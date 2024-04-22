@@ -1,4 +1,4 @@
-package frc.robot.SensorsAndControllers.Interfaces;
+package frc.robot.SensorsAndControllers;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 
@@ -9,15 +9,20 @@ public abstract class EverMotorController {
         kCoast,
         kBrake
     }
-
+ 
     public enum ControlType{
         kPrecent,
         kPos,
         kVel
     }
 
+    protected int m_id;
+
+    public EverMotorController(int id){
+        m_id = id;
+    }
+
     /**
-     
      * @param type - mode type(precentage(-1 - 1), position, velocity)
      * @return current value. depending on the mode
      */
@@ -83,9 +88,4 @@ public abstract class EverMotorController {
      * Restore factory default.
      */
     public abstract void restoreFactoryDefaults();
-    
-
-
-
-
 }
