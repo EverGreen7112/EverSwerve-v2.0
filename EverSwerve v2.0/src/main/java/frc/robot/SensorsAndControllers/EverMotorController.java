@@ -1,8 +1,5 @@
 package frc.robot.SensorsAndControllers;
 
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-
-
 public abstract class EverMotorController {    
     
     public enum IdleMode{
