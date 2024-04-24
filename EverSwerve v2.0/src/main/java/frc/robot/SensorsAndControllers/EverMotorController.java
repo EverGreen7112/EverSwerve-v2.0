@@ -13,10 +13,23 @@ public abstract class EverMotorController {
         kVel
     }
 
+    //motor controller id
     protected int m_id;
+
+    //pidf coefficients
+    protected double m_kp;
+    protected double m_ki;
+    protected double m_kd;
+    protected double m_kf;
 
     public EverMotorController(int id){
         m_id = id;
+        setPidf(0, 0, 0, 0);
+    }
+
+    public EverMotorController(int id, double kp, double ki, double kd, double kf){
+        this(id);
+        setPidf(kp, ki, kd, kf);
     }
 
     /**
@@ -26,11 +39,34 @@ public abstract class EverMotorController {
     public abstract double get(ControlType type);
 
     /**
+     * get current speed(precentage (-1 - 1))
+     */
+    public abstract double get();
+
+    /**
      * Sets the appropriate output on the motor controller, depending on the mode.
      * @param type - control type(precentage(-1 - 1), position, velocity)
      * @param value - target value
      */
     public abstract void set(ControlType type, double value);
+
+    /**
+     * set current speed(precentage (-1 - 1))
+     */
+    public abstract void set(double value);
+
+    /**
+     * @param kp - proportional coefficient
+     * @param ki - integral coefficient
+     * @param kd - derivative coefficient
+     * @param kf - feedforward coefficient
+     */
+    public void setPidf(double kp, double ki, double kd, double kf){
+        m_kp = kp;
+        m_ki = ki;
+        m_kd = kd;
+        m_kf = kf;
+    }
 
     /**
      * Invert directions of motor;
@@ -56,7 +92,7 @@ public abstract class EverMotorController {
     /**
      * Set internal encoder position.
      */
-    public abstract void setEncoderPos();
+    public abstract void setEncoderPos(double pos);
 
     /**
      * follow a given motor controller. 
