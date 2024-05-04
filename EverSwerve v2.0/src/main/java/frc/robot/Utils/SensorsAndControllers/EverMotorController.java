@@ -1,4 +1,4 @@
-package frc.robot.SensorsAndControllers;
+package frc.robot.Utils.SensorsAndControllers;
 
 public abstract class EverMotorController {    
     
@@ -33,7 +33,9 @@ public abstract class EverMotorController {
     }
 
     /**
-     * @param type - mode type(precentage(-1 - 1), position, velocity)
+     * @param type - mode type(precentage(-1 - 1), </n>
+     *                         position(if conversion factor hasn't been changed it's in rotations), 
+     *                         velocity((if conversion factor hasn't been changed it's in rpm))
      * @return current value. depending on the mode
      */
     public abstract double get(ControlType type);
@@ -45,7 +47,9 @@ public abstract class EverMotorController {
 
     /**
      * Sets the appropriate output on the motor controller, depending on the mode.
-     * @param type - control type(precentage(-1 - 1), position, velocity)
+      * @param type - mode type(precentage(-1 - 1), </n>
+     *                         position(if conversion factor hasn't been changed it's in rotations), 
+     *                         velocity((if conversion factor hasn't been changed it's in rpm))
      * @param value - target value
      */
     public abstract void set(ControlType type, double value);
@@ -84,10 +88,12 @@ public abstract class EverMotorController {
     public abstract void stop();
 
     /**
-     * @param type - control type(precentage(-1 - 1), position, velocity)
+     * @param type - @param type - mode type(precentage(-1 - 1), </n>
+     *                         position(if conversion factor hasn't been changed it's in rotations), 
+     *                         velocity((if conversion factor hasn't been changed it's in rpm))
      * @param factor - control type's output's factor 
      */
-    public abstract void setControlTypeConversionFactor(ControlType type, double factor);
+    public abstract void setConversionFactor(ControlType type, double factor);
     
     /**
      * Set internal encoder position.

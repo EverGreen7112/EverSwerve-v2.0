@@ -1,4 +1,4 @@
-package frc.robot.SensorsAndControllers;
+package frc.robot.Utils.SensorsAndControllers;
 
 public abstract class EverAbsEncoder {
     

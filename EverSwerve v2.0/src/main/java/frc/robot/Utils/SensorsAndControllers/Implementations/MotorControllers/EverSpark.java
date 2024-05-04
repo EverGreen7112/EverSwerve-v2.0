@@ -1,11 +1,10 @@
-package frc.robot.SensorsAndControllers.Implementations.MotorControllers;
+package frc.robot.Utils.SensorsAndControllers.Implementations.MotorControllers;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import frc.robot.SensorsAndControllers.EverMotorController;
+import frc.robot.Utils.SensorsAndControllers.EverMotorController;
 
 /**
  * This class represents any spark based motor controller such as: sparkmax, sparkflex, etc...
@@ -79,7 +78,7 @@ public class EverSpark extends EverMotorController{
     }
 
     @Override
-    public void setControlTypeConversionFactor(ControlType type, double factor) {
+    public void setConversionFactor(ControlType type, double factor) {
         switch (type) {
             case kPos:
                 m_controller.getEncoder().setPositionConversionFactor(factor);    
@@ -100,7 +99,7 @@ public class EverSpark extends EverMotorController{
     @Override
     public void follow(EverMotorController motorController) {
         if(!(motorController instanceof EverSpark))
-            throw new RuntimeException("a spark max cant follow a different kind of motor controller");
+            throw new RuntimeException("a spark motor controller cant follow a different kind of motor controller");
         m_controller.follow(m_controller);
     }
 
