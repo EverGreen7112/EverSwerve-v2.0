@@ -1,32 +1,43 @@
 package frc.robot.Subsystems;
 
 import frc.robot.Utils.Math.Vector2d;
+import frc.robot.Utils.SensorsAndControllers.EverAbsEncoder;
+import frc.robot.Utils.SensorsAndControllers.EverGyro;
+import frc.robot.Utils.SensorsAndControllers.EverMotorController;
+import frc.robot.Utils.SensorsAndControllers.Implementations.MotorControllers.EverSpark;
 
 public class SwerveConsts{
 
     public static final boolean USES_ABS_ENCODER = true;
 
-    // chassis motor ports
-    public static final int TOP_LEFT_DRIVE_ID = 0;
-    public static final int TOP_RIGHT_DRIVE_ID = 0;
-    public static final int DOWN_LEFT_DRIVE_ID = 0;
-    public static final int DOWN_RIGHT_DRIVE_ID = 0;
-    public static final int TOP_LEFT_STEERING_ID = 0;
-    public static final int TOP_RIGHT_STEERING_ID = 0;
-    public static final int DOWN_LEFT_STEERING_ID = 0;
-    public static final int DOWN_RIGHT_STEERING_ID = 0;
+    // speed values
+    public static final double MAX_DRIVE_SPEED = 1.0;   //m/s
+    public static final double MAX_ANGULAR_SPEED = 1.0; //deg/s
+
+    // motor controllers
+    public static final EverMotorController TOP_LEFT_DRIVE = new EverSpark(0);
+    public static final EverMotorController TOP_RIGHT_DRIVE = new EverSpark(0);
+    public static final EverMotorController DOWN_LEFT_DRIVE = new EverSpark(0);
+    public static final EverMotorController DOWN_RIGHT_DRIVE = new EverSpark(0);
+    public static final EverMotorController TOP_LEFT_STEER = new EverSpark(0);
+    public static final EverMotorController TOP_RIGHT_STEER = new EverSpark(0);
+    public static final EverMotorController DOWN_LEFT_STEER = new EverSpark(0);
+    public static final EverMotorController DOWN_RIGHT_STEER = new EverSpark(0);
 
     // chassis encoders
-    public static final int TOP_LEFT_ABS_ENCODER = 0;
-    public static final int TOP_RIGHT_ABS_ENCODER = 0;
-    public static final int DOWN_LEFT_ABS_ENCODER = 0;
-    public static final int DOWN_RIGHT_ABS_ENCODER = 0;
+    public static final EverAbsEncoder TOP_LEFT_ABS_ENCODER = null;
+    public static final EverAbsEncoder TOP_RIGHT_ABS_ENCODER = null;
+    public static final EverAbsEncoder DOWN_LEFT_ABS_ENCODER = null;
+    public static final EverAbsEncoder DOWN_RIGHT_ABS_ENCODER = null;
 
     // abs encoder offsets from their origin to the swerve modules's true origin
     public static final double TOP_RIGHT_ABS_ENCODER_OFFSET = 0;
     public static final double TOP_LEFT_ABS_ENCODER_OFFSET = 0;
     public static final double DOWN_RIGHT_ABS_ENCODER_OFFSET = 0;
     public static final double DOWN_LEFT_ABS_ENCODER_OFFSET = 0;
+ 
+    //gyro
+    public static final EverGyro GYRO = null;
 
     //sizes
     public static final double FRONT_WHEEL_DIST_METERS = 0.57;
