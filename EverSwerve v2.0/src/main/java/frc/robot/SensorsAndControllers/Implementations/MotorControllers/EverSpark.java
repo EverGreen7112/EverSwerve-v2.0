@@ -1,23 +1,26 @@
 package frc.robot.SensorsAndControllers.Implementations.MotorControllers;
 
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import frc.robot.SensorsAndControllers.EverMotorController;
 
-public class EverSparkMax extends EverMotorController{
+/**
+ * This class represents any spark based motor controller such as: sparkmax, sparkflex, etc...
+ */
+public class EverSpark extends EverMotorController{
     
-    private CANSparkMax m_controller;
+    private CANSparkBase m_controller;
 
-    public EverSparkMax(int id) {
+    public EverSpark(int id) {
         super(id);
         m_controller = new CANSparkMax(id, MotorType.kBrushless);
     }
 
-    public EverSparkMax(int id, double kp, double ki, double kd, double kf) {
-        super(id);
-        m_controller = new CANSparkMax(id, MotorType.kBrushless);
+    public EverSpark(int id, double kp, double ki, double kd, double kf) {
+        this(id);
         setPidf(kp, ki, kd, kf);
     }
 
@@ -96,7 +99,7 @@ public class EverSparkMax extends EverMotorController{
 
     @Override
     public void follow(EverMotorController motorController) {
-        if(!(motorController instanceof EverSparkMax))
+        if(!(motorController instanceof EverSpark))
             throw new RuntimeException("a spark max cant follow a different kind of motor controller");
         m_controller.follow(m_controller);
     }
