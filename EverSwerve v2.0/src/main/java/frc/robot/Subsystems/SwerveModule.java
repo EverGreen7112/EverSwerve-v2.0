@@ -1,57 +1,60 @@
 package frc.robot.Subsystems;
 
+import org.opencv.core.Mat;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Utils.EverKit.EverAbsEncoder;
+import frc.robot.Utils.EverKit.EverEncoder;
+import frc.robot.Utils.EverKit.EverMotorController;
+import frc.robot.Utils.EverKit.EverPIDController;
+import frc.robot.Utils.EverKit.EverPIDController.ControlType;
 import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
-import frc.robot.Utils.SensorsAndControllers.EverAbsEncoder;
-import frc.robot.Utils.SensorsAndControllers.EverMotorController;
-import frc.robot.Utils.SensorsAndControllers.EverMotorController.ControlType;
-import frc.robot.Utils.SensorsAndControllers.EverMotorController.IdleMode;
 
 public class SwerveModule extends SubsystemBase {
 
     // swerve module motor controllers
-    private EverMotorController m_driveController;
-    private EverMotorController m_steerController;
+    private EverPIDController m_velocityController;
+    private EverMotorController m_driveMotor;
+    private EverEncoder m_driveEncoder;
+    private EverPIDController m_angleController;
+    private EverMotorController m_steerMotor;
+    private EverEncoder m_steerEncoder;
 
     // absolute encoder of module
-    private EverAbsEncoder m_absEncoder;
+    private EverAbsEncoder m_absSteerEncoder;
 
-    public SwerveModule(EverMotorController driveController, EverMotorController steerController) {
-        m_driveController = driveController;
-        m_steerController = steerController;
-        // configure motor controllers
-        m_driveController.restoreFactoryDefaults();
-        m_steerController.restoreFactoryDefaults();
-
-        m_driveController.setIdleMode(IdleMode.kCoast);
-        m_steerController.setIdleMode(IdleMode.kCoast);
-
-        m_driveController.setConversionFactor(ControlType.kVel,
-                SwerveConsts.DRIVE_GEAR_RATIO * SwerveConsts.WHEEL_PERIMETER / 60.0); // convert from rpm without gear
-                                                                                      // ratio to m/s with gear ratio
-         m_steerController.setConversionFactor(ControlType.kPos, SwerveConsts.STEER_GEAR_RATIO * 360.0); //convert from rotations without gear ratio to degrees with gear ratio                                                                       
-
-
-        m_driveController.setPidf(SwerveConsts.WHEEL_VELOCITY_KP, SwerveConsts.WHEEL_VELOCITY_KI,
-                SwerveConsts.WHEEL_VELOCITY_KD, SwerveConsts.WHEEL_VELOCITY_KF);
-        m_steerController.setPidf(SwerveConsts.WHEEL_ANGLE_KP, SwerveConsts.WHEEL_ANGLE_KI,
-                SwerveConsts.WHEEL_ANGLE_KD, 0);
+    /**
+     * @param velocityController velocity control units of measure should be configured for meters per second(the speed of the wheel)
+     * @param angleController angle control units of measure should be configured for degrees(the angle of the wheel)
+    */
+     public SwerveModule(EverPIDController velocityController, EverMotorController driveMotor,
+            EverEncoder driveEncoder, EverPIDController angleController,
+            EverMotorController steerMotor, EverEncoder steerEncoder) {
+        m_velocityController = velocityController;
+        m_driveMotor = driveMotor;
+        m_angleController = angleController;
+        m_steerMotor = steerMotor;
     }
 
-    public SwerveModule(EverMotorController driveController, EverMotorController steerController,
-            EverAbsEncoder absEncoder, double offset) {
-        this(driveController, steerController);
-        // configure abs encoder
-        m_absEncoder = absEncoder;
-        m_absEncoder.setOffset(offset);
-        // set steer's integrated encoder pos to the pos of the abs encoder
-        m_steerController.setEncoderPos(m_absEncoder.getPos());
+    /**
+     * @param velocityController velocity control units of measure should be configured for meters per second(the speed of the wheel)
+     * @param angleController angle control units of measure should be configured for degrees(the angle of the wheel)
+     * @param absSteerEncoder absSteerEncoder units of measure should be configured for degrees(absolute of the wheel)
+     */
+    public SwerveModule(EverPIDController velocityController, EverMotorController driveMotor,
+                        EverEncoder driveEncoder, EverPIDController angleController,
+                        EverMotorController steerMotor, EverEncoder steerEncoder,
+                        EverAbsEncoder absSteerEncoder){
+        this(velocityController, driveMotor, driveEncoder,
+             angleController, steerMotor, steerEncoder);
+        m_absSteerEncoder = absSteerEncoder;
+        m_driveEncoder.setPos(absSteerEncoder.getAbsPos());
     }
 
-     /**
+    /**
      * set state in cartesian values
-     * @param speed - in m/s
+     * @param speed - in meters per second
      * @param angle - in degrees
      */
     public void setState(double speed, double angle) {
@@ -60,7 +63,8 @@ public class SwerveModule extends SubsystemBase {
 
     /**
      * 
-     * @param desiredState - 2d vector - magnitude represents the target speed in m/s
+     * @param desiredState - 2d vector - magnitude represents the target speed in
+     *                     m/s
      *                     angle represents the target angle
      */
     public void setState(Vector2d desiredState) {
@@ -86,36 +90,51 @@ public class SwerveModule extends SubsystemBase {
         }
 
         // turn module to target angle
-        m_steerController.set(ControlType.kPos, currentAngle + optimizedDeltaTargetAngle);
+        m_angleController.activate(currentAngle + optimizedDeltaTargetAngle, ControlType.kPos);
 
         // dot product to current state
         targetSpeed *= Math.cos(Math.toRadians(optimizedNormalDeltaTargetAngle));
 
         // set speed of module at target speed
-        m_driveController.set(ControlType.kVel, targetSpeed);
+        m_velocityController.activate(targetSpeed, ControlType.kVel);
     }
 
     /**
      * turn module to targetAngle
-     * 
      * @param targetAngle in degrees
      */
-
     public void turnToAngle(double targetAngle) {
-        m_steerController.set(ControlType.kPos, targetAngle);
+        m_angleController.activate(targetAngle, ControlType.kPos);
     }
 
     /**
-     * 
-     * @return current angle in degrees of module
+     * @return current angle in degrees
      */
-    public double getAngle(){
-        return m_steerController.get(ControlType.kPos);
+    public double getAngle() {
+        return m_steerEncoder.getPos();
     }
 
-    public void stopModule(){
-        m_driveController.set(0);
-        m_steerController.set(0);
+    /**
+     * @return current velocity in meters per second
+     */
+    public double getVelocity() {
+        return m_driveEncoder.getVel();
     }
+
+    /**
+     * @return module's velocity vector in meters per second
+     */
+    public Vector2d getVec(){
+        double mag = Math.abs(getVelocity());
+        double theta = Math.toRadians(getAngle());
+        return new Vector2d(mag * Math.cos(theta), mag * Math.sin(theta));
+    }
+
+    public void stopModule() {
+        m_driveMotor.stop();
+        m_steerMotor.stop();
+    }
+
+    
 
 }

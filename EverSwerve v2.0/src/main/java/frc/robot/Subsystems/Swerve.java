@@ -1,47 +1,32 @@
 package frc.robot.Subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Utils.EverKit.EverPIDController;
 import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
-import frc.robot.Utils.SensorsAndControllers.EverGyro;
-import frc.robot.Utils.SensorsAndControllers.EverMotorController;
 
 public class Swerve extends SubsystemBase {
 
     private SwerveModule[] m_modules;
-    private EverGyro m_gyro;
+    private AHRS m_gyro;    //TODO: change gyro to EverGyro
 
     //driving vars
     private Vector2d m_driveVec;
     private boolean m_isGyroOriented;
-    private PIDController m_headingController;
+    private PIDController m_headingController; //TODO: change to EverPIDController(add EverExternalPIDController)
     private double m_headingTarget;
-    private double m_rotationSpeed;
-
     private static Swerve m_instance;
     
     private Swerve() {
-        //create modules
-        if(SwerveConsts.USES_ABS_ENCODER){
-            m_modules[0] = new SwerveModule(SwerveConsts.TOP_LEFT_DRIVE, SwerveConsts.TOP_LEFT_STEER, SwerveConsts.TOP_LEFT_ABS_ENCODER, SwerveConsts.TOP_LEFT_ABS_ENCODER_OFFSET);
-            m_modules[1] = new SwerveModule(SwerveConsts.TOP_RIGHT_DRIVE, SwerveConsts.TOP_RIGHT_STEER, SwerveConsts.TOP_RIGHT_ABS_ENCODER, SwerveConsts.TOP_RIGHT_ABS_ENCODER_OFFSET);
-            m_modules[2] = new SwerveModule(SwerveConsts.DOWN_LEFT_DRIVE, SwerveConsts.DOWN_LEFT_STEER, SwerveConsts.DOWN_LEFT_ABS_ENCODER, SwerveConsts.DOWN_LEFT_ABS_ENCODER_OFFSET);
-            m_modules[3] = new SwerveModule(SwerveConsts.DOWN_RIGHT_DRIVE, SwerveConsts.DOWN_RIGHT_STEER, SwerveConsts.DOWN_RIGHT_ABS_ENCODER, SwerveConsts.DOWN_RIGHT_ABS_ENCODER_OFFSET);
-        } 
-        else{
-            m_modules[0] = new SwerveModule(SwerveConsts.TOP_LEFT_DRIVE, SwerveConsts.TOP_LEFT_STEER);
-            m_modules[1] = new SwerveModule(SwerveConsts.TOP_RIGHT_DRIVE, SwerveConsts.TOP_RIGHT_STEER);
-            m_modules[2] = new SwerveModule(SwerveConsts.DOWN_LEFT_DRIVE, SwerveConsts.DOWN_LEFT_STEER);
-            m_modules[3] = new SwerveModule(SwerveConsts.DOWN_RIGHT_DRIVE, SwerveConsts.DOWN_RIGHT_STEER);
-        }
-        
-        m_gyro = SwerveConsts.GYRO;
-        m_headingTarget = m_gyro.getYaw();
-        m_headingController = new PIDController(SwerveConsts.HEADING_KP, SwerveConsts.HEADING_KI, SwerveConsts.HEADING_KD);
-        m_rotationSpeed = 0;
-        m_isGyroOriented = true;
+        SwerveConsts.config();
+        m_modules = SwerveConsts.SWERVE_MODULES;
+        m_gyro = new AHRS(SerialPort.Port.kMXP);
     }
 
     /**
@@ -56,7 +41,6 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
-        calcRotationSpeed();
         drive();
     }
 
@@ -71,7 +55,7 @@ public class Swerve extends SubsystemBase {
     /**
      * see math on pdf document for more information
      * 
-     * @param directionVec    - robot's target velocity
+     * @param driveVec    - robot's target velocity
      * @param isGyroOriented - true for origin of the gyro relative driving
      *                         false for robot relative driving
      */
@@ -81,8 +65,9 @@ public class Swerve extends SubsystemBase {
     }
 
     private void drive(){
+        double desiredRotationSpeed = calcRotationSpeed();
         // if drive values are 0 stop moving
-        if (m_driveVec.mag() == 0 && m_rotationSpeed == 0) {
+        if (m_driveVec.mag() == 0 && desiredRotationSpeed == 0) {
             for (int i = 0; i < m_modules.length; i++) {
                 m_modules[i].stopModule();
             }
@@ -94,7 +79,7 @@ public class Swerve extends SubsystemBase {
             m_driveVec.mul(SwerveConsts.MAX_DRIVE_SPEED);
         }
 
-        // convert driveVector to field oriented
+        // convert driveVector to gyro oriented
         if(m_isGyroOriented) 
             m_driveVec.rotate(Math.toRadians(m_gyro.getYaw()));
         
@@ -106,7 +91,7 @@ public class Swerve extends SubsystemBase {
             rotVecs[i].rotate(Math.toRadians(90));
             // change magnitude of rot vector to rotationSpeed
             rotVecs[i].normalise();
-            rotVecs[i].mul(m_rotationSpeed);
+            rotVecs[i].mul(desiredRotationSpeed);
         }
 
         Vector2d[] sumVectors = new Vector2d[m_modules.length];
@@ -120,7 +105,7 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    private void calcRotationSpeed(){
+    private double calcRotationSpeed(){
         //convert max angular speed to m/s from deg/s
         double ms_max_angular_speed = (SwerveConsts.MAX_ANGULAR_SPEED / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
         // get current angle
@@ -128,8 +113,8 @@ public class Swerve extends SubsystemBase {
         // calculate optimized target angle
         double closestAngle = Funcs.closestAngle(currentAngle, m_headingTarget);
         double optimizedAngle = currentAngle + closestAngle;
-        // get pid output
-        m_rotationSpeed = MathUtil.clamp(m_headingController.calculate(currentAngle, optimizedAngle),
+        // return pid output
+        return MathUtil.clamp(m_headingController.calculate(currentAngle, optimizedAngle),
                 -ms_max_angular_speed, ms_max_angular_speed);
     }
 

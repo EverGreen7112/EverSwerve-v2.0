@@ -4,13 +4,22 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Utils.EverKit.Periodic;
 
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+  public static ArrayList<Periodic> robotPeriodicFuncs = new ArrayList<Periodic>();
+  public static ArrayList<Periodic> teleopPeriodicFuncs = new ArrayList<Periodic>();
+  public static ArrayList<Periodic> testPeriodicFuncs = new ArrayList<Periodic>();
+  public static ArrayList<Periodic> autonomousPeriodicFuncs = new ArrayList<Periodic>();
+  public static ArrayList<Periodic> simulationPeriodicFuncs = new ArrayList<Periodic>();
 
+
+  private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
   @Override
@@ -21,6 +30,14 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    for (Periodic method : robotPeriodicFuncs) {
+      try {
+        method.periodic();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
   }
 
   @Override
@@ -42,7 +59,15 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    for (Periodic method : autonomousPeriodicFuncs) {
+      try {
+        method.periodic();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
   @Override
   public void autonomousExit() {}
@@ -55,7 +80,15 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    for (Periodic method : teleopPeriodicFuncs) {
+      try {
+        method.periodic();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
   @Override
   public void teleopExit() {}
@@ -66,8 +99,28 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    for (Periodic method : testPeriodicFuncs) {
+      try {
+        method.periodic();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
   @Override
-  public void testExit() {}
+  public void testExit() {}  
+
+  @Override
+  public void simulationPeriodic() {
+    for (Periodic method : simulationPeriodicFuncs) {
+      try {
+        method.periodic();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  
 }

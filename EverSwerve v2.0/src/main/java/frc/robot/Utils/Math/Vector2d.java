@@ -253,7 +253,6 @@ public class Vector2d
         return Math.sqrt(sqr(x - xx) + sqr(y - yy));
     }
 
-
     /**
      * Returns the atan2 of this vector.
      * @return the atan2 of this vector.
