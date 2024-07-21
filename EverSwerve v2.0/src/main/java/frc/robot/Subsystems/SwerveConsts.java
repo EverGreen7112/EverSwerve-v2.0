@@ -21,18 +21,18 @@ public class SwerveConsts {
 
     // speed values
     public static final double MAX_DRIVE_SPEED = 1.0; // m/s
-    public static final double MAX_ANGULAR_SPEED = 1.0; // deg/s
+    public static final double MAX_ANGULAR_SPEED = 1.0; // deg/s/
 
     // motor controllers
     public static final EverSparkMax 
-            TL_DRIVE_MOTOR = new EverSparkMax(0),
-            TR_DRIVE_MOTOR = new EverSparkMax(0),
-            DL_DRIVE_MOTOR = new EverSparkMax(0),
-            DR_DRIVE_MOTOR = new EverSparkMax(0),
-            TL_STEER_MOTOR = new EverSparkMax(0),
-            TR_STEER_MOTOR = new EverSparkMax(0),
-            DL_STEER_MOTOR = new EverSparkMax(0),
-            DR_STEER_MOTOR = new EverSparkMax(0);
+            TL_DRIVE_MOTOR = new EverSparkMax(18),
+            TR_DRIVE_MOTOR = new EverSparkMax(17),
+            DL_DRIVE_MOTOR = new EverSparkMax(3),
+            DR_DRIVE_MOTOR = new EverSparkMax(27),
+            TL_STEER_MOTOR = new EverSparkMax(62),
+            TR_STEER_MOTOR = new EverSparkMax(13),
+            DL_STEER_MOTOR = new EverSparkMax(2),
+            DR_STEER_MOTOR = new EverSparkMax(8);
 
     public static final EverSparkMax[] DRIVE_MOTORS = {TL_DRIVE_MOTOR, TR_DRIVE_MOTOR, DL_DRIVE_MOTOR, DR_DRIVE_MOTOR};
     public static final EverSparkMax[] STEER_MOTORS = {TL_STEER_MOTOR, TR_STEER_MOTOR, DL_STEER_MOTOR, DR_STEER_MOTOR};
@@ -74,10 +74,11 @@ public class SwerveConsts {
             Y_CONTROLLER = null;
     // chassis encoders
     public static final EverAbsEncoder
-            TOP_LEFT_ABS_ENCODER = new EverCANCoder(0, 0),
-            TOP_RIGHT_ABS_ENCODER = new EverCANCoder(0, 0),
-            DOWN_LEFT_ABS_ENCODER = new EverCANCoder(0, 0),
-            DOWN_RIGHT_ABS_ENCODER = new EverCANCoder(0, 0);
+            TOP_LEFT_ABS_ENCODER = new EverCANCoder(4, -1.6496582031),
+            TOP_RIGHT_ABS_ENCODER = new EverCANCoder(5, -2.187255859375),
+            DOWN_LEFT_ABS_ENCODER = new EverCANCoder(0, -0.87744140625),
+            DOWN_RIGHT_ABS_ENCODER = new EverCANCoder(1,  -1.2109375);
+            
     // abs encoder offsets from their origin to the swerve modules's true origin
     public static final double TOP_RIGHT_ABS_ENCODER_OFFSET = 0, TOP_LEFT_ABS_ENCODER_OFFSET = 0,
             DOWN_RIGHT_ABS_ENCODER_OFFSET = 0, DOWN_LEFT_ABS_ENCODER_OFFSET = 0;
@@ -111,7 +112,7 @@ public class SwerveConsts {
                 new SwerveModule(DL_VELOCITY_CONTROLLER, DL_DRIVE_MOTOR, DL_DRIVE_MOTOR.getSparkInternalEncoder(), DL_ANGLE_CONTROLLER, DL_STEER_MOTOR, DL_STEER_MOTOR.getSparkInternalEncoder()),
                 new SwerveModule(DR_VELOCITY_CONTROLLER, DR_DRIVE_MOTOR, DR_DRIVE_MOTOR.getSparkInternalEncoder(), DR_ANGLE_CONTROLLER, DR_STEER_MOTOR, DR_STEER_MOTOR.getSparkInternalEncoder())
      };
-
+ 
     public static void config() {
         for (EverSparkMax driveMotor : DRIVE_MOTORS) {
              driveMotor.restoreFactoryDefaults();

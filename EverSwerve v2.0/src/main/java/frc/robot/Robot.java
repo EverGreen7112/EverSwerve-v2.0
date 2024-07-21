@@ -4,12 +4,17 @@
 
 package frc.robot;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Subsystems.Swerve;
 import frc.robot.Utils.EverKit.Periodic;
+import frc.robot.Utils.Math.Vector2d;
 
 public class Robot extends TimedRobot {
   public static ArrayList<Periodic> robotPeriodicFuncs = new ArrayList<Periodic>();
@@ -79,6 +84,8 @@ public class Robot extends TimedRobot {
     }
   }
 
+  CommandXboxController controller = new CommandXboxController(0);
+
   @Override
   public void teleopPeriodic() {
     for (Periodic method : teleopPeriodicFuncs) {
@@ -88,6 +95,9 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
+    Vector2d vec = new Vector2d(controller.getLeftX(), controller.getLeftY() * -1);
+    
+    Swerve.getInstance().drive(vec, false);
   }
 
   @Override

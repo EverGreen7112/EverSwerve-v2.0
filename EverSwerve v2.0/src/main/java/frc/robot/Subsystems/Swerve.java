@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.EverKit.EverPIDController;
 import frc.robot.Utils.Math.Funcs;
@@ -27,6 +28,7 @@ public class Swerve extends SubsystemBase {
         SwerveConsts.config();
         m_modules = SwerveConsts.SWERVE_MODULES;
         m_gyro = new AHRS(SerialPort.Port.kMXP);
+        m_headingController = new PIDController(0, 0, 0);
     }
 
     /**
@@ -42,6 +44,10 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic() {
         drive();
+        SmartDashboard.putNumber("tl", m_modules[0].getAngle());
+        SmartDashboard.putNumber("tr", m_modules[1].getAngle());
+        SmartDashboard.putNumber("dl", m_modules[2].getAngle());
+        SmartDashboard.putNumber("dr", m_modules[3].getAngle());
     }
 
     public void rotateTo(double angle){
