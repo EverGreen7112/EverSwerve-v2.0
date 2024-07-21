@@ -2,6 +2,7 @@ package frc.robot.Utils.EverKit.Implementations.Encoders;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
 
 
@@ -17,15 +18,9 @@ public class EverCANCoder implements EverAbsEncoder{
      */
     public EverCANCoder(int id){
         m_encoder = new CANcoder(id);
-        m_encoder.setPosition(0);
         m_configs = new MagnetSensorConfigs();
         m_posFactor = 1;
         m_velFactor = 1;
-    }
-
-    public EverCANCoder(int id, double offset){
-        this(id);
-        setOffset(offset);
     }
 
     /**
@@ -41,7 +36,7 @@ public class EverCANCoder implements EverAbsEncoder{
      */
     @Override
     public double getPos() {
-       return m_encoder.getPosition().getValue() * m_posFactor;
+       return m_encoder.getPositionSinceBoot().getValue() * m_posFactor;
     }
 
     /**
@@ -67,8 +62,8 @@ public class EverCANCoder implements EverAbsEncoder{
 
     @Override
     public void setOffset(double offset) {
-        m_configs.withMagnetOffset(1 * m_posFactor - offset / m_posFactor);
-        m_encoder.getConfigurator().apply(m_configs);        
+        m_configs.withMagnetOffset((m_posFactor - offset) / m_posFactor);
+        m_encoder.getConfigurator().apply(m_configs);      
     }
 
     /**

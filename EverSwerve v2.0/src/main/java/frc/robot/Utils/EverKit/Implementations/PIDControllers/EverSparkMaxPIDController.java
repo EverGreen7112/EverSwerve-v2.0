@@ -3,6 +3,7 @@ package frc.robot.Utils.EverKit.Implementations.PIDControllers;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utils.EverKit.EverPIDController;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 
@@ -16,17 +17,6 @@ public class EverSparkMaxPIDController implements EverPIDController{
         m_controller = controller;
         m_internalPIDController = m_controller.getControllerInstance().getPIDController();
     }
-
-    public EverSparkMaxPIDController(EverSparkMax controller, double kp, double ki, double kd){
-        this(controller);
-        setPID(kp, ki, kd);
-    }
-
-    public EverSparkMaxPIDController(EverSparkMax controller, double kp, double ki, double kd, double kf){
-        this(controller);
-        setPIDF(kp, ki, kd, kf);
-    }
-
 
     @Override
     public void setPIDF(double kp, double ki, double kd, double ff) {

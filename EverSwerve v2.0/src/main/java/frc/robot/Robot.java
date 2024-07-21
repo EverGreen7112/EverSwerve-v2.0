@@ -9,11 +9,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Subsystems.Swerve;
+import frc.robot.Subsystems.SwerveConsts;
 import frc.robot.Utils.EverKit.Periodic;
+import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
 import frc.robot.Utils.Math.Vector2d;
 
 public class Robot extends TimedRobot {
@@ -29,6 +32,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    Swerve.getInstance();
     m_robotContainer = new RobotContainer();
   }
 
@@ -42,7 +46,14 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
-
+    // SmartDashboard.putNumber("POS tl", SwerveConsts.ABS_ENCODERS[0].getAbsPos());
+    // SmartDashboard.putNumber("POS tr", SwerveConsts.ABS_ENCODERS[1].getAbsPos());
+    // SmartDashboard.putNumber("POS dl", SwerveConsts.ABS_ENCODERS[2].getAbsPos());
+    // SmartDashboard.putNumber("POS dr", SwerveConsts.ABS_ENCODERS[3].getAbsPos());
+    SmartDashboard.putNumber("POS tl", SwerveConsts.ABS_ENCODERS[0].getAbsPos());
+    SmartDashboard.putNumber("POS tr", SwerveConsts.ABS_ENCODERS[1].getAbsPos());
+    SmartDashboard.putNumber("POS dl", SwerveConsts.ABS_ENCODERS[2].getAbsPos());
+    SmartDashboard.putNumber("POS dr", SwerveConsts.ABS_ENCODERS[3].getAbsPos());
   }
 
   @Override
@@ -84,6 +95,7 @@ public class Robot extends TimedRobot {
     }
   }
 
+
   CommandXboxController controller = new CommandXboxController(0);
 
   @Override
@@ -96,8 +108,7 @@ public class Robot extends TimedRobot {
       }
     }
     Vector2d vec = new Vector2d(controller.getLeftX(), controller.getLeftY() * -1);
-    
-    Swerve.getInstance().drive(vec, false);
+    Swerve.getInstance().drive(vec, false);    
   }
 
   @Override

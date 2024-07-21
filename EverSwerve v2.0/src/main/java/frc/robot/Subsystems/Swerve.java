@@ -8,11 +8,16 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Utils.EverKit.EverMotorController.IdleMode;
+import frc.robot.Utils.EverKit.EverAbsEncoder;
 import frc.robot.Utils.EverKit.EverPIDController;
+import frc.robot.Utils.EverKit.EverPIDController.ControlType;
+import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
+import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverSparkMaxPIDController;
 import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
 
-public class Swerve extends SubsystemBase {
+public class Swerve extends SubsystemBase implements SwerveConsts{
 
     private SwerveModule[] m_modules;
     private AHRS m_gyro;    //TODO: change gyro to EverGyro
@@ -20,12 +25,37 @@ public class Swerve extends SubsystemBase {
     //driving vars
     private Vector2d m_driveVec;
     private boolean m_isGyroOriented;
-    private PIDController m_headingController; //TODO: change to EverPIDController(add EverExternalPIDController)
+    private PIDController m_headingController; 
     private double m_headingTarget;
     private static Swerve m_instance;
     
     private Swerve() {
-        SwerveConsts.config();
+        m_driveVec = new Vector2d();
+
+        ABS_ENCODERS[0].setOffset(-12.3);
+        ABS_ENCODERS[1].setOffset(112.236328125);
+        ABS_ENCODERS[2].setOffset(47.4609375);
+        ABS_ENCODERS[3].setOffset(0);
+
+        for (EverSparkMax driveMotor : DRIVE_MOTORS) {
+             driveMotor.restoreFactoryDefaults();
+             driveMotor.setIdleMode(IdleMode.kCoast);
+        }
+        
+        for (EverSparkMax steerMotor : STEER_MOTORS) {
+             steerMotor.setIdleMode(IdleMode.kCoast);
+        }
+        
+        for (EverSparkMaxPIDController velocityController : WHEEL_VELOCITY_CONTROLLERS) {
+             velocityController.setPIDF(WHEEL_VELOCITY_KP, WHEEL_VELOCITY_KI, WHEEL_VELOCITY_KD, WHEEL_VELOCITY_KF);   
+             velocityController.setConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER / 60.0, ControlType.kVel);
+        }
+        
+        for (EverSparkMaxPIDController angleController : WHEEL_ANGLE_CONTROLLERS) {
+             angleController.setPID(WHEEL_ANGLE_KP, WHEEL_ANGLE_KI, WHEEL_ANGLE_KD);      
+             angleController.setConversionFactor(SwerveConsts.STEER_GEAR_RATIO * 360.0, ControlType.kPos);
+        }
+
         m_modules = SwerveConsts.SWERVE_MODULES;
         m_gyro = new AHRS(SerialPort.Port.kMXP);
         m_headingController = new PIDController(0, 0, 0);
@@ -44,10 +74,6 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic() {
         drive();
-        SmartDashboard.putNumber("tl", m_modules[0].getAngle());
-        SmartDashboard.putNumber("tr", m_modules[1].getAngle());
-        SmartDashboard.putNumber("dl", m_modules[2].getAngle());
-        SmartDashboard.putNumber("dr", m_modules[3].getAngle());
     }
 
     public void rotateTo(double angle){
@@ -89,7 +115,6 @@ public class Swerve extends SubsystemBase {
         if(m_isGyroOriented) 
             m_driveVec.rotate(Math.toRadians(m_gyro.getYaw()));
         
-
         // calculate rotation vectors
         Vector2d[] rotVecs = new Vector2d[m_modules.length];
         for (int i = 0; i < rotVecs.length; i++) {
@@ -106,8 +131,10 @@ public class Swerve extends SubsystemBase {
             sumVectors[i] = new Vector2d(m_driveVec);
             sumVectors[i].add(rotVecs[i]);
 
-            // set module state
-            m_modules[i].setState(sumVectors[i]);
+            if(i != 3){    
+                // set module state
+                m_modules[i].setState(sumVectors[i]);
+            }
         }
     }
 

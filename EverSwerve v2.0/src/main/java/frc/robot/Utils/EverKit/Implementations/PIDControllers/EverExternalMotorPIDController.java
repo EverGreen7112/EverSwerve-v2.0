@@ -68,7 +68,7 @@ public class EverExternalMotorPIDController implements EverPIDController, Period
     public void stop() {
         m_controller.stop();
         resetIAccum();
-        stop();
+        stop(periodicTime.kTeleopPeriodic, periodicTime.kTestPeriodic, periodicTime.kAutonomousPeriodic);
     }
 
     @Override

@@ -1,7 +1,10 @@
 package frc.robot.Subsystems;
 
+import javax.swing.text.StyleContext.SmallAttributeSet;
+
 import org.opencv.core.Mat;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
 import frc.robot.Utils.EverKit.EverEncoder;
@@ -28,13 +31,15 @@ public class SwerveModule extends SubsystemBase {
      * @param velocityController velocity control units of measure should be configured for meters per second(the speed of the wheel)
      * @param angleController angle control units of measure should be configured for degrees(the angle of the wheel)
     */
-     public SwerveModule(EverPIDController velocityController, EverMotorController driveMotor,
+    public SwerveModule(EverPIDController velocityController, EverMotorController driveMotor,
             EverEncoder driveEncoder, EverPIDController angleController,
             EverMotorController steerMotor, EverEncoder steerEncoder) {
         m_velocityController = velocityController;
         m_driveMotor = driveMotor;
+        m_driveEncoder = driveEncoder;
         m_angleController = angleController;
         m_steerMotor = steerMotor;
+        m_steerEncoder = steerEncoder;
     }
 
     /**
@@ -49,7 +54,8 @@ public class SwerveModule extends SubsystemBase {
         this(velocityController, driveMotor, driveEncoder,
              angleController, steerMotor, steerEncoder);
         m_absSteerEncoder = absSteerEncoder;
-        m_driveEncoder.setPos(absSteerEncoder.getAbsPos());
+        m_absSteerEncoder.setPosConversionFactor(360);
+        m_steerEncoder.setPos(m_absSteerEncoder.getAbsPos());
     }
 
     /**
@@ -94,9 +100,9 @@ public class SwerveModule extends SubsystemBase {
 
         // dot product to current state
         targetSpeed *= Math.cos(Math.toRadians(optimizedNormalDeltaTargetAngle));
-
+        
         // set speed of module at target speed
-        m_velocityController.activate(targetSpeed, ControlType.kVel);
+        m_velocityController.activate(targetSpeed * 0, ControlType.kVel);
     }
 
     /**
@@ -133,6 +139,11 @@ public class SwerveModule extends SubsystemBase {
     public void stopModule() {
         m_driveMotor.stop();
         m_steerMotor.stop();
+    }
+
+    @Override
+    public void periodic() {
+        
     }
 
     
