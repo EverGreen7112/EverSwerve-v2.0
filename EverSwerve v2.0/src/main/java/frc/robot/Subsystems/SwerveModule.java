@@ -113,6 +113,10 @@ public class SwerveModule extends SubsystemBase {
         m_angleController.activate(targetAngle, ControlType.kPos);
     }
 
+    public double getDistance(){
+        return m_driveEncoder.getPos();
+    }
+
     /**
      * @return current angle in degrees
      */

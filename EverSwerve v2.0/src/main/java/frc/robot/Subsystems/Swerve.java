@@ -21,16 +21,18 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     private SwerveModule[] m_modules;
     private AHRS m_gyro;    //TODO: change gyro to EverGyro
-
-    //driving vars
+    private double m_angleOffset;
     private Vector2d m_driveVec;
     private boolean m_isGyroOriented;
     private PIDController m_headingController; 
     private double m_headingTarget;
     private static Swerve m_instance;
-    
+    private SwerveLocalizator m_localizator;
+
     private Swerve() {
         m_driveVec = new Vector2d();
+
+        m_localizator = SwerveLocalizator.getInstance();
 
         ABS_ENCODERS[0].setOffset(-12.3);
         ABS_ENCODERS[1].setOffset(112.236328125);
@@ -56,6 +58,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
              angleController.setConversionFactor(SwerveConsts.STEER_GEAR_RATIO * 360.0, ControlType.kPos);
         }
 
+        m_angleOffset = 0;
         m_modules = SwerveConsts.SWERVE_MODULES;
         m_gyro = new AHRS(SerialPort.Port.kMXP);
         m_headingController = new PIDController(0, 0, 0);
@@ -84,9 +87,19 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         m_headingTarget += angle;
     }
 
-    /**
-     * see math on pdf document for more information
+     /**
      * 
+     * @return the angle of the robot with an offset to make it field oriented 
+     */
+    public double getFieldOrientedAngle(){
+        return (m_gyro.getAngle() + m_angleOffset);
+    }
+
+    public SwerveModule[] getModules(){
+        return m_modules;
+    }
+
+    /**
      * @param driveVec    - robot's target velocity
      * @param isGyroOriented - true for origin of the gyro relative driving
      *                         false for robot relative driving
@@ -131,10 +144,9 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
             sumVectors[i] = new Vector2d(m_driveVec);
             sumVectors[i].add(rotVecs[i]);
 
-            if(i != 3){    
-                // set module state
-                m_modules[i].setState(sumVectors[i]);
-            }
+            // set module state
+            m_modules[i].setState(sumVectors[i]);
+            
         }
     }
 
