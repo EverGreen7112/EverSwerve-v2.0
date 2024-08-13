@@ -89,7 +89,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         return m_modules;
     }
 
-
     public void rotateTo(double angle){
         m_headingTarget = angle;
     }
@@ -111,7 +110,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     }
 
     private void drive(){
-        double desiredRotationSpeed = calcRotationSpeed();
+        double desiredRotationSpeed = calcDesiredRotationSpeed();
         // if drive values are 0 stop moving
         if (m_driveVec.mag() == 0 && desiredRotationSpeed == 0) {
             for (int i = 0; i < m_modules.length; i++) {
@@ -151,7 +150,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         }
     }
 
-    private double calcRotationSpeed(){
+    private double calcDesiredRotationSpeed(){
         //convert max angular speed to m/s from deg/s
         double ms_max_angular_speed = (SwerveConsts.MAX_ANGULAR_SPEED / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
         // get current angle
@@ -163,5 +162,36 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         return MathUtil.clamp(m_headingController.calculate(currentAngle, optimizedAngle),
                 -ms_max_angular_speed, ms_max_angular_speed);
     }
+
+    /** TODO: test this implementaion against based on the gyro
+     * get the swerves angular velocity (degrees / sec)
+     */
+    public double getAngularVelocity() {
+        double angularVelocity = 0;
+        
+        for (int i = 0; i < m_modules.length; i++) {
+            Vector2d moduleRotationVector = new Vector2d(SwerveConsts.physicalMoudulesVector[i]);
+            moduleRotationVector.rotate(Math.toRadians(90));
+            moduleRotationVector.normalise();
+
+            double moduleVel = m_modules[i].getVelocity();
+            //get current speed in each axis
+            double moduleX = (Math.cos(Math.toRadians(m_modules[i].getAngle())) * moduleVel);
+            double moduleY = (Math.sin(Math.toRadians(m_modules[i].getAngle())) * moduleVel);
+            Vector2d moduleVelocity = new Vector2d(moduleX, moduleY);
+
+            angularVelocity += moduleVelocity.dot(moduleRotationVector);
+        }
+        
+        // at this point the angular velocity is in m/s
+        angularVelocity /= (double)SwerveConsts.physicalMoudulesVector.length;
+
+        // converts angularVelocity to degrees/s
+        angularVelocity /= SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;  // rotations / s
+        angularVelocity *= 360;  // degrees / s
+
+        return angularVelocity;
+    }
+    
 
 }

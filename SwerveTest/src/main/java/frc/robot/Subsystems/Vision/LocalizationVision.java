@@ -54,16 +54,16 @@ public class LocalizationVision {
                         for(int i=0; i<m_locals.length; i++){
                             m_locals[i] = new_locals[i];
                         }
-                    /*
-                    double angularVelocity = swerve.getAngularVelocity();
-                    SwerveLocalizator.getInstance().offsetLocalizationTo(
-                        m_locals[0],                                                         // x
-                        m_locals[2],                                                         // y
-                        -m_locals[3] + (angularVelocity * VISION_FRAME_TIME));  // angle
-                        // we add an estimation for delta angle to the angle given by the vision
-                        // this is an attempt to compensate for the fact that the data as given by the vision is delayed
-                        // this was added to help compensate for angle offset drifting
-                    */
+                    
+                    // double angularVelocity = swerve.getAngularVelocity();
+                    // SwerveLocalizator.getInstance().offsetLocalizationTo(
+                    //     m_locals[0],                                                         // x
+                    //     m_locals[2],                                                         // y
+                    //     -m_locals[3] + (angularVelocity * VISION_FRAME_TIME));  // angle
+                    //     // we add an estimation for delta angle to the angle given by the vision
+                    //     // this is an attempt to compensate for the fact that the data as given by the vision is delayed
+                    //     // this was added to help compensate for angle offset drifting
+                    
             }
         });
         m_visionThread.setDaemon(true);
