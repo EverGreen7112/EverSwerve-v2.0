@@ -1,4 +1,4 @@
-package frc.robot.Subsystems;
+package frc.robot.Subsystems.Swerve;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -23,7 +23,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     private AHRS m_gyro;    //TODO: change gyro to EverGyro
 
     //driving vars
-    private double m_angleOffset; //the offset between the origin angle to the origin of the field oriented angle(comes from vision)
+    private double m_angleOffsetToField; //the offset between the origin angle to t he origin of the field oriented angle(comes from vision)
     private Vector2d m_driveVec;
     private boolean m_isGyroOriented;
     private PIDController m_headingController; 
@@ -82,7 +82,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
      * @return the angle of the robot with an offset to make it field oriented 
     */
     public double getFieldOrientedAngle(){
-        return (m_gyro.getAngle() + m_angleOffset);
+        return (m_gyro.getAngle() + m_angleOffsetToField);
     }
 
     public SwerveModule[] getModules(){
@@ -110,7 +110,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     }
 
     private void drive(){
-        double desiredRotationSpeed = calcDesiredRotationSpeed();
+        double desiredRotationSpeed = calcTargetRotationSpeed();
         // if drive values are 0 stop moving
         if (m_driveVec.mag() == 0 && desiredRotationSpeed == 0) {
             for (int i = 0; i < m_modules.length; i++) {
@@ -150,7 +150,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         }
     }
 
-    private double calcDesiredRotationSpeed(){
+    private double calcTargetRotationSpeed(){
         //convert max angular speed to m/s from deg/s
         double ms_max_angular_speed = (SwerveConsts.MAX_ANGULAR_SPEED / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
         // get current angle
@@ -163,7 +163,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
                 -ms_max_angular_speed, ms_max_angular_speed);
     }
 
-    /** TODO: test this implementaion against based on the gyro
+    /** TODO: test this implementaion against one based on the gyro
      * get the swerves angular velocity (degrees / sec)
      */
     public double getAngularVelocity() {

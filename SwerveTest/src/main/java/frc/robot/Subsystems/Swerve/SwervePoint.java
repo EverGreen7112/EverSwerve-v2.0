@@ -1,4 +1,4 @@
-package frc.robot.Subsystems;
+package frc.robot.Subsystems.Swerve;
 
 public class SwervePoint {
     private double m_x;
@@ -6,6 +6,12 @@ public class SwervePoint {
     private double m_angle;
     
     public SwervePoint(double x, double y, double angle){
+        this.m_x = x;
+        this.m_y = y;
+        this.m_angle = angle;
+    }
+
+    public void set(double x, double y, double angle){
         this.m_x = x;
         this.m_y = y;
         this.m_angle = angle;

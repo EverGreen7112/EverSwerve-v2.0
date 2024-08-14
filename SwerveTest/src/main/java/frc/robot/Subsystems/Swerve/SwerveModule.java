@@ -1,4 +1,4 @@
-package frc.robot.Subsystems;
+package frc.robot.Subsystems.Swerve;
 
 import javax.swing.text.StyleContext.SmallAttributeSet;
 
@@ -122,6 +122,10 @@ public class SwerveModule extends SubsystemBase {
      */
     public double getAngle() {
         return m_steerEncoder.getPos();
+    }
+
+    public void setDistance(double distance){
+        m_driveEncoder.setPos(distance);
     }
 
     public double getDistance(){
