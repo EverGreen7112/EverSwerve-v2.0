@@ -44,10 +44,9 @@ public class SwerveLocalizator implements Periodic {
         if (currentVisionPoint.getX() != m_prevVisionRobotX || currentVisionPoint.getY() != m_prevVisionRobotY) {
             
             //update position
-            m_currentPoint.set(currentVisionPoint.getX(), currentVisionPoint.getY(), currentVisionPoint.getAngle());
+            m_currentPoint.set(currentVisionPoint.getX(), currentVisionPoint.getY());
             m_prevVisionRobotX = currentVisionPoint.getX();
             m_prevVisionRobotY = currentVisionPoint.getY();
-            m_prevVisionRobotAngle = currentVisionPoint.getAngle();
             restartOdometry();
         }
         
@@ -74,8 +73,6 @@ public class SwerveLocalizator implements Periodic {
             }
 
         }
-
-        
 
         //add odometry values to the current point
         Vector2d robotDelta = getDelta();
