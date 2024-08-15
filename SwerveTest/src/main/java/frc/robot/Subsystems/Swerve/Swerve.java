@@ -23,7 +23,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     private AHRS m_gyro;    //TODO: change gyro to EverGyro
 
     //driving vars
-    private double m_angleOffsetToField; //the offset between the origin angle to t he origin of the field oriented angle(comes from vision)
     private Vector2d m_driveVec;
     private boolean m_isGyroOriented;
     private PIDController m_headingController; 
@@ -77,12 +76,8 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         drive();
     }
 
-    /**
-     * 
-     * @return the angle of the robot with an offset to make it field oriented 
-    */
-    public double getFieldOrientedAngle(){
-        return (m_gyro.getAngle() + m_angleOffsetToField);
+    public double getGyroOrientedAngle(){
+        return m_gyro.getAngle();
     }
 
     public SwerveModule[] getModules(){
