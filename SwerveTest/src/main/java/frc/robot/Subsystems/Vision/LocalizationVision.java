@@ -16,7 +16,7 @@ import frc.robot.Subsystems.Swerve.SwervePoint;
  * class that represents a single april tag pos estimation vision system
  */
 public class LocalizationVision {
-    private final float VISION_FRAME_TIME = 0;
+    private final float VISION_FRAME_TIME = 1.0f / 20.0f;
 
     private int m_port;
     private DatagramSocket m_socket;
@@ -71,7 +71,7 @@ public class LocalizationVision {
 
                 /*
                  * we add an estimation for delta angle to the angle given by the vision
-                 * / this is an attempt to compensate for the fact that the data as given by the
+                 * this is an attempt to compensate for the fact that the data as given by the
                  * vision is delayed
                  * this was added to help compensate for angle offset drifting
                  */

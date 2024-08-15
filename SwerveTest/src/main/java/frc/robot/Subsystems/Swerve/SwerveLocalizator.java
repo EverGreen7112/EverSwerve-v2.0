@@ -5,9 +5,12 @@ import frc.robot.Utils.EverKit.Periodic;
 import frc.robot.Utils.Math.Vector2d;
 
 public class SwerveLocalizator implements Periodic {
-    private int VISION_PORT = 5800;
-    private double MIN_DIFF_FOR_ANGLE_OFFSET_REPLACEMENT = 0;
-    private double ANGLE_OFFSET_AVERAGE_NEW_READING_WEIGHT = 0;
+    private final int VISION_PORT = 5800;
+    private final double MIN_DIFF_FOR_ANGLE_OFFSET_REPLACEMENT = 10.0; // minimum difference between the new calculated angle offset and the old angle offset to replace the old offset by the new offset (degrees)
+    private final double ANGLE_OFFSET_AVERAGE_NEW_READING_WEIGHT = 0.5; // how much weight do we give the new offset when averaging with the last offset
+    // (theoretically) the lower the number the less offset drifting
+    // keep in mind this number should be between 0 and 1 with 0 meaning that we'll always stick to the old offset and 1 meaning we'll always replace the offset not caring about the old offset
+    // also keep in mind that even if you set it to 0 the offset will still update if the new offset is drastically different than the last
 
     private static SwerveLocalizator m_instance;
 
@@ -38,11 +41,9 @@ public class SwerveLocalizator implements Periodic {
 
     @Override
     public void periodic() {
-
         //set the current point to the vision values
         SwervePoint currentVisionPoint = m_vision.get2DCords();
         if (currentVisionPoint.getX() != m_prevVisionRobotX || currentVisionPoint.getY() != m_prevVisionRobotY) {
-            
             //update position
             m_currentPoint.set(currentVisionPoint.getX(), currentVisionPoint.getY());
             m_prevVisionRobotX = currentVisionPoint.getX();
@@ -52,16 +53,8 @@ public class SwerveLocalizator implements Periodic {
         
         //update angle
         if(currentVisionPoint.getAngle() != m_prevVisionRobotAngle){
-            // if the new angle offset is drastically different than the last, we should try 
-            /*if (Math.abs(m_angleOffset - new_offset) > ChassisValues.MIN_DIFF_FOR_ANGLE_OFFSET_REPLACEMENT){
-                m_angleOffset = new_offset;
-            } else {
-            // this averages all angle offset values over time but giving more weight to more recent values
-            // this is supposed to help stop offset drfiting, but worse case scenario it still slows offset drifting by ANGLE_OFFSET_AVERAGE_NEW_READING_WEIGHT
-            m_angleOffset = (ChassisValues.ANGLE_OFFSET_AVERAGE_NEW_READING_WEIGHT * new_offset) +
-             ((1 - ChassisValues.ANGLE_OFFSET_AVERAGE_NEW_READING_WEIGHT) * m_angleOffset); 
-            }*/
             double newOffset = currentVisionPoint.getAngle() - Swerve.getInstance().getGyroOrientedAngle();
+            // if the new angle offset is drastically different than the last, we should try 
             if(Math.abs(m_angleOffsetToField - newOffset) > MIN_DIFF_FOR_ANGLE_OFFSET_REPLACEMENT){
                 m_angleOffsetToField = newOffset;
             }
