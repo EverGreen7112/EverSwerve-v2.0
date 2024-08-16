@@ -117,9 +117,9 @@ public class SwerveModule extends SubsystemBase {
         m_angleController.activate(targetAngle, ControlType.kPos);
     }
 
-    /**
-     * @return current angle in degrees
-     */
+    /**                                                 
+     * @return current angle in degrees(0 degrees is forward)             
+     */                                                 
     public double getAngle() {
         return m_steerEncoder.getPos();
     }
@@ -133,19 +133,22 @@ public class SwerveModule extends SubsystemBase {
     }
 
     /**
-     * @return current velocity in meters per second
+     * @return current speed in meters per second
      */
-    public double getVelocity() {
+    public double getSpeed() {
         return m_driveEncoder.getVel();
     }
 
     /**
      * @return module's velocity vector in meters per second
+     * the vector is in the standard axes(0 degrees is right)
      */
-    public Vector2d getVec(){
-        double mag = Math.abs(getVelocity());
+    public Vector2d getVelocity(){
+        double mag = Math.abs(getSpeed());
         double theta = Math.toRadians(getAngle());
-        return new Vector2d(mag * Math.cos(theta), mag * Math.sin(theta));
+        Vector2d vec = new Vector2d(mag * Math.cos(theta), mag * Math.sin(theta));
+        vec.rotate(Math.toRadians(90));
+        return vec;
     }
 
     public void stopModule() {

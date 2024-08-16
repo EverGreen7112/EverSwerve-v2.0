@@ -5,12 +5,8 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.SerialPort.Port;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.EverKit.EverMotorController.IdleMode;
-import frc.robot.Utils.EverKit.EverAbsEncoder;
-import frc.robot.Utils.EverKit.EverPIDController;
 import frc.robot.Utils.EverKit.EverPIDController.ControlType;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverSparkMaxPIDController;
@@ -169,7 +165,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
             moduleRotationVector.rotate(Math.toRadians(90));
             moduleRotationVector.normalise();
 
-            double moduleVel = m_modules[i].getVelocity();
+            double moduleVel = m_modules[i].getSpeed();
             //get current speed in each axis
             double moduleX = (Math.cos(Math.toRadians(m_modules[i].getAngle())) * moduleVel);
             double moduleY = (Math.sin(Math.toRadians(m_modules[i].getAngle())) * moduleVel);
@@ -182,10 +178,19 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         angularVelocity /= (double)SwerveConsts.physicalMoudulesVector.length;
 
         // converts angularVelocity to degrees/s
-        angularVelocity /= SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;  // rotations / s
-        angularVelocity *= 360;  // degrees / s
+        angularVelocity /= SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;  // rotations / sec
+        angularVelocity *= 360;  // degrees / sec
 
         return angularVelocity;
+    }
+    
+    public Vector2d getVelocity(){
+        Vector2d vel = new Vector2d();
+        for(int i = 0; i < m_modules.length; i++){
+            vel.add(m_modules[i].getVelocity());
+        }
+        vel.mul(1.0 / m_modules.length);
+        return vel;
     }
     
 
