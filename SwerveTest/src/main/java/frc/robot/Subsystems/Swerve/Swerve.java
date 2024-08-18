@@ -15,6 +15,8 @@ import frc.robot.Utils.Math.Vector2d;
 
 public class Swerve extends SubsystemBase implements SwerveConsts{
 
+    private static Swerve m_instance = new Swerve();
+
     private SwerveModule[] m_modules;
     private AHRS m_gyro;    //TODO: change gyro to EverGyro
 
@@ -23,7 +25,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     private boolean m_isGyroOriented;
     private PIDController m_headingController; 
     private double m_headingTarget;
-    private static Swerve m_instance;
+
     
     private Swerve() {
         m_driveVec = new Vector2d();
@@ -54,6 +56,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
         m_modules = SwerveConsts.SWERVE_MODULES;
         m_gyro = new AHRS(SerialPort.Port.kMXP);
+        m_gyro.reset();
         m_headingController = new PIDController(0.1, 0, 0);
     }
 
@@ -61,9 +64,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
      * @return the only instance of the swerve
      */
     public static Swerve getInstance(){
-        if(m_instance == null){
-            m_instance = new Swerve();
-        }
         return m_instance;
     }
 

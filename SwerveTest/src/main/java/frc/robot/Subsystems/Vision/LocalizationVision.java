@@ -6,17 +6,17 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.function.Consumer;
 
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
-import frc.robot.Subsystems.Swerve.SwerveLocalizator;
+import frc.robot.Subsystems.Swerve.SwerveLocalizer;
 import frc.robot.Subsystems.Swerve.SwervePoint;
 
 /**
  * class that represents a single april tag pos estimation vision system
  */
 public class LocalizationVision {
-    private final float VISION_FRAME_TIME = 1.0f / 20.0f;
 
     private int m_port;
     private DatagramSocket m_socket;
@@ -24,11 +24,14 @@ public class LocalizationVision {
     private Thread m_visionThread;
     private float[] m_locals = { 0, 0, 0, 0 };
     private float[] m_lastLocals = { 0, 0, 0, 0 };
-    private double m_robotX, m_robotY, m_robotAngle;
+    private SwervePoint m_currentPoint;
+    private Consumer<SwervePoint> m_onNewPointReceived; // what to do when a packet is received
+
 
     public LocalizationVision(int port) {
-        Swerve swerve = Swerve.getInstance();
+        this.m_currentPoint = new SwervePoint(0, 0, 0);
         this.m_port = port;
+        m_onNewPointReceived = (SwervePoint) -> {};
         try {
             m_socket = new DatagramSocket(m_port, InetAddress.getByName("0.0.0.0"));
             m_socket.setBroadcast(true);
@@ -64,21 +67,19 @@ public class LocalizationVision {
                     m_locals[i] = new_locals[i];
                 }
 
-                double angularVelocity = swerve.getAngularVelocity();
-                m_robotX = m_locals[0];// camera's x
-                m_robotY = m_locals[2];// camera's z
-                m_robotAngle = -m_locals[3] + (angularVelocity * VISION_FRAME_TIME);
+                m_currentPoint.setX(m_locals[0]);// camera's x
+                m_currentPoint.setY(m_locals[2]);// camera's z
+                m_currentPoint.setAngle(-m_locals[3]); //camera's yaw
 
-                /*
-                 * we add an estimation for delta angle to the angle given by the vision
-                 * this is an attempt to compensate for the fact that the data as given by the
-                 * vision is delayed
-                 * this was added to help compensate for angle offset drifting
-                 */
+                m_onNewPointReceived.accept(m_currentPoint);
             }
         });
         m_visionThread.setDaemon(true);
         m_visionThread.start();
+    }
+
+    public void setOnNewPointReceived(Consumer<SwervePoint> onNewPointReceived){
+        m_onNewPointReceived = onNewPointReceived;
     }
 
     public float[] get3DCords() {
@@ -93,11 +94,11 @@ public class LocalizationVision {
      * @return the cords from a top-down 2d perspective 
      */
     public SwervePoint get2DCords() {
-        return new SwervePoint(m_robotX, m_robotY, m_robotAngle);
+        return m_currentPoint;
     }
 
     public double getRobotFieldAngle(){
-        return m_robotAngle;
+        return m_currentPoint.getAngle();
     }
 
     public float getX() {
