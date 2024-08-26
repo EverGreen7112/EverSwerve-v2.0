@@ -1,7 +1,5 @@
 package frc.robot.Subsystems.Swerve;
 
-import java.util.function.Consumer;
-
 import frc.robot.Utils.Math.Vector2d;
 
 public class SwerveOdometer {
@@ -31,7 +29,7 @@ public class SwerveOdometer {
         for (int i = 0; i < m_prevModulesDistance.length; i++) {
             double currentDistance = m_modules[i].getDistance();
             Vector2d deltaDistance = Vector2d.generateVec(currentDistance - m_prevModulesDistance[i],
-                    Math.toRadians(m_modules[i].getAngle()));
+                    Math.toRadians(m_modules[i].getAngle() + 90.0)); // +90 inorder to convert to the standard axes
             robotDelta.add(deltaDistance);
             m_prevModulesDistance[i] = currentDistance;
         }

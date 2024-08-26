@@ -58,7 +58,6 @@ public class SwerveLocalizer implements Periodic {
             }
             m_currentPoint.setAngle(getFieldOrientedAngle());
         });
-
         start(PeriodicTime.kRobotPeriodic);
     }
 

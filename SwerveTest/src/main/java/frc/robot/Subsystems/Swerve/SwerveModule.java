@@ -1,10 +1,5 @@
 package frc.robot.Subsystems.Swerve;
 
-import javax.swing.text.StyleContext.SmallAttributeSet;
-
-import org.opencv.core.Mat;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
 import frc.robot.Utils.EverKit.EverEncoder;
@@ -20,6 +15,7 @@ public class SwerveModule extends SubsystemBase {
     private EverPIDController m_velocityController;
     private EverMotorController m_driveMotor;
     private EverEncoder m_driveEncoder;
+    
     private EverPIDController m_angleController;
     private EverMotorController m_steerMotor;
     private EverEncoder m_steerEncoder;
@@ -63,7 +59,6 @@ public class SwerveModule extends SubsystemBase {
     }
 
     /**
-     * set state in cartesian values
      * @param speed - in meters per second
      * @param angle - in degrees
      */
@@ -106,7 +101,7 @@ public class SwerveModule extends SubsystemBase {
         targetSpeed *= Math.cos(Math.toRadians(optimizedNormalDeltaTargetAngle));
         
         // set speed of module at target speed
-        m_velocityController.activate(targetSpeed * 0, ControlType.kVel);
+        m_velocityController.activate(targetSpeed, ControlType.kVel);
     }
 
     /**

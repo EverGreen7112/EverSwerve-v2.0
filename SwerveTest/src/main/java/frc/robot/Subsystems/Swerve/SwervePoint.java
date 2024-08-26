@@ -1,5 +1,9 @@
 package frc.robot.Subsystems.Swerve;
 
+
+/**
+ * Represents a point on the field in which the swerve can be at
+ */
 public class SwervePoint {
     private double m_x;
     private double m_y;

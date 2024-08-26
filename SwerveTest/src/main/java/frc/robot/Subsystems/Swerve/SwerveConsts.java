@@ -1,10 +1,7 @@
 package frc.robot.Subsystems.Swerve;
 
 import frc.robot.Utils.EverKit.EverAbsEncoder;
-import frc.robot.Utils.EverKit.EverMotorController;
 import frc.robot.Utils.EverKit.EverPIDController;
-import frc.robot.Utils.EverKit.EverMotorController.IdleMode;
-import frc.robot.Utils.EverKit.EverPIDController.ControlType;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverCANCoder;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
@@ -30,6 +27,7 @@ public interface SwerveConsts{
             TR_DRIVE_MOTOR = new EverSparkMax(17),
             DL_DRIVE_MOTOR = new EverSparkMax(3),
             DR_DRIVE_MOTOR = new EverSparkMax(27),
+            
             TL_STEER_MOTOR = new EverSparkMax(62),
             TR_STEER_MOTOR = new EverSparkMax(13),
             DL_STEER_MOTOR = new EverSparkMax(2),
@@ -65,7 +63,7 @@ public interface SwerveConsts{
             HEADING_ANGLE_CONTROLLER = null,
             X_CONTROLLER = null,
             Y_CONTROLLER = null;
-    // chassis encoders
+    // chassis encoders 
     public static final EverAbsEncoder
             TL_ABS_ENCODER = new EverCANCoder(4),
             TR_ABS_ENCODER = new EverCANCoder(5),

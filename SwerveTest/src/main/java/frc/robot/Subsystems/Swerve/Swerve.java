@@ -5,6 +5,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.EverKit.EverMotorController.IdleMode;
 import frc.robot.Utils.EverKit.EverPIDController.ControlType;
@@ -23,17 +24,18 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     //driving vars
     private Vector2d m_driveVec;
     private boolean m_isGyroOriented;
-    private PIDController m_headingController; 
+    private PIDController m_headingController;
     private double m_headingTarget;
 
     
     private Swerve() {
         m_driveVec = new Vector2d();
 
-        ABS_ENCODERS[0].setOffset(-12.3/360.0 + 0.5);
-        ABS_ENCODERS[1].setOffset(112.236328125/360.0 + 0.5);
-        ABS_ENCODERS[2].setOffset(47.4609375/360.0);
-        ABS_ENCODERS[3].setOffset(303.22265625/360);
+        //offset of abs encoder to 0 degrees being forward
+        ABS_ENCODERS[0].setOffset(0);
+        ABS_ENCODERS[1].setOffset(0);
+        ABS_ENCODERS[2].setOffset(0);
+        ABS_ENCODERS[3].setOffset(0);
 
         for (EverSparkMax driveMotor : DRIVE_MOTORS) {
              driveMotor.restoreFactoryDefaults();
@@ -57,7 +59,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         m_modules = SwerveConsts.SWERVE_MODULES;
         m_gyro = new AHRS(SerialPort.Port.kMXP);
         m_gyro.reset();
-        m_headingController = new PIDController(0.1, 0, 0);
+        m_headingController = new PIDController(0, 0, 0);
     }
 
     /**
@@ -137,7 +139,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
             // set module state
             m_modules[i].setState(sumVectors[i]);
-            
         }
     }
 

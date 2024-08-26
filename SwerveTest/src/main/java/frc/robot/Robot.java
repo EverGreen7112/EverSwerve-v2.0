@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -16,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Utils.EverKit.Periodic;
-import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
 import frc.robot.Utils.Math.Vector2d;
 
 public class Robot extends TimedRobot {
@@ -45,11 +42,14 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
-    
-    // SmartDashboard.putNumber("POS tl", SwerveConsts.SWERVE_MODULES[0].getAbsPos());
-    // SmartDashboard.putNumber("POS tr", SwerveConsts.SWERVE_MODULES[1].getAbsPos());
-    // SmartDashboard.putNumber("POS dl", SwerveConsts.SWERVE_MODULES[2].getAbsPos());
-    // SmartDashboard.putNumber("POS dr", SwerveConsts.SWERVE_MODULES[3].getAbsPos());
+
+    SmartDashboard.putNumber("angle TL", SwerveConsts.TL_ABS_ENCODER.getAbsPos());    
+    SmartDashboard.putNumber("angle TR", SwerveConsts.TR_ABS_ENCODER.getAbsPos());
+    SmartDashboard.putNumber("angle DL", SwerveConsts.DL_ABS_ENCODER.getAbsPos());
+    SmartDashboard.putNumber("angle DR", SwerveConsts.DR_ABS_ENCODER.getAbsPos());
+
+
+
   }
 
   @Override
@@ -96,6 +96,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+
     for (Periodic method : teleopPeriodicFuncs) {
       try {
         method.periodic();
@@ -104,8 +105,8 @@ public class Robot extends TimedRobot {
       }
     }
     Vector2d vec = new Vector2d(controller.getLeftX(), controller.getLeftY() * -1);
-    Swerve.getInstance().drive(vec, true);    
-    
+    Swerve.getInstance().drive(vec, false);  
+
   }
 
   @Override
