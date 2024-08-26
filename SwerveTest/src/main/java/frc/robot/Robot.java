@@ -43,6 +43,8 @@ public class Robot extends TimedRobot {
       }
     }
 
+
+    
     SmartDashboard.putNumber("angle TL", SwerveConsts.TL_ABS_ENCODER.getAbsPos());    
     SmartDashboard.putNumber("angle TR", SwerveConsts.TR_ABS_ENCODER.getAbsPos());
     SmartDashboard.putNumber("angle DL", SwerveConsts.DL_ABS_ENCODER.getAbsPos());

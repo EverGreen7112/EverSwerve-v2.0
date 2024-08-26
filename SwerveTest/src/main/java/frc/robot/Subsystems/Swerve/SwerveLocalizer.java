@@ -1,7 +1,5 @@
 package frc.robot.Subsystems.Swerve;
 
-import java.util.function.Supplier;
-
 import frc.robot.Subsystems.Vision.LocalizationVision;
 import frc.robot.Utils.EverKit.Periodic;
 import frc.robot.Utils.Math.Vector2d;
@@ -19,7 +17,7 @@ public class SwerveLocalizer implements Periodic {
 
     private SwerveOdometer m_odometer;
     private LocalizationVision m_vision;
-        
+
     private SwervePoint m_currentPoint;
     private double m_angleOffsetToField; //the offset between the gyro angle to the field angle
 
