@@ -6,8 +6,18 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Commands.DriveByJoysticks;
 
 public class RobotContainer {
+
+
+  public static final CommandXboxController chassis = new CommandXboxController(0);
+  
+  //command instances
+  public static DriveByJoysticks teleop = new DriveByJoysticks(() -> chassis.getLeftX(), () -> chassis.getLeftY(),
+      () -> chassis.getRightX(), () -> true, true);
+
   public RobotContainer() {
     configureBindings();
   }

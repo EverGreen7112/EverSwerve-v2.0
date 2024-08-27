@@ -6,13 +6,17 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Commands.DriveByJoysticks;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
+import frc.robot.Subsystems.Swerve.SwerveLocalizer;
 import frc.robot.Utils.EverKit.Periodic;
 import frc.robot.Utils.Math.Vector2d;
 
@@ -26,10 +30,15 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
+  private Field2d m_field; 
   @Override
   public void robotInit() {
     Swerve.getInstance();
     m_robotContainer = new RobotContainer();
+     
+    //create and add robot field data to dashboard
+    m_field = new Field2d();
+    SmartDashboard.putData(m_field);
   }
 
   @Override
@@ -42,16 +51,11 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
-
-
-    //TODO: remove after finishing debugging later it fills the canbus
-    SmartDashboard.putNumber("angle TL", SwerveConsts.TL_ABS_ENCODER.getAbsPos());    
-    SmartDashboard.putNumber("angle TR", SwerveConsts.TR_ABS_ENCODER.getAbsPos());
-    SmartDashboard.putNumber("angle DL", SwerveConsts.DL_ABS_ENCODER.getAbsPos());
-    SmartDashboard.putNumber("angle DR", SwerveConsts.DR_ABS_ENCODER.getAbsPos());
-
-
-
+    //update the robot position of dashboard
+    m_field.setRobotPose(SwerveLocalizer.getInstance().getCurrentPoint().getX(),
+                         SwerveLocalizer.getInstance().getCurrentPoint().getY(),
+                        new Rotation2d(SwerveLocalizer.getInstance().getCurrentPoint().getAngle()));
+                    
   }
 
   @Override
@@ -86,15 +90,16 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousExit() {}
 
+
   @Override
   public void teleopInit() {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    RobotContainer.teleop.schedule();
   }
 
 
-  CommandXboxController controller = new CommandXboxController(0);
 
   @Override
   public void teleopPeriodic() {
@@ -105,9 +110,7 @@ public class Robot extends TimedRobot {
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }
-    Vector2d vec = new Vector2d(controller.getLeftX(), controller.getLeftY() * -1);
-    Swerve.getInstance().drive(vec, false);  
+    }  
 
   }
 

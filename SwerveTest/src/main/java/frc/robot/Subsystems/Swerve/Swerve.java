@@ -27,15 +27,14 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     private PIDController m_headingController;
     private double m_headingTarget;
 
-    
     private Swerve() {
         m_driveVec = new Vector2d();
 
         //offset of abs encoder to 0 degrees being forward
-        ABS_ENCODERS[0].setOffset(0);
-        ABS_ENCODERS[1].setOffset(0);
-        ABS_ENCODERS[2].setOffset(0);
-        ABS_ENCODERS[3].setOffset(0);
+        ABS_ENCODERS[0].setOffset(166.904296875/360.0);
+        ABS_ENCODERS[1].setOffset(292.236328125/360.0);
+        ABS_ENCODERS[2].setOffset(47.8125/360.0);
+        ABS_ENCODERS[3].setOffset(308.056640625/360.0);
 
         for (EverSparkMax driveMotor : DRIVE_MOTORS) {
              driveMotor.restoreFactoryDefaults();
@@ -59,7 +58,8 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         m_modules = SwerveConsts.SWERVE_MODULES;
         m_gyro = new AHRS(SerialPort.Port.kMXP);
         m_gyro.reset();
-        m_headingController = new PIDController(0, 0, 0);
+        m_headingController = new PIDController(0.02675, 0, 0);
+        m_headingController.setTolerance(2);
     }
 
     /**
@@ -71,6 +71,8 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("angular velocity", getAngularVelocity());
+
         drive();
     }
 
