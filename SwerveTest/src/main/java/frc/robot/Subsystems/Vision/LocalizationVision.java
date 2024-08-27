@@ -33,6 +33,7 @@ public class LocalizationVision {
         this.m_port = port;
         m_onNewPointReceived = (SwervePoint) -> {};
         try {
+            //create socket
             m_socket = new DatagramSocket(m_port, InetAddress.getByName("0.0.0.0"));
             m_socket.setBroadcast(true);
             byte[] buf = new byte[48];
@@ -48,7 +49,7 @@ public class LocalizationVision {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+                
                 // get floats from socket
                 float[] new_locals = new float[] {
                         (ByteBuffer.wrap(m_packet.getData()).order(ByteOrder.LITTLE_ENDIAN).getFloat()),

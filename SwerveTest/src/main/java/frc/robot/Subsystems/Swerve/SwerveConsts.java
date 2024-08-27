@@ -19,7 +19,7 @@ public interface SwerveConsts{
 
     // speed values
     public static final double MAX_DRIVE_SPEED = 1.0; // m/s
-    public static final double MAX_ANGULAR_SPEED = 1.0; // deg/s/
+    public static final double MAX_ANGULAR_SPEED = 180.0; // deg/s/
 
     // motor controllers
     public static final EverSparkMax 
@@ -63,6 +63,7 @@ public interface SwerveConsts{
             HEADING_ANGLE_CONTROLLER = null,
             X_CONTROLLER = null,
             Y_CONTROLLER = null;
+            
     // chassis encoders 
     public static final EverAbsEncoder
             TL_ABS_ENCODER = new EverCANCoder(4),

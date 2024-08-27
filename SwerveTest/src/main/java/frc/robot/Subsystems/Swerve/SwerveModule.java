@@ -51,10 +51,10 @@ public class SwerveModule extends SubsystemBase {
              angleController, steerMotor, steerEncoder);
         m_absSteerEncoder = absSteerEncoder;
         m_absSteerEncoder.setPosConversionFactor(1);
-        m_steerEncoder.setPos(getAbsPos());
+        m_steerEncoder.setPos(getAbsAngle());
     }
 
-    public double getAbsPos(){
+    public double getAbsAngle(){
         return Funcs.convertRotationsToDegrees(m_absSteerEncoder.getAbsPos());
     }
 
@@ -68,9 +68,7 @@ public class SwerveModule extends SubsystemBase {
 
     /**
      * 
-     * @param desiredState - 2d vector - magnitude represents the target speed in
-     *                     m/s
-     *                     angle represents the target angle
+     * @param desiredState - desired velocity in meters per second
      */
     public void setState(Vector2d desiredState) {
         // rotate vector by 90 because we want 0 degrees to be in the front and not in
@@ -123,6 +121,9 @@ public class SwerveModule extends SubsystemBase {
         m_driveEncoder.setPos(distance);
     }
 
+    /**
+     * @return distance travelled in meters 
+     */
     public double getDistance(){
         return m_driveEncoder.getPos();
     }
