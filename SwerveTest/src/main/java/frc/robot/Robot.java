@@ -104,7 +104,6 @@ public class Robot extends TimedRobot {
       }
     }
     Vector2d vec = new Vector2d(controller.getLeftX(), controller.getLeftY() * -1);
-    Swerve.getInstance().drive(vec, true);    
     
   }
 
