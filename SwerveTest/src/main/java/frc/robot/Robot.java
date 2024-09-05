@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
     //create and add robot field data to dashboard
     m_field = new Field2d();
     SmartDashboard.putData(m_field);
+
   }
 
   @Override
@@ -51,6 +52,7 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
+
     //update the robot position of dashboard
     m_field.setRobotPose(SwerveLocalizer.getInstance().getCurrentPoint().getX(),
                          SwerveLocalizer.getInstance().getCurrentPoint().getY(),
@@ -90,16 +92,14 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousExit() {}
 
-
   @Override
   public void teleopInit() {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+       Swerve.getInstance().m_gyro.zeroYaw();
     RobotContainer.teleop.schedule();
   }
-
-
 
   @Override
   public void teleopPeriodic() {
@@ -110,8 +110,8 @@ public class Robot extends TimedRobot {
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }  
-
+    }
+    
   }
 
   @Override

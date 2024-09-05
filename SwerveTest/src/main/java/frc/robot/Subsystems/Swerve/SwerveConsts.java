@@ -15,10 +15,9 @@ import frc.robot.Utils.Math.Vector2d;
  * DR = Down Right
  */
 public interface SwerveConsts{
-    public static final boolean USES_ABS_ENCODER = true;
 
     // speed values
-    public static final double MAX_DRIVE_SPEED = 1.0; // m/s
+    public static final double MAX_DRIVE_SPEED = 1; // m/s
     public static final double MAX_ANGULAR_SPEED = 180.0; // deg/s/
 
     // motor controllers

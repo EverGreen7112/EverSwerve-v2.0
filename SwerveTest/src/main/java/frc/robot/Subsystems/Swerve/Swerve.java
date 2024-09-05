@@ -19,7 +19,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     private static Swerve m_instance = new Swerve();
 
     private SwerveModule[] m_modules;
-    private AHRS m_gyro;    //TODO: change gyro to EverGyro
+    public AHRS m_gyro;    //TODO: change gyro to EverGyro
 
     //driving vars
     private Vector2d m_driveVec;
@@ -31,13 +31,14 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         m_driveVec = new Vector2d();
 
         //offset of abs encoder to 0 degrees being forward
-        ABS_ENCODERS[0].setOffset(166.904296875/360.0);
-        ABS_ENCODERS[1].setOffset(292.236328125/360.0);
+        ABS_ENCODERS[0].setOffset(167.6953125/360.0);
+        ABS_ENCODERS[1].setOffset(292.5/360.0);
         ABS_ENCODERS[2].setOffset(47.8125/360.0);
-        ABS_ENCODERS[3].setOffset(308.056640625/360.0);
+        ABS_ENCODERS[3].setOffset(0/360.0);
 
         for (EverSparkMax driveMotor : DRIVE_MOTORS) {
              driveMotor.restoreFactoryDefaults();
+             driveMotor.setInverted(false);
              driveMotor.setIdleMode(IdleMode.kCoast);
         }
         
@@ -59,7 +60,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         m_gyro = new AHRS(SerialPort.Port.kMXP);
         m_gyro.reset();
         m_headingController = new PIDController(0.02675, 0, 0);
-        m_headingController.setTolerance(2);
+        m_headingController.setTolerance(0.05);
     }
 
     /**
@@ -71,8 +72,15 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("angular velocity", getAngularVelocity());
+        SmartDashboard.putNumber("Tl", m_modules[0].getAngle());
+        
+        SmartDashboard.putNumber("TR", m_modules[1].getAngle());
 
+                SmartDashboard.putNumber("DL", m_modules[2].getAngle());
+
+        SmartDashboard.putNumber("DR", m_modules[3].getAngle());
+
+        // SmartDashboard.putNumber("angular velocity", getAngularVelocity());
         drive();
     }
 
@@ -121,7 +129,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
         // convert driveVector to gyro oriented
         if(m_isGyroOriented) 
-            m_driveVec.rotate(Math.toRadians(m_gyro.getYaw()));
+            m_driveVec.rotate(Math.toRadians(getGyroOrientedAngle()));
         
         // calculate rotation vectors
         Vector2d[] rotVecs = new Vector2d[m_modules.length];
@@ -148,7 +156,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         //convert max angular speed to m/s from deg/s
         double ms_max_angular_speed = (SwerveConsts.MAX_ANGULAR_SPEED / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
         // get current angle
-        double currentAngle = m_gyro.getYaw();
+        double currentAngle = getGyroOrientedAngle();
         // calculate optimized target angle
         double closestAngle = Funcs.closestAngle(currentAngle, m_headingTarget);
         double optimizedAngle = currentAngle + closestAngle;
@@ -170,8 +178,8 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
             double moduleVel = m_modules[i].getSpeed();
             //get current speed in each axis
-            double moduleX = (Math.cos(Math.toRadians(m_modules[i].getAngle())) * moduleVel);
-            double moduleY = (Math.sin(Math.toRadians(m_modules[i].getAngle())) * moduleVel);
+            double moduleX = (Math.cos(Math.toRadians(getGyroOrientedAngle() + 90)) * moduleVel);
+            double moduleY = (Math.sin(Math.toRadians(getGyroOrientedAngle() + 90)) * moduleVel);
             Vector2d moduleVelocity = new Vector2d(moduleX, moduleY);
 
             angularVelocity += moduleVelocity.dot(moduleRotationVector);
