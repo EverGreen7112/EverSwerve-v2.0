@@ -7,8 +7,10 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Utils.EverKit.EverGyro;
 import frc.robot.Utils.EverKit.EverMotorController.IdleMode;
 import frc.robot.Utils.EverKit.EverPIDController.ControlType;
+import frc.robot.Utils.EverKit.Implementations.Gyros.EverNavX;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverSparkMaxPIDController;
 import frc.robot.Utils.Math.Funcs;
@@ -19,7 +21,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     private static Swerve m_instance = new Swerve();
 
     private SwerveModule[] m_modules;
-    private AHRS m_gyro;    //TODO: change gyro to EverGyro
+    private EverGyro m_gyro;    //TODO: change gyro to EverGyro
 
     //driving vars
     private Vector2d m_tVelocity;
@@ -58,10 +60,10 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         }
 
         m_modules = SwerveConsts.SWERVE_MODULES;
-        m_gyro = new AHRS(SerialPort.Port.kMXP);
-        m_gyro.reset();
+        m_gyro = new EverNavX(SerialPort.Port.kMXP);
+        m_gyro.resetYaw();
         m_headingController = new PIDController(0.02675, 0, 0);
-        m_headingController.setTolerance(0.5);
+        m_headingController.setTolerance(0.25);
     }
 
     /**
@@ -74,12 +76,12 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     @Override
     public void periodic() {
         SmartDashboard.putNumber("angular velocity", getAngularVelocity());
-
+        String a = "f";
         drive();
     }
 
     public double getGyroOrientedAngle(){
-        return m_gyro.getAngle();
+        return m_gyro.getYaw();
     }
 
     public SwerveModule[] getModules(){
