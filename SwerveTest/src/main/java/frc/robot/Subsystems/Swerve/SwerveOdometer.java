@@ -29,7 +29,7 @@ public class SwerveOdometer {
         for (int i = 0; i < m_modules.length; i++) {
             double currentDistance = m_modules[i].getDistance();
             Vector2d deltaDistance = Vector2d.generateVec(currentDistance - m_prevModulesDistance[i],
-                    Math.toRadians(m_modules[i].getAngle() + 90.0)); // +90 in order to convert to the standard axes
+                    Math.toRadians(m_modules[i].getAngle()));
             robotDelta.add(deltaDistance);
             m_prevModulesDistance[i] = currentDistance;
         }

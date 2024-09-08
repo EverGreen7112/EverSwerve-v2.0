@@ -31,10 +31,10 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         m_driveVec = new Vector2d();
 
         //offset of abs encoder to 0 degrees being forward
-        ABS_ENCODERS[0].setOffset(167.6953125/360.0);
-        ABS_ENCODERS[1].setOffset(292.5/360.0);
-        ABS_ENCODERS[2].setOffset(47.8125/360.0);
-        ABS_ENCODERS[3].setOffset(0/360.0);
+        ABS_ENCODERS[0].setOffset(77.255859375/360.0);
+        ABS_ENCODERS[1].setOffset(202.1484375/360.0);
+        ABS_ENCODERS[2].setOffset(316.669921875/360.0);
+        ABS_ENCODERS[3].setOffset(218.75978088378906/360.0);
 
         for (EverSparkMax driveMotor : DRIVE_MOTORS) {
              driveMotor.restoreFactoryDefaults();
@@ -72,12 +72,9 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Tl", m_modules[0].getAngle());
-        
+        SmartDashboard.putNumber("TL", m_modules[0].getAngle());
         SmartDashboard.putNumber("TR", m_modules[1].getAngle());
-
-                SmartDashboard.putNumber("DL", m_modules[2].getAngle());
-
+        SmartDashboard.putNumber("DL", m_modules[2].getAngle());
         SmartDashboard.putNumber("DR", m_modules[3].getAngle());
 
         // SmartDashboard.putNumber("angular velocity", getAngularVelocity());
@@ -135,7 +132,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         Vector2d[] rotVecs = new Vector2d[m_modules.length];
         for (int i = 0; i < rotVecs.length; i++) {
             rotVecs[i] = new Vector2d(SwerveConsts.physicalMoudulesVector[i]);
-            rotVecs[i].rotate(Math.toRadians(90));
+            rotVecs[i].rotate(Math.toRadians(-90));
             // change magnitude of rot vector to rotationSpeed
             rotVecs[i].normalise();
             rotVecs[i].mul(desiredRotationSpeed);
@@ -176,11 +173,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
             moduleRotationVector.rotate(Math.toRadians(90));
             moduleRotationVector.normalise();
 
-            double moduleVel = m_modules[i].getSpeed();
-            //get current speed in each axis
-            double moduleX = (Math.cos(Math.toRadians(getGyroOrientedAngle() + 90)) * moduleVel);
-            double moduleY = (Math.sin(Math.toRadians(getGyroOrientedAngle() + 90)) * moduleVel);
-            Vector2d moduleVelocity = new Vector2d(moduleX, moduleY);
+            Vector2d moduleVelocity = m_modules[i].getVelocity();
 
             angularVelocity += moduleVelocity.dot(moduleRotationVector);
         }

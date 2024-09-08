@@ -71,10 +71,6 @@ public class SwerveModule extends SubsystemBase {
      * @param desiredState - desired velocity in meters per second
      */
     public void setState(Vector2d desiredState) {
-        // rotate vector by 90 because we want 0 degrees to be in the front and not in
-        // the right
-        desiredState.rotate(Math.toRadians(90));
-
         // get polar values from desired state vector
         double targetSpeed = desiredState.mag(); // get target speed
         double targetAngle = Math.toDegrees(desiredState.theta()); // convert target angle from radians to degrees
@@ -137,13 +133,11 @@ public class SwerveModule extends SubsystemBase {
 
     /**
      * @return module's velocity vector in meters per second
-     * the vector is in the standard axes(0 degrees is right)
      */
     public Vector2d getVelocity(){
         double mag = Math.abs(getSpeed());
         double theta = Math.toRadians(getAngle());
         Vector2d vec = new Vector2d(mag * Math.cos(theta), mag * Math.sin(theta));
-        vec.rotate(Math.toRadians(90));
         return vec;
     }
 
