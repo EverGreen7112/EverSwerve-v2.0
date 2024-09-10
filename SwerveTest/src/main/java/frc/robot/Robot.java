@@ -17,6 +17,7 @@ import frc.robot.Commands.DriveByJoysticks;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
+import frc.robot.Subsystems.Swerve.SwerveOdometer;
 import frc.robot.Utils.EverKit.Periodic;
 import frc.robot.Utils.Math.Vector2d;
 
@@ -31,6 +32,7 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   private Field2d m_field; 
+  private Field2d m_odometryField;
   @Override
   public void robotInit() {
     Swerve.getInstance();
@@ -38,7 +40,9 @@ public class Robot extends TimedRobot {
      
     //create and add robot field data to dashboard
     m_field = new Field2d();
-    SmartDashboard.putData(m_field);
+    SmartDashboard.putData("field", m_field);
+    // m_odometryField = new Field2d();
+    // SmartDashboard.putData("odometry", m_odometryField);
 
   }
 
@@ -56,8 +60,11 @@ public class Robot extends TimedRobot {
     //update the robot position of dashboard
     m_field.setRobotPose(SwerveLocalizer.getInstance().getCurrentPoint().getX(),
                          SwerveLocalizer.getInstance().getCurrentPoint().getY(),
-                        new Rotation2d(SwerveLocalizer.getInstance().getCurrentPoint().getAngle()));
-                    
+                        new Rotation2d(Math.toRadians(SwerveLocalizer.getInstance().getCurrentPoint().getAngle())));
+
+    SmartDashboard.putString("salami", m_field.getRobotPose().toString());
+    // SmartDashboard.putString("x, y", SwerveLocalizer.getInstance().getCurrentPoint().getX() + "," + SwerveLocalizer.getInstance().getCurrentPoint().getY());
+    // m_odometryField.setRobotPose(SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getX(), SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getY(), new Rotation2d(0));
   }
 
   @Override
@@ -97,7 +104,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-       Swerve.getInstance().m_gyro.zeroYaw();
+    
+    Swerve.getInstance().m_gyro.zeroYaw();
     RobotContainer.teleop.schedule();
   }
 

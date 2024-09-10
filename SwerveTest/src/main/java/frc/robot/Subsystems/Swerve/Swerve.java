@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.EverKit.EverMotorController.IdleMode;
 import frc.robot.Utils.EverKit.EverPIDController.ControlType;
+import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverSparkMaxPIDController;
 import frc.robot.Utils.Math.Funcs;
@@ -40,6 +41,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
              driveMotor.restoreFactoryDefaults();
              driveMotor.setInverted(false);
              driveMotor.setIdleMode(IdleMode.kCoast);
+             
         }
         
         for (EverSparkMax steerMotor : STEER_MOTORS) {
@@ -49,7 +51,9 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         for (EverSparkMaxPIDController velocityController : WHEEL_VELOCITY_CONTROLLERS) {
              velocityController.setPIDF(WHEEL_VELOCITY_KP, WHEEL_VELOCITY_KI, WHEEL_VELOCITY_KD, WHEEL_VELOCITY_KF);   
              velocityController.setConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER / 60.0, ControlType.kVel);
+             velocityController.setConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER, ControlType.kPos);
         }
+
         
         for (EverSparkMaxPIDController angleController : WHEEL_ANGLE_CONTROLLERS) {
              angleController.setPID(WHEEL_ANGLE_KP, WHEEL_ANGLE_KI, WHEEL_ANGLE_KD);      
@@ -77,7 +81,9 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         SmartDashboard.putNumber("DL", m_modules[2].getAngle());
         SmartDashboard.putNumber("DR", m_modules[3].getAngle());
 
-        // SmartDashboard.putNumber("angular velocity", getAngularVelocity());
+        SmartDashboard.putNumber("angular velocity", getAngularVelocity());
+        SmartDashboard.putString("velocity", getVelocity().toString());
+        SmartDashboard.putNumber("angle", m_gyro.getAngle());
         drive();
     }
 
@@ -170,8 +176,8 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         
         for (int i = 0; i < m_modules.length; i++) {
             Vector2d moduleRotationVector = new Vector2d(SwerveConsts.physicalMoudulesVector[i]);
-            moduleRotationVector.rotate(Math.toRadians(90));
             moduleRotationVector.normalise();
+            moduleRotationVector.rotate(Math.toRadians(-90));
 
             Vector2d moduleVelocity = m_modules[i].getVelocity();
 
@@ -188,12 +194,16 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         return angularVelocity;
     }
     
+    /**
+     * @return velocity relative to the robot and the axes are forward is y right is x
+     */
     public Vector2d getVelocity(){
         Vector2d vel = new Vector2d();
         for(int i = 0; i < m_modules.length; i++){
             vel.add(m_modules[i].getVelocity());
         }
         vel.mul(1.0 / m_modules.length);
+        vel = new Vector2d(vel.x, vel.y);
         return vel;
     }
     

@@ -135,7 +135,7 @@ public class SwerveModule extends SubsystemBase {
      * @return module's velocity vector in meters per second
      */
     public Vector2d getVelocity(){
-        double mag = Math.abs(getSpeed());
+        double mag = getSpeed();
         double theta = Math.toRadians(getAngle());
         Vector2d vec = new Vector2d(mag * Math.cos(theta), mag * Math.sin(theta));
         return vec;

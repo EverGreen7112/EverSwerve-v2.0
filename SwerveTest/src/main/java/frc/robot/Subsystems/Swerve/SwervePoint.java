@@ -19,6 +19,21 @@ public class SwervePoint {
         this.m_x = x;
         this.m_y = y;
     }
+    
+    public void mul(double factor){
+        this.m_x *= factor;
+        this.m_y *= factor;
+    }
+
+    public void mul(double factorX, double factorY){
+        this.m_x *= factorX;
+        this.m_y *= factorY;
+    }
+
+    @Override
+    public String toString() {
+        return m_x + "," + m_y + " angle: " + m_angle; 
+    }
 
     public double getX() {
         return m_x;

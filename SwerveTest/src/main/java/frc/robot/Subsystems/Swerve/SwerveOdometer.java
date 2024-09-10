@@ -1,5 +1,6 @@
 package frc.robot.Subsystems.Swerve;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utils.Math.Vector2d;
 
 public class SwerveOdometer {
@@ -19,6 +20,10 @@ public class SwerveOdometer {
         return m_instance;
     }
 
+    public SwervePoint getCurrentOdometryOnlyPoint(){
+        return m_currentPoint;
+    }
+
     /**
      * calculate odometry
      * returns delta since last call to the function
@@ -33,13 +38,12 @@ public class SwerveOdometer {
             robotDelta.add(deltaDistance);
             m_prevModulesDistance[i] = currentDistance;
         }
-        robotDelta.mul(0.25);
+        robotDelta.mul(1.0 / m_modules.length);
         
         //update position based only on odometry for callibration or debugging purposes
         m_currentPoint.add(robotDelta.x, robotDelta.y);
         m_currentPoint.setAngle(Swerve.getInstance().getGyroOrientedAngle());
-
-        robotDelta.rotateBy(Math.toRadians(fieldOrientedAngle));
+        robotDelta.rotate(Math.toRadians(fieldOrientedAngle));
         return robotDelta;
     }
 }

@@ -1,10 +1,27 @@
 package frc.robot.Subsystems.Swerve;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Subsystems.Vision.LocalizationVision;
 import frc.robot.Utils.EverKit.Periodic;
 import frc.robot.Utils.Math.Vector2d;
 
+/**
+ * WPilib's coordinate system is NWU positive X is forward positive is to the left rotation is counter-clock wise
+ */
 public class SwerveLocalizer implements Periodic {
+
+    /* 1 is clock wise is positive
+      -1 is counter-clock wise is positive
+    */
+    public final double GYRO_FACTOR = -1;
+    
+    /*
+     use these to flip axes to WPIlib's coordinate system
+     NWU - positive X is forward positive y is to the left rotation is counter-clock wise
+    */
+    public final double X_AXIS_FACTOR = 1;
+    public final double Y_AXIS_FACTOR = 1;
+
     private final float VISION_FRAME_TIME = 1.0f / 20.0f;
     private final int VISION_PORT = 5800;
     private final double MIN_DIFF_FOR_ANGLE_OFFSET_REPLACEMENT = 10.0; // minimum difference between the new calculated angle offset and the old angle offset to replace the old offset by the new offset (degrees)
@@ -22,10 +39,17 @@ public class SwerveLocalizer implements Periodic {
     private double m_angleOffsetToField; //the offset between the gyro angle to the field angle
 
     private SwerveLocalizer() {
-        m_currentPoint = new SwervePoint(0, 0, Swerve.getInstance().getGyroOrientedAngle());
+        m_currentPoint = new SwervePoint(SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
+                                         SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0,
+                                         Swerve.getInstance().getGyroOrientedAngle());
+
         m_odometer = SwerveOdometer.getInstance();
         m_vision = new LocalizationVision(VISION_PORT);
         m_angleOffsetToField = 0;
+
+        for(int i = 0; i < Swerve.getInstance().getModules().length; i++){
+            Swerve.getInstance().getModules()[i].setDistance(0);
+        }
 
         m_vision.setOnNewPointReceived((SwervePoint newPoint) -> {
             //set the current point to the vision values
@@ -67,10 +91,18 @@ public class SwerveLocalizer implements Periodic {
     public void periodic() {
         //add odometry values to the current point
         Vector2d robotDelta = m_odometer.getDelta(getFieldOrientedAngle());
-        m_currentPoint.add(robotDelta.x, robotDelta.y);
-
+        // SmartDashboard.putNumber("field angle", getFieldOrientedAngle());
+        // Vector2d wpilibAxesRobotDelta = new Vector2d(robotDelta.y, -robotDelta.x);//flip axes to wpilib's
+        // m_currentPoint.add(wpilibAxesRobotDelta.x, wpilibAxesRobotDelta.y);
+        m_currentPoint.add(robotDelta.y, -robotDelta.x);
+        m_currentPoint.setAngle(getFieldOrientedAngle());
     }
 
+
+    /**
+    * returns point in WPilib's coordinate system
+    * NWU - positive X is forward positive is to the left rotation is counter-clock wise
+    */
     public SwervePoint getCurrentPoint(){
         return m_currentPoint;
     }
