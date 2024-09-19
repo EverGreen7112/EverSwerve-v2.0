@@ -19,6 +19,7 @@ import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
 import frc.robot.Subsystems.Swerve.SwerveOdometer;
 import frc.robot.Utils.EverKit.Periodic;
+import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
 
 public class Robot extends TimedRobot {
@@ -41,6 +42,9 @@ public class Robot extends TimedRobot {
     //create and add robot field data to dashboard
     m_field = new Field2d();
     SmartDashboard.putData("field", m_field);
+    SmartDashboard.putNumber("speed", 1);
+    SmartDashboard.putNumber("angular speed", 180.0);
+    
     // m_odometryField = new Field2d();
     // SmartDashboard.putData("odometry", m_odometryField);
 
@@ -62,7 +66,6 @@ public class Robot extends TimedRobot {
                          SwerveLocalizer.getInstance().getCurrentPoint().getY(),
                         new Rotation2d(Math.toRadians(SwerveLocalizer.getInstance().getCurrentPoint().getAngle())));
 
-    SmartDashboard.putString("salami", m_field.getRobotPose().toString());
     // SmartDashboard.putString("x, y", SwerveLocalizer.getInstance().getCurrentPoint().getX() + "," + SwerveLocalizer.getInstance().getCurrentPoint().getY());
     // m_odometryField.setRobotPose(SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getX(), SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getY(), new Rotation2d(0));
   }
@@ -104,9 +107,19 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    
-    Swerve.getInstance().m_gyro.zeroYaw();
+    new Thread(() ->{
+      try {
+        Thread.sleep(1);
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      Swerve.getInstance().m_gyro.zeroYaw();
+
+    }).start();
+
     RobotContainer.teleop.schedule();
+    
   }
 
   @Override

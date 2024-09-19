@@ -14,16 +14,14 @@ public class DriveByJoysticks extends Command{
     private double JOYSTICK_DEADZONE = 0.2;
     private Supplier<Double> m_speedX, m_speedY, m_rotation;
     private Supplier<Boolean> m_isFieldOriented;
-    private boolean m_usesAbsEncoder;
     private double m_currentTime;
 
-    public DriveByJoysticks(Supplier<Double> speedX, Supplier<Double> speedY, Supplier<Double> rotation, Supplier<Boolean> isFieldOriented, boolean usesAbsEncoder){
+    public DriveByJoysticks(Supplier<Double> speedX, Supplier<Double> speedY, Supplier<Double> rotation, Supplier<Boolean> isFieldOriented){
         addRequirements(Swerve.getInstance());
         m_speedX = speedX;
         m_speedY = speedY;
         m_rotation = rotation;
         m_isFieldOriented = isFieldOriented;
-        m_usesAbsEncoder = usesAbsEncoder;
     }
 
     @Override
@@ -55,15 +53,16 @@ public class DriveByJoysticks extends Command{
         speedY = Funcs.roundAfterDecimalPoint(speedY, 2);
 
         //rotate robot according to rotation supplier   
-        Swerve.getInstance().rotateBy(SwerveConsts.MAX_ANGULAR_SPEED * rotation * deltaTime);
+        Swerve.getInstance().rotateBy(SwerveConsts.MAX_ANGULAR_SPEED.get() * rotation * deltaTime);
         //create drive vector
-        Vector2d vec = new Vector2d(speedX, -speedY);
+        Vector2d vec = new Vector2d(-speedX * Math.abs(speedX) * SwerveConsts.MAX_DRIVE_SPEED.get(), speedY * Math.abs(speedY) * SwerveConsts.MAX_DRIVE_SPEED.get());
+        
         //make sure mag never goes over 1 so driving in all directions will be the same speed
-        if(vec.mag() > 1){
+        if(vec.mag() > Swerve.MAX_DRIVE_SPEED.get()){
             vec.normalise();
         }
         //drive
-        Swerve.getInstance().drive(vec, true);
+        Swerve.getInstance().drive(Funcs.convertFromStandartAxesToWpilibs(vec), true);
         //update current time
         m_currentTime = System.currentTimeMillis() / 1000.0;
     }

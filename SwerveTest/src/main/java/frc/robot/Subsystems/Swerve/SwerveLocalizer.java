@@ -13,7 +13,7 @@ public class SwerveLocalizer implements Periodic {
     /* 1 is clock wise is positive
       -1 is counter-clock wise is positive
     */
-    public final double GYRO_FACTOR = -1;
+    public final double GYRO_FACTOR = 1;
     
     /*
      use these to flip axes to WPIlib's coordinate system
@@ -91,10 +91,8 @@ public class SwerveLocalizer implements Periodic {
     public void periodic() {
         //add odometry values to the current point
         Vector2d robotDelta = m_odometer.getDelta(getFieldOrientedAngle());
-        // SmartDashboard.putNumber("field angle", getFieldOrientedAngle());
-        // Vector2d wpilibAxesRobotDelta = new Vector2d(robotDelta.y, -robotDelta.x);//flip axes to wpilib's
-        // m_currentPoint.add(wpilibAxesRobotDelta.x, wpilibAxesRobotDelta.y);
-        m_currentPoint.add(robotDelta.y, -robotDelta.x);
+        //flip odometry to wpilib's coordinates
+        m_currentPoint.add(robotDelta.x, robotDelta.y);
         m_currentPoint.setAngle(getFieldOrientedAngle());
     }
 

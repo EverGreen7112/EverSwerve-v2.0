@@ -24,19 +24,21 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     //driving vars
     private Vector2d m_driveVec;
+    private double m_tAngularVelocity;
     private boolean m_isGyroOriented;
     private PIDController m_headingController;
     private double m_headingTarget;
-
+    
     private Swerve() {
         m_driveVec = new Vector2d();
-
+        
         //offset of abs encoder to 0 degrees being forward
-        ABS_ENCODERS[0].setOffset(77.255859375/360.0);
-        ABS_ENCODERS[1].setOffset(202.1484375/360.0);
-        ABS_ENCODERS[2].setOffset(316.669921875/360.0);
-        ABS_ENCODERS[3].setOffset(218.75978088378906/360.0);
+        ABS_ENCODERS[0].setOffset(169.80470275878906/360.0);
+        ABS_ENCODERS[1].setOffset(297.333984375/360.0);
+        ABS_ENCODERS[2].setOffset(52.558597564697266/360.0);
+        ABS_ENCODERS[3].setOffset(308.14453125/360.0);
 
+        
         for (EverSparkMax driveMotor : DRIVE_MOTORS) {
              driveMotor.restoreFactoryDefaults();
              driveMotor.setInverted(false);
@@ -53,17 +55,21 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
              velocityController.setConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER / 60.0, ControlType.kVel);
              velocityController.setConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER, ControlType.kPos);
         }
-
         
         for (EverSparkMaxPIDController angleController : WHEEL_ANGLE_CONTROLLERS) {
              angleController.setPID(WHEEL_ANGLE_KP, WHEEL_ANGLE_KI, WHEEL_ANGLE_KD);      
              angleController.setConversionFactor(SwerveConsts.STEER_GEAR_RATIO * 360.0, ControlType.kPos);
         }
 
-        m_modules = SwerveConsts.SWERVE_MODULES;
+        m_modules = new SwerveModule[4];
+        m_modules[0] = new SwerveModule(SwerveConsts.TL_VELOCITY_CONTROLLER, SwerveConsts.TL_DRIVE_MOTOR, new EverSparkInternalEncoder(SwerveConsts.TL_DRIVE_MOTOR), SwerveConsts.TL_ANGLE_CONTROLLER, SwerveConsts.TL_STEER_MOTOR, new EverSparkInternalEncoder(SwerveConsts.TL_STEER_MOTOR), SwerveConsts.ABS_ENCODERS[0]);
+        m_modules[1] = new SwerveModule(SwerveConsts.TR_VELOCITY_CONTROLLER, SwerveConsts.TR_DRIVE_MOTOR, new EverSparkInternalEncoder(SwerveConsts.TR_DRIVE_MOTOR), SwerveConsts.TR_ANGLE_CONTROLLER, SwerveConsts.TR_STEER_MOTOR, new EverSparkInternalEncoder(SwerveConsts.TR_STEER_MOTOR), SwerveConsts.ABS_ENCODERS[1]);
+        m_modules[2] = new SwerveModule(SwerveConsts.DL_VELOCITY_CONTROLLER, SwerveConsts.DL_DRIVE_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DL_DRIVE_MOTOR), SwerveConsts.DL_ANGLE_CONTROLLER, SwerveConsts.DL_STEER_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DL_STEER_MOTOR), SwerveConsts.ABS_ENCODERS[2]);
+        m_modules[3] = new SwerveModule(SwerveConsts.DR_VELOCITY_CONTROLLER, SwerveConsts.DR_DRIVE_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DR_DRIVE_MOTOR), SwerveConsts.DR_ANGLE_CONTROLLER, SwerveConsts.DR_STEER_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DR_STEER_MOTOR), SwerveConsts.ABS_ENCODERS[3]);
+        
         m_gyro = new AHRS(SerialPort.Port.kMXP);
         m_gyro.reset();
-        m_headingController = new PIDController(0.02675, 0, 0);
+        m_headingController = new PIDController(0.02675, 0, 0); //0.02675, 0, 0
         m_headingController.setTolerance(0.05);
     }
 
@@ -81,9 +87,9 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         SmartDashboard.putNumber("DL", m_modules[2].getAngle());
         SmartDashboard.putNumber("DR", m_modules[3].getAngle());
 
-        SmartDashboard.putNumber("angular velocity", getAngularVelocity());
         SmartDashboard.putString("velocity", getVelocity().toString());
         SmartDashboard.putNumber("angle", m_gyro.getAngle());
+       
         drive();
     }
 
@@ -124,12 +130,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
             }
         }
 
-        //clamp velocity
-        if(m_driveVec.mag() > SwerveConsts.MAX_DRIVE_SPEED){
-            m_driveVec.normalise();
-            m_driveVec.mul(SwerveConsts.MAX_DRIVE_SPEED);
-        }
-
         // convert driveVector to gyro oriented
         if(m_isGyroOriented) 
             m_driveVec.rotate(Math.toRadians(getGyroOrientedAngle()));
@@ -138,7 +138,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         Vector2d[] rotVecs = new Vector2d[m_modules.length];
         for (int i = 0; i < rotVecs.length; i++) {
             rotVecs[i] = new Vector2d(SwerveConsts.physicalMoudulesVector[i]);
-            rotVecs[i].rotate(Math.toRadians(-90));
+            rotVecs[i].rotate(Math.toRadians(90));
             // change magnitude of rot vector to rotationSpeed
             rotVecs[i].normalise();
             rotVecs[i].mul(desiredRotationSpeed);
@@ -157,7 +157,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     private double calcTargetRotationSpeed(){
         //convert max angular speed to m/s from deg/s
-        double ms_max_angular_speed = (SwerveConsts.MAX_ANGULAR_SPEED / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
+        double ms_max_angular_speed = (SwerveConsts.MAX_ANGULAR_SPEED.get() / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
         // get current angle
         double currentAngle = getGyroOrientedAngle();
         // calculate optimized target angle
@@ -193,6 +193,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
         return angularVelocity;
     }
+
     
     /**
      * @return velocity relative to the robot and the axes are forward is y right is x

@@ -2,6 +2,11 @@ package frc.robot.Utils.Math;
 
 public class Funcs {
 
+    public static Vector2d convertFromStandartAxesToWpilibs(Vector2d vec){
+        Vector2d tmp = new Vector2d(vec).rotate(Math.toRadians(90));
+        return tmp;
+    }
+
     public static double closestAngle(double a, double b) {
         // get direction
         double dir = modulo(b, 360.0) - modulo(a, 360.0);

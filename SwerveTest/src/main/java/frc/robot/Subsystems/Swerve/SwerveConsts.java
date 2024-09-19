@@ -1,11 +1,15 @@
 package frc.robot.Subsystems.Swerve;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
 import frc.robot.Utils.EverKit.EverPIDController;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverCANCoder;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverSparkMaxPIDController;
+import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
 
 /*
@@ -17,9 +21,12 @@ import frc.robot.Utils.Math.Vector2d;
 public interface SwerveConsts{
 
     // speed values
-    public static final double MAX_DRIVE_SPEED = 1; // m/s
-    public static final double MAX_ANGULAR_SPEED = 180.0; // deg/s/
-
+    public static final Supplier<Double> MAX_DRIVE_SPEED = () -> {return SmartDashboard.getNumber("speed", 1);}; // m/s
+    public static final Supplier<Double> MAX_ANGULAR_SPEED = () -> {return SmartDashboard.getNumber("angular speed", 180.0);}; // deg/s/
+    /*
+     *  speed = SmartDashboard.getNumber("speed", MAX_DRIVE_SPEED);
+        angularSpeed = SmartDashboard.getNumber("angular speed", MAX_ANGULAR_SPEED);
+     */
 
     // motor controllers
     public static final EverSparkMax 
@@ -94,14 +101,13 @@ public interface SwerveConsts{
                     -(SIDE_WHEEL_DIST_METERS / 2));
 
     // array of physical module vectors
-    public static final Vector2d[] physicalMoudulesVector = { TL, TR, DL, DR};// array of vectors from robot center to swerves module
+    public static final Vector2d[] physicalMoudulesVector = { Funcs.convertFromStandartAxesToWpilibs(TL),
+                                                              Funcs.convertFromStandartAxesToWpilibs(TR),
+                                                              Funcs.convertFromStandartAxesToWpilibs(DL),
+                                                              Funcs.convertFromStandartAxesToWpilibs(DR)
+    };// array of vectors from robot center to swerves module
 
-    public static final SwerveModule[] SWERVE_MODULES = {
-        new SwerveModule(TL_VELOCITY_CONTROLLER, TL_DRIVE_MOTOR, new EverSparkInternalEncoder(TL_DRIVE_MOTOR), TL_ANGLE_CONTROLLER, TL_STEER_MOTOR, new EverSparkInternalEncoder(TL_STEER_MOTOR), ABS_ENCODERS[0]),
-        new SwerveModule(TR_VELOCITY_CONTROLLER, TR_DRIVE_MOTOR, new EverSparkInternalEncoder(TR_DRIVE_MOTOR), TR_ANGLE_CONTROLLER, TR_STEER_MOTOR, new EverSparkInternalEncoder(TR_STEER_MOTOR), ABS_ENCODERS[1]),
-        new SwerveModule(DL_VELOCITY_CONTROLLER, DL_DRIVE_MOTOR, new EverSparkInternalEncoder(DL_DRIVE_MOTOR), DL_ANGLE_CONTROLLER, DL_STEER_MOTOR, new EverSparkInternalEncoder(DL_STEER_MOTOR), ABS_ENCODERS[2]),
-        new SwerveModule(DR_VELOCITY_CONTROLLER, DR_DRIVE_MOTOR, new EverSparkInternalEncoder(DR_DRIVE_MOTOR), DR_ANGLE_CONTROLLER, DR_STEER_MOTOR, new EverSparkInternalEncoder(DR_STEER_MOTOR), ABS_ENCODERS[3])
-     };
+    
  
 
 }
