@@ -15,20 +15,20 @@ import frc.robot.Subsystems.Swerve.SwervePoint;
 public class SwerveToWpi {
     private static Swerve m_swerve = Swerve.getInstance();
 
-    public Pose2d getPos() {
+    public static Pose2d getPos() {
         SwervePoint currentPoint = SwerveLocalizer.getInstance().getCurrentPoint();
         return new Pose2d(currentPoint.getX(),
                 currentPoint.getY(),
                 new Rotation2d(Math.toRadians(currentPoint.getAngle())));
     }
 
-    public void resetPos(Pose2d pos) {
+    public static void resetPos(Pose2d pos) {
         SwerveLocalizer.getInstance().setCurrentPoint(new SwervePoint(pos.getX(),
                 pos.getY(),
                 pos.getRotation().getDegrees()));
     }
 
-    public ChassisSpeeds getRobotRelativeSpeeds() {
+    public static ChassisSpeeds getRobotRelativeSpeeds() {
         ChassisSpeeds speeds = new ChassisSpeeds();
         speeds.omegaRadiansPerSecond = Math.toRadians(m_swerve.getAngularVelocity());
         speeds.vxMetersPerSecond = m_swerve.getRobotOrientedVelocity().x;
@@ -36,7 +36,7 @@ public class SwerveToWpi {
         return speeds;
     }
 
-    public void driveRobotRelative(ChassisSpeeds speeds) {
+    public static void driveRobotRelative(ChassisSpeeds speeds) {
         m_swerve.drive(new Vector2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond), false,
                 Math.toDegrees(speeds.omegaRadiansPerSecond));
     }
