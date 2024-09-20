@@ -71,15 +71,14 @@ public class SwerveModule extends SubsystemBase {
      * @param desiredState - desired velocity in meters per second
      */
     public void setState(Vector2d desiredState) {
-        // get polar values from desired state vector
-        double targetSpeed = desiredState.mag(); // get target speed
-        double targetAngle = Math.toDegrees(desiredState.theta()); // convert target angle from radians to degrees
+        double targetSpeed = desiredState.mag();
+        double targetAngle = Math.toDegrees(desiredState.theta());
 
         double currentAngle = getAngle();
 
         // calculate optimal delta angle
-        double optimizedFlippedDeltaTargetAngle = Funcs.closestAngle(currentAngle, targetAngle - 180);
-        double optimizedNormalDeltaTargetAngle = Funcs.closestAngle(currentAngle, targetAngle);
+        double optimizedFlippedDeltaTargetAngle = Funcs.getShortestAnglePath(currentAngle, targetAngle - 180);
+        double optimizedNormalDeltaTargetAngle = Funcs.getShortestAnglePath(currentAngle, targetAngle);
 
         double optimizedDeltaTargetAngle = 0;
         if (Math.abs(optimizedNormalDeltaTargetAngle) > Math.abs(optimizedFlippedDeltaTargetAngle)) {
@@ -113,8 +112,8 @@ public class SwerveModule extends SubsystemBase {
         return m_steerEncoder.getPos();
     }
 
-    public void setDistance(double distance){
-        m_driveEncoder.setPos(distance);
+    public void resetDistance(){
+        m_driveEncoder.setPos(0);
     }
 
     /**
@@ -147,9 +146,7 @@ public class SwerveModule extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
-        
-    }
+    public void periodic() {}
 
     
 

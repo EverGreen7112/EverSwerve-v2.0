@@ -15,6 +15,13 @@ public class SwervePoint {
         this.m_angle = angle;
     }
 
+    public SwervePoint(SwervePoint point){
+        m_x = point.m_x;
+        m_y = point.m_y;
+        m_angle = point.m_angle;
+
+    }
+
     public void set(double x, double y){
         this.m_x = x;
         this.m_y = y;

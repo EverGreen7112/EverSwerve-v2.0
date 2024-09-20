@@ -94,7 +94,7 @@ public class Vector2d
      * @return a representative String of this vector.
      */
     public String toString() {
-        return x + " : " + y;
+        return x + ", " + y;
     }
 
     /**

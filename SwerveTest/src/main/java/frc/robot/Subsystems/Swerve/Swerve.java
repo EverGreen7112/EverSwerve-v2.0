@@ -87,7 +87,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         SmartDashboard.putNumber("DL", m_modules[2].getAngle());
         SmartDashboard.putNumber("DR", m_modules[3].getAngle());
 
-        SmartDashboard.putString("velocity", getVelocity().toString());
+        SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         SmartDashboard.putNumber("angle", m_gyro.getAngle());
        
         drive();
@@ -127,7 +127,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
             }
         }
 
-        // convert driveVector to gyro oriented
+        // convert to gyro oriented
         if(m_isGyroOriented) 
             velocity.rotate(Math.toRadians(getGyroOrientedAngle()));
         
@@ -152,21 +152,9 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         }
     }
 
-    // private double calcTargetRotationSpeed(){
-    //     //convert max angular speed to m/s from deg/s
-    //     double ms_max_angular_speed = (SwerveConsts.MAX_ANGULAR_SPEED.get() / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
-    //     // get current angle
-    //     double currentAngle = getGyroOrientedAngle();
-    //     // calculate optimized target angle
-    //     double closestAngle = Funcs.closestAngle(currentAngle, m_headingTarget);
-    //     double optimizedAngle = currentAngle + closestAngle;
-    //     // return pid output
-    //     return MathUtil.clamp(m_headingController.calculate(currentAngle, optimizedAngle),
-    //             -ms_max_angular_speed, ms_max_angular_speed);
-    // }
-
-    /** TODO: test this implementaion against one based on the gyro
-     * get the swerves angular velocity (degrees / sec)
+    /**
+     * @return robot's angular velocity in NWU - positive X is forward positive Y is left positive rotation is counter-clock wise
+     * degrees/sec 
      */
     public double getAngularVelocity() {
         double angularVelocity = 0;
@@ -174,7 +162,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         for (int i = 0; i < m_modules.length; i++) {
             Vector2d moduleRotationVector = new Vector2d(SwerveConsts.physicalMoudulesVector[i]);
             moduleRotationVector.normalise();
-            moduleRotationVector.rotate(Math.toRadians(-90));
+            moduleRotationVector.rotate(Math.toRadians(90 * SwerveConsts.GYRO_FACTOR));
 
             Vector2d moduleVelocity = m_modules[i].getVelocity();
 
@@ -191,11 +179,10 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         return angularVelocity;
     }
 
-    
     /**
-     * @return velocity relative to the robot and the axes are forward is y right is x
+     * @return robot's velocity in NWU - positive X is forward positive Y is left positive rotation is counter-clock wise
      */
-    public Vector2d getVelocity(){
+    public Vector2d getRobotOrientedVelocity(){
         Vector2d vel = new Vector2d();
         for(int i = 0; i < m_modules.length; i++){
             vel.add(m_modules[i].getVelocity());
@@ -204,6 +191,16 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         vel = new Vector2d(vel.x, vel.y);
         return vel;
     }
-    
 
+    public Vector2d getGyroOrientedVelocity(){
+        Vector2d vel = getRobotOrientedVelocity();
+        vel.rotate(Math.toRadians(getGyroOrientedAngle()));
+        return vel;
+    }
+    
+    public void resetModulesDistance(){
+        for(int i = 0; i < m_modules.length; i++){
+            m_modules[i].resetDistance();
+        }
+    }
 }

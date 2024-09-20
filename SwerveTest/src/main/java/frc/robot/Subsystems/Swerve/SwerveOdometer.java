@@ -10,10 +10,14 @@ public class SwerveOdometer {
     private SwervePoint m_currentPoint; //position based only on odometry for callibration or debugging purposes
     private double[] m_prevModulesDistance;
     private SwerveModule[] m_modules;
-    public SwerveOdometer(){
-        m_currentPoint = new SwervePoint(0, 0, Swerve.getInstance().getGyroOrientedAngle());
+    
+    private SwerveOdometer(){
+        m_currentPoint = new SwervePoint(SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
+                                         SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0,
+                                         Swerve.getInstance().getGyroOrientedAngle());
         m_modules = Swerve.getInstance().getModules();
         m_prevModulesDistance = new double[m_modules.length];
+        Swerve.getInstance().resetModulesDistance();
     }
 
     public static SwerveOdometer getInstance(){
