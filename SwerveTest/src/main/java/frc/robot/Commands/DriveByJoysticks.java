@@ -13,15 +13,13 @@ public class DriveByJoysticks extends Command{
 
     private double JOYSTICK_DEADZONE = 0.2;
     private Supplier<Double> m_speedX, m_speedY, m_rotation;
-    private Supplier<Boolean> m_isFieldOriented;
     private double m_currentTime;
 
-    public DriveByJoysticks(Supplier<Double> speedX, Supplier<Double> speedY, Supplier<Double> rotation, Supplier<Boolean> isFieldOriented){
+    public DriveByJoysticks(Supplier<Double> speedX, Supplier<Double> speedY, Supplier<Double> rotation){
         addRequirements(Swerve.getInstance());
         m_speedX = speedX;
         m_speedY = speedY;
         m_rotation = rotation;
-        m_isFieldOriented = isFieldOriented;
     }
 
     @Override
@@ -52,8 +50,6 @@ public class DriveByJoysticks extends Command{
         speedX = Funcs.roundAfterDecimalPoint(speedX, 2);
         speedY = Funcs.roundAfterDecimalPoint(speedY, 2);
 
-        //rotate robot according to rotation supplier   
-        Swerve.getInstance().rotateBy(SwerveConsts.MAX_ANGULAR_SPEED.get() * rotation * deltaTime);
         //create drive vector
         Vector2d vec = new Vector2d(-speedX * Math.abs(speedX) * SwerveConsts.MAX_DRIVE_SPEED.get(), speedY * Math.abs(speedY) * SwerveConsts.MAX_DRIVE_SPEED.get());
         
@@ -61,8 +57,9 @@ public class DriveByJoysticks extends Command{
         if(vec.mag() > Swerve.MAX_DRIVE_SPEED.get()){
             vec.normalise();
         }
+
         //drive
-        Swerve.getInstance().drive(Funcs.convertFromStandartAxesToWpilibs(vec), true);
+        Swerve.getInstance().drive(Funcs.convertFromStandartAxesToWpilibs(vec), true, rotation * SwerveConsts.MAX_ANGULAR_SPEED.get());
         //update current time
         m_currentTime = System.currentTimeMillis() / 1000.0;
     }

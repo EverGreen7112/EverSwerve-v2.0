@@ -23,11 +23,8 @@ public interface SwerveConsts{
     // speed values
     public static final Supplier<Double> MAX_DRIVE_SPEED = () -> {return SmartDashboard.getNumber("speed", 1);}; // m/s
     public static final Supplier<Double> MAX_ANGULAR_SPEED = () -> {return SmartDashboard.getNumber("angular speed", 180.0);}; // deg/s/
-    /*
-     *  speed = SmartDashboard.getNumber("speed", MAX_DRIVE_SPEED);
-        angularSpeed = SmartDashboard.getNumber("angular speed", MAX_ANGULAR_SPEED);
-     */
 
+    public static final double GYRO_FACTOR = -1; //use this to decide the direction of positivity of the gyro(counter clock wise should be positive)
     // motor controllers
     public static final EverSparkMax 
             TL_DRIVE_MOTOR = new EverSparkMax(18),
@@ -64,12 +61,6 @@ public interface SwerveConsts{
             DR_ANGLE_CONTROLLER = new EverSparkMaxPIDController(DR_STEER_MOTOR);
 
     public static final EverSparkMaxPIDController[] WHEEL_ANGLE_CONTROLLERS = {TL_ANGLE_CONTROLLER, TR_ANGLE_CONTROLLER, DL_ANGLE_CONTROLLER, DR_ANGLE_CONTROLLER};
-
-    // swerve pid controllers
-    public static final EverPIDController
-            HEADING_ANGLE_CONTROLLER = null,
-            X_CONTROLLER = null,
-            Y_CONTROLLER = null;
             
     // chassis encoders 
     public static final EverAbsEncoder

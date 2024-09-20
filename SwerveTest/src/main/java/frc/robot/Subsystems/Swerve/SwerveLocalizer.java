@@ -6,22 +6,10 @@ import frc.robot.Utils.EverKit.Periodic;
 import frc.robot.Utils.Math.Vector2d;
 
 /**
- * WPilib's coordinate system is NWU positive X is forward positive is to the left rotation is counter-clock wise
+NWU - positive X is forward positive Y is left positive rotation is counter-clock wise
  */
 public class SwerveLocalizer implements Periodic {
-
-    /* 1 is clock wise is positive
-      -1 is counter-clock wise is positive
-    */
-    public final double GYRO_FACTOR = 1;
-    
-    /*
-     use these to flip axes to WPIlib's coordinate system
-     NWU - positive X is forward positive y is to the left rotation is counter-clock wise
-    */
-    public final double X_AXIS_FACTOR = 1;
-    public final double Y_AXIS_FACTOR = 1;
-
+  
     private final float VISION_FRAME_TIME = 1.0f / 20.0f;
     private final int VISION_PORT = 5800;
     private final double MIN_DIFF_FOR_ANGLE_OFFSET_REPLACEMENT = 10.0; // minimum difference between the new calculated angle offset and the old angle offset to replace the old offset by the new offset (degrees)
@@ -99,7 +87,7 @@ public class SwerveLocalizer implements Periodic {
 
     /**
     * returns point in WPilib's coordinate system
-    * NWU - positive X is forward positive is to the left rotation is counter-clock wise
+        NWU - positive X is forward positive Y is left positive rotation is counter-clock wise
     */
     public SwervePoint getCurrentPoint(){
         return m_currentPoint;

@@ -16,7 +16,7 @@ public class RobotContainer {
   
   //command instances
   public static DriveByJoysticks teleop = new DriveByJoysticks(() -> chassis.getLeftX(), () -> chassis.getLeftY(),
-      () -> chassis.getRightX(), () -> true);
+      () -> chassis.getRightX());
 
   public RobotContainer() {
     configureBindings();
