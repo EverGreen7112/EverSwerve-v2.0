@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
                          SwerveLocalizer.getInstance().getCurrentPoint().getY(),
                         new Rotation2d(Math.toRadians(SwerveLocalizer.getInstance().getCurrentPoint().getAngle())));
 
-    // SmartDashboard.putString("x, y", SwerveLocalizer.getInstance().getCurrentPoint().getX() + "," + SwerveLocalizer.getInstance().getCurrentPoint().getY());
+    SmartDashboard.putString("x, y", SwerveLocalizer.getInstance().getCurrentPoint().getX() + "," + SwerveLocalizer.getInstance().getCurrentPoint().getY());
     // m_odometryField.setRobotPose(SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getX(), SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getY(), new Rotation2d(0));
   }
 

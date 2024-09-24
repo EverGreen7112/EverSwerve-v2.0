@@ -27,8 +27,11 @@ public class SwerveLocalizer implements Periodic {
     private double m_angleOffsetToField; //the offset between the gyro angle to the field angle
 
     private SwerveLocalizer() {
-        m_currentPoint = new SwervePoint(SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
-                                         SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0,
+        // m_currentPoint = new SwervePoint(SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
+        //                                  SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0,
+        //                                  Swerve.getInstance().getGyroOrientedAngle());
+        m_currentPoint = new SwervePoint(0,
+                                         0,
                                          Swerve.getInstance().getGyroOrientedAngle());
         m_odometer = SwerveOdometer.getInstance();
         m_vision = new LocalizationVision(VISION_PORT);

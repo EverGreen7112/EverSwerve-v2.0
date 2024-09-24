@@ -47,11 +47,12 @@ public class DriveByJoysticks extends Command{
         speedY = Funcs.roundAfterDecimalPoint(speedY, 2);
 
         //create drive vector
-        Vector2d vec = new Vector2d(-speedX * Math.abs(speedX) * SwerveConsts.MAX_DRIVE_SPEED.get(), speedY * Math.abs(speedY) * SwerveConsts.MAX_DRIVE_SPEED.get());
+        Vector2d vec = new Vector2d(-speedX * SwerveConsts.MAX_DRIVE_SPEED.get(), speedY * SwerveConsts.MAX_DRIVE_SPEED.get());
         
         //make sure mag never goes over 1 so driving in all directions will be the same speed
         if(vec.mag() > Swerve.MAX_DRIVE_SPEED.get()){
             vec.normalise();
+            vec.mul(Swerve.MAX_DRIVE_SPEED.get());
         }
 
         //drive

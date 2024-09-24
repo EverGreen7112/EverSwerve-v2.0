@@ -30,6 +30,9 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
+    
+    ReplanningConfig a = new ReplanningConfig(true, false);
+    
 
     // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
@@ -38,22 +41,23 @@ public class RobotContainer {
             SwerveToWpi::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             SwerveToWpi::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig(
-                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                    1,
+                    new PIDConstants(2.5, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(2.5, 0.0, 0.0), // Rotation PID constants
+                    2,
                     SwerveConsts.ROBOT_RADIUS,
-                    new ReplanningConfig()
+                    a
             ),
             () -> {
               // Boolean supplier that controls when the path will be mirrored for the red alliance
               // This will flip the path being followed to the red side of the field.
               // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-              var alliance = DriverStation.getAlliance();
-              if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
-              }
+              // var alliance = DriverStation.getAlliance();
+              // if (alliance.isPresent()) {
+              //   return alliance.get() == DriverStation.Alliance.Red;
+              // }
               
+              // return false;
               return false;
             },
             Swerve.getInstance() // Reference to this subsystem to set requirements

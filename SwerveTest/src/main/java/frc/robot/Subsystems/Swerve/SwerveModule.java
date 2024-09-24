@@ -52,6 +52,7 @@ public class SwerveModule extends SubsystemBase {
         m_absSteerEncoder = absSteerEncoder;
         m_absSteerEncoder.setPosConversionFactor(1);
         m_steerEncoder.setPos(getAbsAngle());
+        
     }
 
     public double getAbsAngle(){
@@ -71,6 +72,11 @@ public class SwerveModule extends SubsystemBase {
      * @param desiredState - desired velocity in meters per second
      */
     public void setState(Vector2d desiredState) {
+
+        if(desiredState.mag() == 0){
+            stopModule();
+        }
+
         double targetSpeed = desiredState.mag();
         double targetAngle = Math.toDegrees(desiredState.theta());
 

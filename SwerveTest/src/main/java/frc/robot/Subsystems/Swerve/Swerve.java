@@ -90,7 +90,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         SmartDashboard.putNumber("angle", m_gyro.getAngle());
        
-        drive();
+    //    drive();
     }
 
     public double getGyroOrientedAngle(){
@@ -114,6 +114,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
        m_tVelocity = velocity;
        m_isGyroOriented = isGyroOriented;
        m_tAngularVelocity = angularVelocity;
+       drive();
     }
 
     private void drive(){
