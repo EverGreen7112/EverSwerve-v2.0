@@ -3,10 +3,10 @@ package frc.robot.Utils.Math;
 public class Funcs {
 
     /**
-     * @param vec - vector in the standart 2d axes (positive y is forward positive x is right)
+     * @param vec - vector in the standard 2d axes (positive y is forward positive x is right)
      * @return the vector in wpilib's axes, NWU - positive X is forward positive Y is left
      */
-    public static Vector2d convertFromStandartAxesToWpilibs(Vector2d vec){
+    public static Vector2d convertFromStandardAxesToWpilibs(Vector2d vec){
         Vector2d tmp = new Vector2d(vec).rotate(Math.toRadians(90));
         return tmp;
     }

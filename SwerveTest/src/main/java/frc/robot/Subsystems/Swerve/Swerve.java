@@ -118,7 +118,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     private void drive(){
         Vector2d velocity = m_tVelocity;
-        double angularVelocity = m_tAngularVelocity;
+        double angularVelocity = (m_tAngularVelocity / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
 
         // if drive values are 0 stop moving
         if (velocity.mag() == 0 && angularVelocity == 0) {
@@ -128,8 +128,8 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         }
 
         // convert to gyro oriented
-        if(m_isGyroOriented) 
-            velocity.rotate(Math.toRadians(getGyroOrientedAngle()));
+        if(m_isGyroOriented)
+            velocity.rotate(Math.toRadians(getGyroOrientedAngle() * SwerveConsts.GYRO_FACTOR));
         
         // calculate rotation vectors
         Vector2d[] rotVecs = new Vector2d[m_modules.length];
@@ -194,7 +194,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     public Vector2d getGyroOrientedVelocity(){
         Vector2d vel = getRobotOrientedVelocity();
-        vel.rotate(Math.toRadians(getGyroOrientedAngle()));
+        vel.rotate(Math.toRadians(getGyroOrientedAngle() * GYRO_FACTOR));
         return vel;
     }
     

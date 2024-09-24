@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     Swerve.getInstance();
     m_robotContainer = new RobotContainer();
-     
+    
     //create and add robot field data to dashboard
     m_field = new Field2d();
     SmartDashboard.putData("field", m_field);
@@ -82,6 +82,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    Swerve.getInstance().m_gyro.zeroYaw();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -108,12 +109,13 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     new Thread(() ->{
+      
       try {
         Thread.sleep(1);
       } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
+
       Swerve.getInstance().m_gyro.zeroYaw();
 
     }).start();

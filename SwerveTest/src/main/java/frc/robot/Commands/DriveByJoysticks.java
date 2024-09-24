@@ -13,7 +13,6 @@ public class DriveByJoysticks extends Command{
 
     private double JOYSTICK_DEADZONE = 0.2;
     private Supplier<Double> m_speedX, m_speedY, m_rotation;
-    private double m_currentTime;
 
     public DriveByJoysticks(Supplier<Double> speedX, Supplier<Double> speedY, Supplier<Double> rotation){
         addRequirements(Swerve.getInstance());
@@ -25,7 +24,6 @@ public class DriveByJoysticks extends Command{
     @Override
     public void initialize() {
         addRequirements(Swerve.getInstance());
-        m_currentTime = System.currentTimeMillis() / 1000.0;
     }
 
     @Override
@@ -35,8 +33,6 @@ public class DriveByJoysticks extends Command{
         double speedY = m_speedY.get();
         double rotation = m_rotation.get();
         
-        double deltaTime = (System.currentTimeMillis() / 1000.0) - m_currentTime;
-
         //apply deadzone on supplier values
         if(Math.abs(speedX) < JOYSTICK_DEADZONE)
             speedX = 0;
@@ -59,8 +55,7 @@ public class DriveByJoysticks extends Command{
         }
 
         //drive
-        Swerve.getInstance().drive(Funcs.convertFromStandartAxesToWpilibs(vec), true, rotation * SwerveConsts.MAX_ANGULAR_SPEED.get());
-        //update current time
-        m_currentTime = System.currentTimeMillis() / 1000.0;
+        Swerve.getInstance().drive(Funcs.convertFromStandardAxesToWpilibs(vec), true, -rotation * SwerveConsts.MAX_ANGULAR_SPEED.get());
+        
     }
 }

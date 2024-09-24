@@ -22,7 +22,6 @@ import frc.robot.Utils.Math.SwerveToWpi;
 
 public class RobotContainer {
 
-
   public static final CommandXboxController chassis = new CommandXboxController(0);
   
   //command instances
@@ -38,7 +37,7 @@ public class RobotContainer {
             SwerveToWpi::resetPos, // Method to reset odometry (will be called if your auto has a starting pose)
             SwerveToWpi::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             SwerveToWpi::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-            new HolonomicPathFollowerConfig( 
+            new HolonomicPathFollowerConfig(
                     new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                     1,
@@ -54,10 +53,12 @@ public class RobotContainer {
               if (alliance.isPresent()) {
                 return alliance.get() == DriverStation.Alliance.Red;
               }
+              
               return false;
             },
             Swerve.getInstance() // Reference to this subsystem to set requirements
     );
+    
   }
 
   private void configureBindings() {}

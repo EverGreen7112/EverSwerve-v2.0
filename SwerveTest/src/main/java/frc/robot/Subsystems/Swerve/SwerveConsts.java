@@ -94,10 +94,10 @@ public interface SwerveConsts{
                     -(SIDE_WHEEL_DIST_METERS / 2));
 
     // array of physical module vectors
-    public static final Vector2d[] physicalMoudulesVector = { Funcs.convertFromStandartAxesToWpilibs(TL),
-                                                              Funcs.convertFromStandartAxesToWpilibs(TR),
-                                                              Funcs.convertFromStandartAxesToWpilibs(DL),
-                                                              Funcs.convertFromStandartAxesToWpilibs(DR)
+    public static final Vector2d[] physicalMoudulesVector = { Funcs.convertFromStandardAxesToWpilibs(TL),
+                                                              Funcs.convertFromStandardAxesToWpilibs(TR),
+                                                              Funcs.convertFromStandardAxesToWpilibs(DL),
+                                                              Funcs.convertFromStandardAxesToWpilibs(DR)
     };// array of vectors from robot center to swerves module
 
     

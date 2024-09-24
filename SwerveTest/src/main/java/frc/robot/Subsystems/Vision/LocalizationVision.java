@@ -27,7 +27,6 @@ public class LocalizationVision {
     private SwervePoint m_currentPoint;
     private Consumer<SwervePoint> m_onNewPointReceived; // what to do when a packet is received
 
-
     public LocalizationVision(int port) {
         this.m_currentPoint = new SwervePoint(0, 0, 0);
         this.m_port = port;
