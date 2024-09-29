@@ -69,7 +69,7 @@ public class LocalizationVision {
 
                 m_currentPoint.setX(m_locals[0]);// camera's x
                 m_currentPoint.setY(m_locals[2]);// camera's z
-                m_currentPoint.setAngle(-m_locals[3]); //camera's yaw
+                m_currentPoint.setAngle(m_locals[3]); //camera's yaw
 
                 m_onNewPointReceived.accept(m_currentPoint);
             }

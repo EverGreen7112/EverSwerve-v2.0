@@ -35,10 +35,10 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         m_tVelocity = new Vector2d();
         
         //offset of abs encoder to 0 degrees being forward
-        ABS_ENCODERS[0].setOffset(169.80470275878906/360.0);
-        ABS_ENCODERS[1].setOffset(297.333984375/360.0);
-        ABS_ENCODERS[2].setOffset(52.558597564697266/360.0);
-        ABS_ENCODERS[3].setOffset(308.14453125/360.0);
+        ABS_ENCODERS[0].setOffset(166.552734375/360.0);
+        ABS_ENCODERS[1].setOffset(292.939453125/360.0);
+        ABS_ENCODERS[2].setOffset(48.867191314697266/360.0);
+        ABS_ENCODERS[3].setOffset(307.3785705566406/360.0);
 
         
         for (EverSparkMax driveMotor : DRIVE_MOTORS) {
@@ -89,6 +89,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
         SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         SmartDashboard.putNumber("angle", m_gyro.getAngle());
+        SmartDashboard.putNumber("angular velocity", getAngularVelocity());
        
     //    drive();
     }

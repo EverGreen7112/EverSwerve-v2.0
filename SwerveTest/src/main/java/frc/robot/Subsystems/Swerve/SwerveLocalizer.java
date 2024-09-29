@@ -46,7 +46,7 @@ public class SwerveLocalizer implements Periodic {
             
             //update angle
             double angularVelocity = Swerve.getInstance().getAngularVelocity();
-            double currentAngle = currentVisionPoint.getAngle() + (angularVelocity * VISION_FRAME_TIME);
+            double currentAngle = currentVisionPoint.getAngle() + (angularVelocity * VISION_FRAME_TIME) + 90.0;
             /*
             * we add an estimation for delta angle to the angle given by the vision
             * this is an attempt to compensate for the fact that the data as given by the
@@ -64,6 +64,7 @@ public class SwerveLocalizer implements Periodic {
                 m_angleOffsetToField = (ANGLE_OFFSET_AVERAGE_NEW_READING_WEIGHT * newOffset) +
                     ((1 - ANGLE_OFFSET_AVERAGE_NEW_READING_WEIGHT) * m_angleOffsetToField);
             }
+            
             m_currentPoint.setAngle(getFieldOrientedAngle());
         });
         start(PeriodicTime.kRobotPeriodic);
