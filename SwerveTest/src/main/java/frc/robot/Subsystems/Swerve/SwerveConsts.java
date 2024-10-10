@@ -20,6 +20,7 @@ import frc.robot.Utils.Math.Vector2d;
  */
 public interface SwerveConsts{
 
+        
     // speed values
     public static final Supplier<Double> MAX_DRIVE_SPEED = () -> {return SmartDashboard.getNumber("speed", 0.2);}; // m/s
     public static final Supplier<Double> MAX_ANGULAR_SPEED = () -> {return SmartDashboard.getNumber("angular speed", 180.0);}; // deg/s/

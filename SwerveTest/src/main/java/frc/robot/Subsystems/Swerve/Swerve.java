@@ -25,14 +25,8 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     private SwerveModule[] m_modules;
     public AHRS m_gyro;    //TODO: change gyro to EverGyro
-
-    //driving vars
-    private Vector2d m_tVelocity;
-    private double m_tAngularVelocity;
-    private boolean m_isGyroOriented;
     
     private Swerve() {
-        m_tVelocity = new Vector2d();
         
         //offset of abs encoder to 0 degrees being forward
         ABS_ENCODERS[0].setOffset(166.552734375/360.0);
@@ -91,7 +85,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         SmartDashboard.putNumber("angle", m_gyro.getAngle());
         SmartDashboard.putNumber("angular velocity", getAngularVelocity());
        
-    //    drive();
     }
 
     public double getGyroOrientedAngle(){
@@ -107,30 +100,24 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
      * see math on pdf document for more information
      * NWU - positive X is forward positive Y is left positive rotation is counter-clock wise
      * 
-     * @param driveVec    - robot's target velocity
+     * @param velocity    - robot's target velocity(m/s)
      * @param isGyroOriented - true for origin of the gyro relative driving
      *                         false for robot relative driving
+     * @param angularVelocity = robot's target angular velocity(deg/s) 
      */
     public void drive(Vector2d velocity, boolean isGyroOriented, double angularVelocity) {
-       m_tVelocity = velocity;
-       m_isGyroOriented = isGyroOriented;
-       m_tAngularVelocity = angularVelocity;
-       drive();
-    }
-
-    private void drive(){
-        Vector2d velocity = m_tVelocity;
-        double angularVelocity = (m_tAngularVelocity / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
+        //convert to m/s
+        double angularVel = (angularVelocity / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
 
         // if drive values are 0 stop moving
-        if (velocity.mag() == 0 && angularVelocity == 0) {
+        if (velocity.mag() == 0 && angularVel == 0) {
             for (int i = 0; i < m_modules.length; i++) {
                 m_modules[i].stopModule();
             }
         }
 
         // convert to gyro oriented
-        if(m_isGyroOriented)
+        if(isGyroOriented)
             velocity.rotate(Math.toRadians(getGyroOrientedAngle() * SwerveConsts.GYRO_FACTOR));
         
         // calculate rotation vectors
@@ -140,7 +127,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
             rotVecs[i].rotate(Math.toRadians(90 * SwerveConsts.GYRO_FACTOR));
             // change magnitude of rot vector to rotationSpeed
             rotVecs[i].normalise();
-            rotVecs[i].mul(angularVelocity);
+            rotVecs[i].mul(angularVel);
         }
 
         Vector2d[] sumVectors = new Vector2d[m_modules.length];

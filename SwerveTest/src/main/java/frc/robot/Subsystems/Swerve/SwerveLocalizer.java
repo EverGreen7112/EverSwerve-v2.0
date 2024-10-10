@@ -25,19 +25,23 @@ public class SwerveLocalizer implements Periodic {
 
     private SwervePoint m_currentPoint;
     private double m_angleOffsetToField; //the offset between the gyro angle to the field angle
-
+    
+    //custom offset for when setting robot's odometry values before the match begin using the setCurrentPoint function 
+    private double m_offsetNotFromVision;
+    private boolean m_isVisionWorking;
     private SwerveLocalizer() {
-        // m_currentPoint = new SwervePoint(SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
-        //                                  SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0,
-        //                                  Swerve.getInstance().getGyroOrientedAngle());
-        m_currentPoint = new SwervePoint(0,
-                                         0,
+
+        m_currentPoint = new SwervePoint(SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
+                                         SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0,
                                          Swerve.getInstance().getGyroOrientedAngle());
         m_odometer = SwerveOdometer.getInstance();
         m_vision = new LocalizationVision(VISION_PORT);
         m_angleOffsetToField = 0;
+        m_isVisionWorking = false;
+        m_offsetNotFromVision = 0;
 
         m_vision.setOnNewPointReceived((SwervePoint newPoint) -> {
+            m_isVisionWorking = true;
             //set the current point to the vision values
             
             //update position
@@ -46,14 +50,14 @@ public class SwerveLocalizer implements Periodic {
             
             //update angle
             double angularVelocity = Swerve.getInstance().getAngularVelocity();
-            double currentAngle = currentVisionPoint.getAngle() + (angularVelocity * VISION_FRAME_TIME) + 90.0;
+            double newAngle = currentVisionPoint.getAngle() + (angularVelocity * VISION_FRAME_TIME) + 90.0;
             /*
             * we add an estimation for delta angle to the angle given by the vision
             * this is an attempt to compensate for the fact that the data as given by the
             * vision is delayed
             * this was added to help compensate for angle offset drifting
             */
-            double newOffset = currentAngle - Swerve.getInstance().getGyroOrientedAngle();
+            double newOffset = newAngle - Swerve.getInstance().getGyroOrientedAngle();
             // if the new angle offset is drastically different than the last, we should try 
             if(Math.abs(m_angleOffsetToField - newOffset) > MIN_DIFF_FOR_ANGLE_OFFSET_REPLACEMENT){
                 m_angleOffsetToField = newOffset;
@@ -82,7 +86,6 @@ public class SwerveLocalizer implements Periodic {
         m_currentPoint.setAngle(getFieldOrientedAngle());
     }
 
-
     /**
     * returns point in WPIlib's coordinate system
     * NWU - positive X is forward positive Y is left positive rotation is counter-clock wise
@@ -92,10 +95,11 @@ public class SwerveLocalizer implements Periodic {
     }
 
     public void setCurrentPoint(SwervePoint newPoint){
+        m_offsetNotFromVision = newPoint.getAngle() - Swerve.getInstance().getGyroOrientedAngle();
         m_currentPoint = new SwervePoint(newPoint);
     }
 
     public double getFieldOrientedAngle(){
-        return Swerve.getInstance().getGyroOrientedAngle() + m_angleOffsetToField;
+        return Swerve.getInstance().getGyroOrientedAngle() + ((m_isVisionWorking) ? m_angleOffsetToField : m_offsetNotFromVision);
     }
 }
