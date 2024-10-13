@@ -1,10 +1,11 @@
 package frc.robot.Subsystems.Swerve;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
 
 public class SwerveOdometer {
-
+    private static final double ODOMETRY_FACTOR = 3.765 / 3.95; 
     private static SwerveOdometer m_instance = new SwerveOdometer();
 
     private SwervePoint m_currentPoint; //position based only on odometry for callibration or debugging purposes
@@ -12,8 +13,12 @@ public class SwerveOdometer {
     private SwerveModule[] m_modules;
     
     private SwerveOdometer(){
-        m_currentPoint = new SwervePoint(SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
-                                         SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0,
+        Vector2d startPos = Funcs.convertFromStandardAxesToWpilibs(new Vector2d(
+                                        SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0 + 0.08,
+                                        SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0 + 0.08));
+
+        m_currentPoint = new SwervePoint(startPos.x,
+                                         startPos.y,
                                          Swerve.getInstance().getGyroOrientedAngle());
         m_modules = Swerve.getInstance().getModules();
         m_prevModulesDistance = new double[m_modules.length];
@@ -45,7 +50,7 @@ public class SwerveOdometer {
         robotDelta.mul(1.0 / m_modules.length);
         
         //update position based only on odometry for callibration or debugging purposes
-        m_currentPoint.add(robotDelta.x, robotDelta.y);
+        m_currentPoint.add(robotDelta.x * ODOMETRY_FACTOR, robotDelta.y * ODOMETRY_FACTOR);
         m_currentPoint.setAngle(Swerve.getInstance().getGyroOrientedAngle());
         robotDelta.rotate(Math.toRadians(fieldOrientedAngle));
         return robotDelta;

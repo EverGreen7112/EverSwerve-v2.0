@@ -3,6 +3,7 @@ package frc.robot.Subsystems.Swerve;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Subsystems.Vision.LocalizationVision;
 import frc.robot.Utils.EverKit.Periodic;
+import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
 
 /**
@@ -31,8 +32,12 @@ public class SwerveLocalizer implements Periodic {
     private boolean m_isVisionWorking;
     private SwerveLocalizer() {
 
-        m_currentPoint = new SwervePoint(SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
-                                         SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0,
+        Vector2d startPos = new Vector2d(
+                                        SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
+                                        SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0);
+
+        m_currentPoint = new SwervePoint(startPos.x,
+                                         startPos.y,
                                          Swerve.getInstance().getGyroOrientedAngle());
         m_odometer = SwerveOdometer.getInstance();
         m_vision = new LocalizationVision(VISION_PORT);

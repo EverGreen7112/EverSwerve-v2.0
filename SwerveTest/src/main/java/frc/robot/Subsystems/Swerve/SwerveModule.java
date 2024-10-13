@@ -1,5 +1,6 @@
 package frc.robot.Subsystems.Swerve;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
 import frc.robot.Utils.EverKit.EverEncoder;
@@ -72,6 +73,10 @@ public class SwerveModule extends SubsystemBase {
      * @param desiredState - desired velocity in meters per second
      */
     public void setState(Vector2d desiredState) {
+        
+        if(desiredState.mag() < SwerveConsts.MIN_SPEED){
+            desiredState = new Vector2d(0, 0);
+        }        
 
         if(desiredState.mag() == 0){
             stopModule();
@@ -98,6 +103,7 @@ public class SwerveModule extends SubsystemBase {
 
         // dot product to current state
         targetSpeed *= Math.cos(Math.toRadians(optimizedNormalDeltaTargetAngle));
+        
         
         // set speed of module at target speed
         m_velocityController.activate(targetSpeed, ControlType.kVel);

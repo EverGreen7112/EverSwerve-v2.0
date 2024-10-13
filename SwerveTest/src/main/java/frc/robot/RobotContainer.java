@@ -11,7 +11,6 @@ import com.pathplanner.lib.path.EventMarker;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,6 +24,8 @@ import frc.robot.Commands.Shooter.ReleaseNote;
 import frc.robot.Commands.Shooter.RotateTo;
 import frc.robot.Commands.Swerve.DriveByJoysticks;
 import frc.robot.Subsystems.Intake.Intake;
+import frc.robot.Subsystems.Shooter.Shooter;
+import frc.robot.Subsystems.Shooter.ShooterConsts;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Utils.Math.SwerveToWpi;
@@ -35,7 +36,7 @@ public class RobotContainer {
   
   //command instances
   public static DriveByJoysticks teleop = new DriveByJoysticks(() -> chassis.getLeftX(), () -> chassis.getLeftY(),
-      () -> chassis.getRightX());
+      () -> chassis.getRightX(), () -> chassis.back().getAsBoolean());
 
   public RobotContainer() {
     configureBindings();
@@ -72,8 +73,13 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    NamedCommands.registerCommand("start intake", new InstantCommand(()->{Intake.getInstance().intake();}));
-    NamedCommands.registerCommand("stop intake", new InstantCommand(()->{Intake.getInstance().stop();}));
+    NamedCommands.registerCommand("start intake", new InstantCommand(()->{Intake.getInstance().intake();
+                                                                               Shooter.getInstance().pullNote(-0.5);
+                                                                               Shooter.getInstance().turnToAngle(ShooterConsts.AIM_MOTOR_MIN_ANGLE);}));
+    
+    NamedCommands.registerCommand("stop intake", new InstantCommand(()->{
+                                                                              Shooter.getInstance().pullNote(0);}));
+    
 
     //buttons
     chassis.a().whileTrue(new IntakeNote(0.5));

@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("field", m_field);
     SmartDashboard.putNumber("speed", 1);
     SmartDashboard.putNumber("angular speed", 180.0);
-    
+    // Swerve.getInstance().m_gyro
     // m_odometryField = new Field2d();
     // SmartDashboard.putData("odometry", m_odometryField);
 
@@ -98,6 +98,8 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
+
+    
   }
 
   @Override
