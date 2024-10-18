@@ -1,5 +1,6 @@
 package frc.robot.Subsystems.Swerve;
 
+import frc.robot.Utils.Math.Vector2d;
 
 /**
  * Represents a point on the field in which the swerve can be at
@@ -71,5 +72,9 @@ public class SwervePoint {
         m_y += y;
     }
 
+
+    public Vector2d getAs2DVector(){
+        return new Vector2d(m_x, m_y);
+    }
 
 }

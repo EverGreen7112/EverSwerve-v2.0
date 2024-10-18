@@ -2,12 +2,14 @@ package frc.robot.Subsystems.Shooter;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import frc.robot.Utils.Math.Funcs;
+import frc.robot.Utils.Math.Vector2d;
 import frc.robot.Utils.Math.Vector3d;
 
 public class ShooterConsts {
      //speaker
         public static final Vector3d RED_SPAKER_POS = new Vector3d(652.67 * 0.0254 + 0.05, 2.078, 218.42 * 0.0254 - 0.4);
-        public static final Vector3d BLUE_SPAKER_POS = new Vector3d(-1.5 * 0.0254 - 0.05, 2.078, 218.41 * 0.0254 + 0.4);
+        public static final Vector3d BLUE_SPAKER_POS = new Vector3d(1, 5.6, 2.2);
         public static final double SPEAKER_HEIGHT_SCALAR = 0.142354; 
 
         //gear ratio
@@ -66,9 +68,9 @@ public class ShooterConsts {
         public static final double MIN_NOTE_DISTANCE = 20.0;//20.0
 
         //shooter angle
-        public static final double SHOOTER_ANGLE_KP = 0.0111;//0.011
-        public static final double SHOOTER_ANGLE_KI = 0.000001901; //0.0000003
-        public static final double SHOOTER_ANGLE_KD = 0.00015;//0.03
+        public static final double SHOOTER_ANGLE_KP = 0.0075;//0.011
+        public static final double SHOOTER_ANGLE_KI = 0.0000019; //0.0000003
+        public static final double SHOOTER_ANGLE_KD = 0.0001;//0.03
         public static final double SHOOTER_ANGLE_KF = 0;//0.054 / 2;//0.057 / 2
         
 

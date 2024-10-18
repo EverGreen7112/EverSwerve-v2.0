@@ -1,7 +1,5 @@
 package frc.robot.Commands.Intake;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Intake.Intake;
 import frc.robot.Subsystems.Shooter.Shooter;

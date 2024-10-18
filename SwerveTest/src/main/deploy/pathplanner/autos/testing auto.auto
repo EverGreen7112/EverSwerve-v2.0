@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.73,
+      "y": 6.71
+    },
+    "rotation": 45.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "start intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp side note from side of the speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop intake"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

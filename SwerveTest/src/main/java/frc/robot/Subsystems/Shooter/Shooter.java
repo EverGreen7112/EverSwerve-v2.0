@@ -19,6 +19,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
 import frc.robot.Utils.Math.Vector2d;
+import frc.robot.Utils.Math.Vector3d;
 
 
 public class Shooter extends SubsystemBase{
@@ -107,38 +108,26 @@ public class Shooter extends SubsystemBase{
         
         m_aimPidController.setSetpoint(m_targetAngle);
         //calculate current output
-        double output = MathUtil.clamp(m_aimPidController.calculate(m_aimEncoder.getDistance()), -0.3, 0.3);//put this in consts i dont have time
+        double output = MathUtil.clamp(m_aimPidController.calculate(m_aimEncoder.getDistance()), -0.25, 0.25);//put this in consts i dont have time
         //activate motor with ff
         m_aimMotor.set(output + m_aimFF * Math.signum(output));
     }
 
     /**
-    //  * calculate the angle the shooter needs to be at according to the current distance from the speaker
-    //  * @return the angle the shooter needs to be at
-    //  */
-    // public double getShooterAngleToSpeaker(){
-       
-    //     Vector2d currentPos2d = SwerveLocalizer.getInstance().get
-    //     //get position of shooter (NOT ROBOT)
-    //     Vector3d currentPos = new Vector3d(currentPos2d.x, ShooterConsts.SHOOTER_HEIGHT_METERS, currentPos2d.y);
-    //     Vector3d speakerPos = new Vector3d();
-       
-    //     //get position of speaker according to the alliance
-    //     if(Robot.getAlliance() == Alliance.Blue){
-    //         speakerPos = ShooterConsts.BLUE_SPAKER_POS;
-    //     }
-    //     else if(Robot.getAlliance() == Alliance.Red){
-    //         speakerPos = ShooterConsts.RED_SPAKER_POS;
-    //     }
+     * calculate the angle the shooter needs to be at according to the current distance from the speaker
+     * @return the angle the shooter needs to be at
+     */
+    public double getShooterAngleToSpeaker(){
+        double targetAngle = 0;
 
-    //     //calculate the vector between them
-    //     Vector3d delta = currentPos.subtract(speakerPos);
-    //     delta.add(new Vector3d(0, 
-    //     -ShooterConsts.SPEAKER_HEIGHT_SCALAR * (delta.getX()*delta.getX() + delta.getZ()*delta.getZ()), 
-    //     0));
-    //     SmartDashboard.putNumber("distance from speaker",  Math.sqrt(delta.getX()*delta.getX() + delta.getZ()*delta.getZ()));
-    //     return -Math.toDegrees(delta.getPitch());
-    // }
+        Vector2d currentPos2d = SwerveLocalizer.getInstance().getCurrentPoint().getAs2DVector();
+        Vector3d currentPos = new Vector3d(currentPos2d.x, currentPos2d.y, 0.4);
+
+        Vector3d speaker = ShooterConsts.BLUE_SPAKER_POS;
+        Vector3d delta = (new Vector3d(speaker.m_x, speaker.m_y, speaker.m_z)).subtract(currentPos);
+        SmartDashboard.putString("delta", delta.toString());
+        return delta.getPitch();
+    }
 
 
     /**
@@ -168,6 +157,11 @@ public class Shooter extends SubsystemBase{
     public void chargeShoot(double speed){
         m_leftShootMotor.set(speed);
         m_rightShootMotor.set(speed);
+    }
+
+    public void chargeShoot(double speedL, double speedR){
+        m_leftShootMotor.set(speedL);
+        m_rightShootMotor.set(speedR);
     }
 
     public void pushNoteToShoot(double speed){

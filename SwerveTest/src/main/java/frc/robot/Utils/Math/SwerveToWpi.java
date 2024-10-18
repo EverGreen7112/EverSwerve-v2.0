@@ -3,6 +3,8 @@ package frc.robot.Utils.Math;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Robot;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
 import frc.robot.Subsystems.Swerve.SwervePoint;
@@ -25,6 +27,7 @@ public class SwerveToWpi {
     public static void resetPos(Pose2d pos) {
         SwerveLocalizer.getInstance().setCurrentPoint(new SwervePoint(pos.getX(),
                 pos.getY(),
+                // pos.getRotation().getDegrees() - ((Robot.getAlliance() == Alliance.Red) ? 180 : 0)));
                 pos.getRotation().getDegrees()));
     }
 

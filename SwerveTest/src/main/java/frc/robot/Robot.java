@@ -6,9 +6,15 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -18,6 +24,7 @@ import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
 import frc.robot.Subsystems.Swerve.SwerveOdometer;
+import frc.robot.Subsystems.Swerve.SwervePoint;
 import frc.robot.Utils.EverKit.Periodic;
 import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
@@ -32,22 +39,33 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
-  private Field2d m_field; 
-  private Field2d m_odometryField;
+  private static Field2d m_field; 
+  private static Field2d m_odometryField;
+
+  private static SendableChooser<Alliance> m_allianceChooser;
+  public static SendableChooser<Command> m_autoChooser;
+
   @Override
   public void robotInit() {
-    Swerve.getInstance();
-    m_robotContainer = new RobotContainer();
     
+    m_robotContainer = new RobotContainer();
+  
     //create and add robot field data to dashboard
     m_field = new Field2d();
     SmartDashboard.putData("field", m_field);
     SmartDashboard.putNumber("speed", 1);
     SmartDashboard.putNumber("angular speed", 180.0);
-    // Swerve.getInstance().m_gyro
+
     // m_odometryField = new Field2d();
     // SmartDashboard.putData("odometry", m_odometryField);
 
+    m_allianceChooser = new SendableChooser<Alliance>();
+    m_allianceChooser.addOption("blue", Alliance.Blue);
+    m_allianceChooser.addOption("red", Alliance.Red);
+    SmartDashboard.putData("alliance", m_allianceChooser);
+
+    m_autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData(m_autoChooser);
   }
 
   @Override
@@ -68,6 +86,8 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putString("x, y", SwerveLocalizer.getInstance().getCurrentPoint().getX() + "," + SwerveLocalizer.getInstance().getCurrentPoint().getY());
     // m_odometryField.setRobotPose(SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getX(), SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getY(), new Rotation2d(0));
+    SmartDashboard.putNumber("absolute angle", SwerveLocalizer.getInstance().getCurrentPoint().getAngle());
+    SmartDashboard.putNumber("gyro angle", Swerve.getInstance().getGyroOrientedAngle());
   }
 
   @Override
@@ -81,8 +101,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    Swerve.getInstance().m_gyro.zeroYaw();
+    m_autonomousCommand = m_autoChooser.getSelected();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -170,6 +189,11 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
+  }
+
+
+  public static Alliance getAlliance(){
+    return m_allianceChooser.getSelected();
   }
   
 }

@@ -76,14 +76,14 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("TL", m_modules[0].getAngle());
-        SmartDashboard.putNumber("TR", m_modules[1].getAngle());
-        SmartDashboard.putNumber("DL", m_modules[2].getAngle());
-        SmartDashboard.putNumber("DR", m_modules[3].getAngle());
+        //absolute encoders
+        // SmartDashboard.putNumber("TL", m_modules[0].getAngle());
+        // SmartDashboard.putNumber("TR", m_modules[1].getAngle());
+        // SmartDashboard.putNumber("DL", m_modules[2].getAngle());
+        // SmartDashboard.putNumber("DR", m_modules[3].getAngle());
 
-        SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
-        SmartDashboard.putNumber("angle", m_gyro.getAngle());
-        SmartDashboard.putNumber("angular velocity", getAngularVelocity());
+        // SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
+        // SmartDashboard.putNumber("angular velocity", getAngularVelocity());
        
     }
 

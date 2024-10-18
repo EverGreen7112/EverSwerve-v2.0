@@ -5,7 +5,7 @@ import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
 
 public class SwerveOdometer {
-    private static final double ODOMETRY_FACTOR = 3.765 / 3.95; 
+    private static final double ODOMETRY_FACTOR = 1; //3.765 / 3.95 
     private static SwerveOdometer m_instance = new SwerveOdometer();
 
     private SwervePoint m_currentPoint; //position based only on odometry for callibration or debugging purposes

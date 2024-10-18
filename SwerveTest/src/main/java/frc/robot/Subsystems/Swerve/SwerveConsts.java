@@ -24,7 +24,7 @@ public interface SwerveConsts{
     // speed values
     public static final Supplier<Double> MAX_DRIVE_SPEED = () -> {return SmartDashboard.getNumber("speed", 0.2);}; // m/s
     public static final Supplier<Double> MAX_ANGULAR_SPEED = () -> {return SmartDashboard.getNumber("angular speed", 180.0);}; // deg/s/
-    public static final double MIN_SPEED = 0;
+    public static final double MIN_SPEED = 0.07;
     
     public static final double GYRO_FACTOR = -1; //use this to decide the direction of positivity of the gyro(counter clock wise should be positive)
     // motor controllers

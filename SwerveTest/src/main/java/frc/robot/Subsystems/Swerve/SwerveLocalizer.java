@@ -1,6 +1,8 @@
 package frc.robot.Subsystems.Swerve;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 import frc.robot.Subsystems.Vision.LocalizationVision;
 import frc.robot.Utils.EverKit.Periodic;
 import frc.robot.Utils.Math.Funcs;
@@ -89,6 +91,8 @@ public class SwerveLocalizer implements Periodic {
         Vector2d robotDelta = m_odometer.getDelta(getFieldOrientedAngle());
         m_currentPoint.add(robotDelta.x, robotDelta.y);
         m_currentPoint.setAngle(getFieldOrientedAngle());
+        SmartDashboard.putNumber("offset", m_angleOffsetToField);
+        SmartDashboard.putNumber("not from vison offset", m_offsetNotFromVision);
     }
 
     /**
@@ -100,11 +104,26 @@ public class SwerveLocalizer implements Periodic {
     }
 
     public void setCurrentPoint(SwervePoint newPoint){
-        m_offsetNotFromVision = newPoint.getAngle() - Swerve.getInstance().getGyroOrientedAngle();
+        m_offsetNotFromVision = (newPoint.getAngle() ) - Swerve.getInstance().getGyroOrientedAngle();
+        SmartDashboard.putNumber("a", newPoint.getAngle());
         m_currentPoint = new SwervePoint(newPoint);
     }
 
     public double getFieldOrientedAngle(){
         return Swerve.getInstance().getGyroOrientedAngle() + ((m_isVisionWorking) ? m_angleOffsetToField : m_offsetNotFromVision);
+    }
+
+    public double getAngleToSpeaker(){
+        Vector2d speakerPos;
+        if(Robot.getAlliance() == Alliance.Red){
+            speakerPos = new Vector2d(0, 0);
+        }
+        else{
+            speakerPos = new Vector2d(0, 0);
+        }
+        
+        Vector2d currentPos = SwerveLocalizer.getInstance().getCurrentPoint().getAs2DVector();
+        Vector2d deltaToSpeaker = currentPos.subtract(speakerPos.x, speakerPos.y);
+        return Math.toDegrees(deltaToSpeaker.theta());
     }
 }

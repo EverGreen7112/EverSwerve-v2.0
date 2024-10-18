@@ -155,7 +155,7 @@ public class Vector3d {
         }
 
         // Calculate the pitch angle
-        double pitch = Math.asin(m_y / magnitude);
+        double pitch = Math.asin(m_z / magnitude);
 
         return pitch;
     }

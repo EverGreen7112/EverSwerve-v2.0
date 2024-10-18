@@ -19,9 +19,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Commands.Intake.EjectNote;
 import frc.robot.Commands.Intake.IntakeNote;
+import frc.robot.Commands.Shooter.AutoAimShooter;
 import frc.robot.Commands.Shooter.ChargeNote;
 import frc.robot.Commands.Shooter.ReleaseNote;
 import frc.robot.Commands.Shooter.RotateTo;
+import frc.robot.Commands.Shooter.ShootFromSideOfAmp;
 import frc.robot.Commands.Swerve.DriveByJoysticks;
 import frc.robot.Subsystems.Intake.Intake;
 import frc.robot.Subsystems.Shooter.Shooter;
@@ -58,19 +60,14 @@ public class RobotContainer {
               // Boolean supplier that controls when the path will be mirrored for the red alliance
               // This will flip the path being followed to the red side of the field.
               // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-              // var alliance = DriverStation.getAlliance();
-              // if (alliance.isPresent()) {
-              //   return alliance.get() == DriverStation.Alliance.Red;
-              // }
-              
-              // return false;
-              return false;
+              return  Robot.getAlliance() == DriverStation.Alliance.Red;
             },
             Swerve.getInstance() // Reference to this subsystem to set requirements
     );
     
   }
+
+
 
   private void configureBindings() {
     NamedCommands.registerCommand("start intake", new InstantCommand(()->{Intake.getInstance().intake();
@@ -78,19 +75,20 @@ public class RobotContainer {
                                                                                Shooter.getInstance().turnToAngle(ShooterConsts.AIM_MOTOR_MIN_ANGLE);}));
     
     NamedCommands.registerCommand("stop intake", new InstantCommand(()->{
-                                                                              Shooter.getInstance().pullNote(0);}));
+                                                                              Shooter.getInstance().pullNote(0); Intake.getInstance().stop();}));
     
+                                                                              
+    NamedCommands.registerCommand("start shoot from side of amp", new InstantCommand(() -> {Shooter.getInstance().turnToAngle(113);}).andThen(new ShootFromSideOfAmp().withTimeout(2)));
+    NamedCommands.registerCommand("release note", new ReleaseNote().withTimeout(0.5));
 
     //buttons
     chassis.a().whileTrue(new IntakeNote(0.5));
     chassis.start().whileTrue(new EjectNote(0.5));
     chassis.x().whileTrue(new ChargeNote());
     chassis.y().whileTrue(new ReleaseNote());
-    chassis.b().onTrue(new RotateTo(60));
+    chassis.b().onTrue(new InstantCommand(() -> {Shooter.getInstance().turnToAngle(113);;}));
 
   }
 
-  public Command getAutonomousCommand() {
-    return new PathPlannerAuto("3 note auto - middle");
-  }
+  
 }
