@@ -8,8 +8,9 @@ public class ShootToSpeaker extends Command {
     public ShootToSpeaker(){}
 
     public void initialize(){
-        Shooter.getInstance().turnTo(130);
-        Shooter.getInstance().shoot();
+        addRequirements(Shooter.getInstance());
+        Shooter.getInstance().turnTo(114); //114
+        Shooter.getInstance().shoot(1, 1);
     }
 
     public boolean isFinished(){

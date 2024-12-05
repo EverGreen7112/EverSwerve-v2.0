@@ -32,14 +32,10 @@ public class SwerveLocalizer implements Periodic {
     //custom offset for when setting robot's odometry values before the match begin using the setCurrentPoint function 
     private double m_offsetNotFromVision;
     private boolean m_isVisionWorking;
+
     private SwerveLocalizer() {
-
-        Vector2d startPos = new Vector2d(
-                                        SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
-                                        SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0);
-
-        m_currentPoint = new SwervePoint(startPos.x,
-                                         startPos.y,
+        m_currentPoint = new SwervePoint(SwerveConsts.FRONT_WHEEL_DIST_METERS / 2.0,
+                                         SwerveConsts.SIDE_WHEEL_DIST_METERS / 2.0,
                                          Swerve.getInstance().getGyroOrientedAngle());
         m_odometer = SwerveOdometer.getInstance();
         m_vision = new LocalizationVision(VISION_PORT);
@@ -91,8 +87,7 @@ public class SwerveLocalizer implements Periodic {
         Vector2d robotDelta = m_odometer.getDelta(getFieldOrientedAngle());
         m_currentPoint.add(robotDelta.x, robotDelta.y);
         m_currentPoint.setAngle(getFieldOrientedAngle());
-        SmartDashboard.putNumber("offset", m_angleOffsetToField);
-        SmartDashboard.putNumber("not from vison offset", m_offsetNotFromVision);
+        
     }
 
     /**
@@ -100,12 +95,12 @@ public class SwerveLocalizer implements Periodic {
     * NWU - positive X is forward positive Y is left positive rotation is counter-clock wise
     */
     public SwervePoint getCurrentPoint(){
+        m_currentPoint.setAngle(getFieldOrientedAngle());
         return m_currentPoint;
     }
 
     public void setCurrentPoint(SwervePoint newPoint){
-        m_offsetNotFromVision = (newPoint.getAngle() ) - Swerve.getInstance().getGyroOrientedAngle();
-        SmartDashboard.putNumber("a", newPoint.getAngle());
+        m_offsetNotFromVision = (newPoint.getAngle()) - Swerve.getInstance().getGyroOrientedAngle();
         m_currentPoint = new SwervePoint(newPoint);
     }
 
@@ -116,14 +111,14 @@ public class SwerveLocalizer implements Periodic {
     public double getAngleToSpeaker(){
         Vector2d speakerPos;
         if(Robot.getAlliance() == Alliance.Red){
-            speakerPos = new Vector2d(0, 0);
+            speakerPos = new Vector2d(16.54, 5.8928 - 0.6);
         }
         else{
-            speakerPos = new Vector2d(0, 0);
+            speakerPos = new Vector2d(0,  5.8928 - 0.4);
         }
         
         Vector2d currentPos = SwerveLocalizer.getInstance().getCurrentPoint().getAs2DVector();
-        Vector2d deltaToSpeaker = currentPos.subtract(speakerPos.x, speakerPos.y);
+        Vector2d deltaToSpeaker = speakerPos.subtract(currentPos.x, currentPos.y);
         return Math.toDegrees(deltaToSpeaker.theta());
     }
 }

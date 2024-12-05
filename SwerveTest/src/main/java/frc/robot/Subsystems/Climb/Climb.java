@@ -85,9 +85,9 @@ public class Climb extends SubsystemBase {
     @Override
     public void periodic(){
         //logs for debugging 
-        SmartDashboard.putNumber("left climber pos", m_motorL.getEncoder().getPosition());
-        SmartDashboard.putNumber("right climber pos", m_motorR.getEncoder().getPosition());
-        SmartDashboard.putBoolean("left climber limitswitch", m_limitSwitchL.get());
-        SmartDashboard.putBoolean("right climber limitswitch", !m_limitSwitchR.get());
+        // SmartDashboard.putNumber("left climber pos", m_motorL.getEncoder().getPosition());
+        // SmartDashboard.putNumber("right climber pos", m_motorR.getEncoder().getPosition());
+        // SmartDashboard.putBoolean("left climber limitswitch", m_limitSwitchL.get());
+        // SmartDashboard.putBoolean("right climber limitswitch", !m_limitSwitchR.get());
     }
 }

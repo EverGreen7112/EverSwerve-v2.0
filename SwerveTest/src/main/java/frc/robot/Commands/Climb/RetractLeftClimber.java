@@ -3,7 +3,7 @@ package frc.robot.Commands.Climb;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Climb.Climb;
 
-public class RetractLeft extends Command{
+public class RetractLeftClimber extends Command{
     @Override
     public void execute(){
         Climb.getInstance().retractLeft();

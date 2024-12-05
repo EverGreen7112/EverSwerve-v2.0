@@ -3,10 +3,11 @@ package frc.robot.Commands.Climb;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Climb.Climb;
 
-public class ExtendRight extends Command{
+
+public class ExtendLeftClimber extends Command{
     @Override
     public void execute(){
-        Climb.getInstance().extendRight();
+        Climb.getInstance().extendLeft();
     }
 
     public boolean isFinished(){
@@ -15,7 +16,7 @@ public class ExtendRight extends Command{
 
     @Override
     public void end(boolean interrupted) {
-        Climb.getInstance().stopRight();
+        Climb.getInstance().stopLeft();
     }
 
     

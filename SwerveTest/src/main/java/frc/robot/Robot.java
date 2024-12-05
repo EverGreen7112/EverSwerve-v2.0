@@ -7,10 +7,9 @@ package frc.robot;
 import java.util.ArrayList;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -18,16 +17,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Commands.Swerve.DriveByJoysticks;
 import frc.robot.Subsystems.Swerve.Swerve;
-import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
-import frc.robot.Subsystems.Swerve.SwerveOdometer;
-import frc.robot.Subsystems.Swerve.SwervePoint;
+import frc.robot.Subsystems.Vision.JetsonHealthChecker;
 import frc.robot.Utils.EverKit.Periodic;
-import frc.robot.Utils.Math.Funcs;
-import frc.robot.Utils.Math.Vector2d;
 
 public class Robot extends TimedRobot {
   public static ArrayList<Periodic> robotPeriodicFuncs = new ArrayList<Periodic>();
@@ -35,12 +28,12 @@ public class Robot extends TimedRobot {
   public static ArrayList<Periodic> testPeriodicFuncs = new ArrayList<Periodic>();
   public static ArrayList<Periodic> autonomousPeriodicFuncs = new ArrayList<Periodic>();
   public static ArrayList<Periodic> simulationPeriodicFuncs = new ArrayList<Periodic>();
+  private static JetsonHealthChecker m_jetsonHealthChecker = new JetsonHealthChecker(5801);
 
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
   private static Field2d m_field; 
-  private static Field2d m_odometryField;
 
   private static SendableChooser<Alliance> m_allianceChooser;
   public static SendableChooser<Command> m_autoChooser;
@@ -49,12 +42,12 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     
     m_robotContainer = new RobotContainer();
-  
+    Swerve.getInstance().resetGyro();
+
     //create and add robot field data to dashboard
     m_field = new Field2d();
     SmartDashboard.putData("field", m_field);
-    SmartDashboard.putNumber("speed", 1);
-    SmartDashboard.putNumber("angular speed", 180.0);
+    
 
     // m_odometryField = new Field2d();
     // SmartDashboard.putData("odometry", m_odometryField);
@@ -64,8 +57,13 @@ public class Robot extends TimedRobot {
     m_allianceChooser.addOption("red", Alliance.Red);
     SmartDashboard.putData("alliance", m_allianceChooser);
 
-    m_autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData(m_autoChooser);
+    m_autoChooser = new SendableChooser<Command>();
+    m_autoChooser.addOption("middle auto", new PathPlannerAuto("middle auto"));
+    m_autoChooser.addOption("not amp side auto", new PathPlannerAuto("not amp side auto"));
+    SmartDashboard.putData("auto", m_autoChooser);
+
+
+
   }
 
   @Override
@@ -79,17 +77,11 @@ public class Robot extends TimedRobot {
       }
     }
 
-    //update the robot position of dashboard
+    // update the robot position of dashboard
     m_field.setRobotPose(SwerveLocalizer.getInstance().getCurrentPoint().getX(),
                          SwerveLocalizer.getInstance().getCurrentPoint().getY(),
                         new Rotation2d(Math.toRadians(SwerveLocalizer.getInstance().getCurrentPoint().getAngle())));
 
-    SmartDashboard.putString("x, y", SwerveLocalizer.getInstance().getCurrentPoint().getX() + "," + SwerveLocalizer.getInstance().getCurrentPoint().getY());
-    // m_odometryField.setRobotPose(SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getX(), SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getY(), new Rotation2d(0));
-    SmartDashboard.putNumber("absolute angle", SwerveLocalizer.getInstance().getCurrentPoint().getAngle());
-    SmartDashboard.putNumber("gyro angle", Swerve.getInstance().getGyroOrientedAngle());
-    
-   
   }
 
   @Override
@@ -131,24 +123,12 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    new Thread(() ->{
-      
-      try {
-        Thread.sleep(1);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-
-      Swerve.getInstance().m_gyro.zeroYaw();
-
-    }).start();
-
-    RobotContainer.teleop.schedule();
+   
     
   }
 
   @Override
-  public void teleopPeriodic() {
+  public void teleopPeriodic() { 
 
     for (Periodic method : teleopPeriodicFuncs) {
       try {
@@ -157,6 +137,8 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
+
+    
     
   }
 

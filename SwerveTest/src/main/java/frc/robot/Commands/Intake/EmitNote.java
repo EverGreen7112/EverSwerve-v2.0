@@ -19,11 +19,9 @@ public class EmitNote extends Command{
 
     @Override
     public void execute(){
-        if(Shooter.getInstance().readyToIntake())
-            Intake.getInstance().emitNote();
-            Shooter.getInstance().emitNote();
-        }
-
+        Intake.getInstance().emitNote();
+        Shooter.getInstance().emitNote();
+    }
     @Override
     public boolean isFinished(){
         return false;

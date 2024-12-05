@@ -19,11 +19,11 @@ import frc.robot.Utils.Math.Vector2d;
  * DR = Down Right
  */
 public interface SwerveConsts{
-
-        
     // speed values
-    public static final Supplier<Double> MAX_DRIVE_SPEED = () -> {return SmartDashboard.getNumber("speed", 0.2);}; // m/s
-    public static final Supplier<Double> MAX_ANGULAR_SPEED = () -> {return SmartDashboard.getNumber("angular speed", 180.0);}; // deg/s/
+    public static final double MAX_NORMAL_DRIVE_SPEED = 2.8; // m/s
+    public static final double MAX_TURBO_DRIVE_SPEED = 4;
+    public static final double MAX_SLOW_DRIVE_SPEED = 1.5;
+    public static final double MAX_ANGULAR_SPEED = 180; // deg/s/
     public static final double MIN_SPEED = 0.07;
     
     public static final double GYRO_FACTOR = -1; //use this to decide the direction of positivity of the gyro(counter clock wise should be positive)

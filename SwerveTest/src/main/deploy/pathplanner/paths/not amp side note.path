@@ -32,11 +32,11 @@
     },
     {
       "anchor": {
-        "x": 1.36,
+        "x": 1.7121880748754352,
         "y": 5.56
       },
       "prevControl": {
-        "x": 1.3140196323188638,
+        "x": 1.666207707194299,
         "y": 5.597779868883561
       },
       "nextControl": null,
@@ -52,9 +52,27 @@
     }
   ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.25,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "stop intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 2.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0

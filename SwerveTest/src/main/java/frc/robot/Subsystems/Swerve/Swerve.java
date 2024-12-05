@@ -24,7 +24,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     private static Swerve m_instance = new Swerve();
 
     private SwerveModule[] m_modules;
-    public AHRS m_gyro;    //TODO: change gyro to EverGyro
+    private AHRS m_gyro;    //TODO: change gyro to EverGyro
     
     private Swerve() {
         
@@ -84,11 +84,12 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
         // SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         // SmartDashboard.putNumber("angular velocity", getAngularVelocity());
+        SmartDashboard.putNumber("gyro angle", m_gyro.getAngle());
        
     }
 
     public double getGyroOrientedAngle(){
-        return m_gyro.getAngle() * SwerveConsts.GYRO_FACTOR;
+        return m_gyro.getYaw() * SwerveConsts.GYRO_FACTOR;
     }
 
     public SwerveModule[] getModules(){
@@ -177,7 +178,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
             vel.add(m_modules[i].getVelocity());
         }
         vel.mul(1.0 / m_modules.length);
-        vel = new Vector2d(vel.x, vel.y);
         return vel;
     }
 
@@ -191,5 +191,13 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         for(int i = 0; i < m_modules.length; i++){
             m_modules[i].resetDistance();
         }
+    }
+
+    /**
+     * DO NOT use it in the middle of the game unless you have to.
+     * every action that depends on the localization might not work 
+     */
+    public void resetGyro(){
+        m_gyro.zeroYaw();
     }
 }
