@@ -1,217 +1,166 @@
 package frc.robot.Subsystems.Shooter;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
-import frc.robot.Utils.Math.Vector2d;
-import frc.robot.Utils.Math.Vector3d;
+import frc.robot.Subsystems.Swerve.SwervePoint;
+import frc.robot.Utils.Math.Funcs;
 
+public class Shooter extends SubsystemBase {
+    private final double 
 
-public class Shooter extends SubsystemBase{
+                         INTAKE_SPEED = 0.5, CONTAINMENT_SPEED = 0.5, SHOOT_SPEED = 1, 
+                         MIN_ANGLE = -49, MAX_ANGLE = 130,
+                         BLUE_SPEAKER_X = 0, BLUE_SPEAKER_Y = 5.8928 + (0.01 * (15 * 2.54)),
+                         RED_SPEAKER_X = 16.54, RED_SPEAKER_Y = 5.8928 + (0.01 * (15 * 2.54)),
+                         SPEAKER_H = 3.5;
 
-    private static Shooter m_instance;
-    //controls the right side shooter rollers
-    private CANSparkMax m_rightShootMotor;
-    //controls the left side shooter roller
-    private CANSparkMax m_leftShootMotor;
-    //controls the motor that puts note inside
-    private CANSparkMax m_containmentMotor;
-    //controls the angle of the shooter
-    private CANSparkMax m_aimMotor;
-    //external aim motor encoder
-    public DutyCycleEncoder m_aimEncoder;
-    //aim motor pid controller
-    private PIDController m_aimPidController;
-    //sends signal when the shooter is at the bottom angle
-    private DigitalInput m_bottomLimitSwitch;
-    //target angle
+    private static Shooter m_instance = new Shooter();
+    public CANSparkMax m_pivotMotor, m_leftShoot, m_rightShoot, m_containmentMotor;
+    private Supplier <Double> m_pivotAngle;
+    private DutyCycleEncoder m_pivotEncoder;
+    private PIDController m_angleController;
     private double m_targetAngle;
-    //pid controller ff
-    private double m_aimFF;
-    //target shoot speed
-    private double m_targetShootSpeed;
-    // sensor to determine if note is in
-    private AnalogInput m_noteSensor;
-
 
     private Shooter(){
-        //create motor controller objects
-        m_rightShootMotor = new CANSparkMax(ShooterConsts.RIGHT_SHOOT_MOTOR_ID, MotorType.kBrushless);
-        m_leftShootMotor = new CANSparkMax(ShooterConsts.LEFT_SHOOT_MOTOR_ID, MotorType.kBrushless);
-        m_containmentMotor = new CANSparkMax(ShooterConsts.CONTAINMENT_MOTOR_ID, MotorType.kBrushless);
-        m_aimMotor = new CANSparkMax(ShooterConsts.AIM_MOTOR_ID, MotorType.kBrushless);
-        
-        //reset factory defaults
-        m_rightShootMotor.restoreFactoryDefaults();
-        m_leftShootMotor.restoreFactoryDefaults();
-        m_containmentMotor.restoreFactoryDefaults();
-        m_aimMotor.restoreFactoryDefaults();
-        
-        m_aimMotor.setSmartCurrentLimit(ShooterConsts.AIM_MOTOR_CURRENT_LIMIT);
-        m_aimMotor.setOpenLoopRampRate(ShooterConsts.AIM_MOTOR_RATE_LIMIT);
-        
-        //set inverted
-        m_rightShootMotor.setInverted(ShooterConsts.RIGHT_SHOOT_MOTOR_INVERTED);
-        m_leftShootMotor.setInverted(ShooterConsts.LEFT_SHOOT_MOTOR_INVERTED);
-        m_containmentMotor.setInverted(ShooterConsts.CONTAINMENT_MOTOR_INVERTED);
-        m_aimMotor.setInverted(ShooterConsts.AIM_MOTOR_INVERTED);
+        m_leftShoot = new CANSparkMax(1, MotorType.kBrushless);
+        m_rightShoot = new CANSparkMax(6, MotorType.kBrushless);
+        m_leftShoot.restoreFactoryDefaults();
+        m_rightShoot.restoreFactoryDefaults();
+        m_leftShoot.setInverted(true);
 
-        //set idle mode
-        m_rightShootMotor.setIdleMode(ShooterConsts.RIGHT_SHOOT_IDLE_MODE);
-        m_leftShootMotor.setIdleMode(ShooterConsts.LEFT_SHOOT_IDLE_MODE);
-        m_containmentMotor.setIdleMode(ShooterConsts.CONTAINMENT_IDLE_MODE);
-        m_aimMotor.setIdleMode(ShooterConsts.AIM_IDLE_MODE);
-        
-        //create external encoder instance
-        m_aimEncoder = new DutyCycleEncoder(ShooterConsts.EXTERNAL_AIM_MOTOR_ENCODER_ID);
-        m_aimEncoder.setPositionOffset(ShooterConsts.EXTERNAL_ENCODER_OFFSET);
-        m_aimEncoder.setDistancePerRotation(-360);
-        
-        m_targetAngle = ShooterConsts.AIM_MOTOR_MIN_ANGLE;
-        m_targetShootSpeed = 0;
-        //create limit switch
-        m_bottomLimitSwitch = new DigitalInput(ShooterConsts.BOTTOM_LIMIT_SWITCH_ID);
-        //create pid controller
-        m_aimPidController = new PIDController(ShooterConsts.SHOOTER_ANGLE_KP, ShooterConsts.SHOOTER_ANGLE_KI, ShooterConsts.SHOOTER_ANGLE_KD);
-        m_noteSensor = new AnalogInput(ShooterConsts.NOTE_SENSOR_PORT);
+        m_pivotMotor = new CANSparkMax(9, MotorType.kBrushless);
+        m_containmentMotor = new CANSparkMax(7, MotorType.kBrushless);
+        m_pivotMotor.restoreFactoryDefaults();
+        m_containmentMotor.restoreFactoryDefaults();
+        m_containmentMotor.setInverted(true);
+        m_pivotMotor.setIdleMode(IdleMode.kBrake);
+        m_pivotEncoder = new DutyCycleEncoder(0);
+        m_pivotEncoder.setDistancePerRotation(-1 * 360); //set conversion ratio 
+        m_pivotEncoder.setPositionOffset(0.222401380560035);
+
+        m_angleController = new PIDController(0.0045,  0.0000015, 0.00018);
+
+        m_pivotAngle = () -> {return m_pivotEncoder.getDistance();};
+        m_angleController.setTolerance(3);
+        m_targetAngle = MIN_ANGLE;
+
     }
 
-    /**
-     * @return only instance of this class
-     */
+    
+
+    @Override
+    public void periodic(){
+        
+        m_angleController.setSetpoint(m_targetAngle);
+        m_pivotMotor.set(-1 * MathUtil.clamp(m_angleController.calculate(m_pivotAngle.get()), -0.25, 0.25));
+        
+    }
+
     public static Shooter getInstance(){
-        if(m_instance == null)
-            m_instance = new Shooter();
         return m_instance;
     }
 
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("shooter angle", getShooterAngle());
-        SmartDashboard.putNumber("target shooter angle", m_targetAngle);
-        
-        
-        m_aimPidController.setSetpoint(m_targetAngle);
-        //calculate current output
-        double output = MathUtil.clamp(m_aimPidController.calculate(m_aimEncoder.getDistance()), -0.25, 0.25);//put this in consts i dont have time
-        //activate motor with ff
-        m_aimMotor.set(output + m_aimFF * Math.signum(output));
+    public void containNote(){
+        m_containmentMotor.set(CONTAINMENT_SPEED);
     }
 
-    /**
-     * calculate the angle the shooter needs to be at according to the current distance from the speaker
-     * @return the angle the shooter needs to be at
-     */
-    public double getShooterAngleToSpeaker(){
-        double targetAngle = 0;
-
-        Vector2d currentPos2d = SwerveLocalizer.getInstance().getCurrentPoint().getAs2DVector();
-        Vector3d currentPos = new Vector3d(currentPos2d.x, currentPos2d.y, 0.4);
-
-        Vector3d speaker = ShooterConsts.BLUE_SPAKER_POS;
-        Vector3d delta = (new Vector3d(speaker.m_x, speaker.m_y, speaker.m_z)).subtract(currentPos);
-        SmartDashboard.putString("delta", delta.toString());
-        return delta.getPitch();
+    public void stopContain(){
+        m_containmentMotor.stopMotor();
     }
 
-
-    /**
-     * Turn the shooter to given angle
-     * @param angle - target shooter angle in degrees
-     */
-    public void turnToAngle(double angle){
-        //clamp value to make sure bad input won't break the robot
-        angle = MathUtil.clamp(angle, ShooterConsts.AIM_MOTOR_MIN_ANGLE, ShooterConsts.AIM_MOTOR_MAX_ANGLE);
-        //reset accumalted I after changing target angles direction
-        if(Math.signum(angle - getShooterAngle()) != Math.signum(m_targetAngle - getShooterAngle()))
-            m_aimPidController.reset();
-
-        m_targetAngle = angle;
-        //scale kf according to the shooter's angle(watch the cosinus function graph inorder to understand why its here)
-        m_aimFF = Math.cos(Math.toRadians(m_targetAngle)) * ShooterConsts.SHOOTER_ANGLE_KF;
-        //set target angle
-        m_aimPidController.setSetpoint(m_targetAngle);
+    public void releaseNote(){
+        m_containmentMotor.set(-CONTAINMENT_SPEED);
     }
 
-    public void pullNote(double speed){
-        m_leftShootMotor.set(speed);
-        m_rightShootMotor.set(speed);
-        m_containmentMotor.set(speed);
+    public void shoot(){
+        m_rightShoot.set(SHOOT_SPEED);
+        m_leftShoot.set(SHOOT_SPEED);
     }
 
-    public void chargeShoot(double speed){
-        m_leftShootMotor.set(speed);
-        m_rightShootMotor.set(speed);
+    public void shoot(double speedL, double speedR){
+        m_rightShoot.set(speedL);
+        m_leftShoot.set(speedR);
     }
 
-    public void chargeShoot(double speedL, double speedR){
-        m_leftShootMotor.set(speedL);
-        m_rightShootMotor.set(speedR);
+    public void shootToAmp(){
+        m_rightShoot.set(0.15);
+        m_leftShoot.set(0.15);
     }
 
-    public void pushNoteToShoot(double speed){
-        m_containmentMotor.set(speed);
+    public void stopShoot(){
+        m_rightShoot.stopMotor();
+        m_leftShoot.stopMotor();
     }
-
-    public double getTargetAngle(){
-        return m_targetAngle;
-    }
-
-    /**
-     * @return current shooter angle
-     */
-    public double getShooterAngle(){
-        return m_aimEncoder.getDistance(); 
-    }
-
     
-
-
-    public void setContainmentSpeed(double speed){
-        m_containmentMotor.set(speed);
+    public void intakeNote(){
+        m_leftShoot.set(-INTAKE_SPEED);
+        m_rightShoot.set(-INTAKE_SPEED);
+        m_containmentMotor.set(CONTAINMENT_SPEED);
     }
 
-    /**
-     * 
-     * @return current speed of the right rollers
-     */
-    public double getRightRollersSpeed(){
-        return m_rightShootMotor.getEncoder().getVelocity();
+    public void stopIntake(){
+        m_leftShoot.stopMotor();
+        m_rightShoot.stopMotor();
+        m_containmentMotor.stopMotor();
     }
 
-    /**
-     * 
-     * @return current speed of the left roller
-     */
-    public double getLeftRollerSpeed(){
-        return m_leftShootMotor.getEncoder().getVelocity();
+    public void emitNote(){
+        m_leftShoot.set(INTAKE_SPEED);
+        m_rightShoot.set(INTAKE_SPEED);
+        m_containmentMotor.set(-CONTAINMENT_SPEED);
     }
 
-    /**
-     * 
-     * @return current speed of the containment roller
-     */
-    public double getContainmentSpeed(){
-        return m_containmentMotor.getEncoder().getVelocity();
+    public void stopEmission(){
+        m_leftShoot.stopMotor();
+        m_rightShoot.stopMotor();
+        m_containmentMotor.stopMotor();
     }
 
-    
+    public void turnTo(double angle){
+        m_angleController.reset();//reset the I
+        m_targetAngle = MathUtil.clamp(angle, MIN_ANGLE, MAX_ANGLE);        
+    }
 
+    public void turnToIntake(){
+        turnTo(MIN_ANGLE);
+    }
+
+    public void turnToAmp(){
+        turnTo(98);
+    }
+
+    public boolean readyToIntake(){
+        return MathUtil.isNear(MIN_ANGLE, m_pivotAngle.get(), 2); //is the shooter at the bottom
+    }
+
+    public void autoAim(){
+        double targetAngle, distance;
+        SwervePoint pos = SwerveLocalizer.getInstance().getCurrentPoint();
+        if(Robot.getAlliance() == Alliance.Blue){
+            distance = Math.sqrt(Math.pow(pos.getX() - BLUE_SPEAKER_X,2) + Math.pow(pos.getY() - BLUE_SPEAKER_Y,2));
+        }
+        else{
+            distance = Math.sqrt(Math.pow(RED_SPEAKER_X - pos.getX(),2) + Math.pow(RED_SPEAKER_Y - pos.getY(),2));
+        }
+        
+
+        targetAngle = Math.toDegrees(Math.atan2(SPEAKER_H , distance));
+        turnTo(targetAngle);
+        
+    }
 
 
 }

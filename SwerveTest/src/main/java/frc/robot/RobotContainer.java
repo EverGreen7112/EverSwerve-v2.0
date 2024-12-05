@@ -17,24 +17,32 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Commands.Intake.EjectNote;
+import frc.robot.Commands.Climb.ExtendLeft;
+import frc.robot.Commands.Climb.ExtendRight;
+import frc.robot.Commands.Climb.RetractLeft;
+import frc.robot.Commands.Climb.RetractRight;
+import frc.robot.Commands.Intake.EmitNote;
 import frc.robot.Commands.Intake.IntakeNote;
-import frc.robot.Commands.Shooter.AutoAimShooter;
-import frc.robot.Commands.Shooter.ChargeNote;
+import frc.robot.Commands.Shooter.ShootToAmp;
+import frc.robot.Commands.Shooter.AutomaticShootToSpeaker;
 import frc.robot.Commands.Shooter.ReleaseNote;
-import frc.robot.Commands.Shooter.RotateTo;
 import frc.robot.Commands.Shooter.ShootFromSideOfAmp;
+import frc.robot.Commands.Shooter.TurnShooterTo;
 import frc.robot.Commands.Swerve.DriveByJoysticks;
 import frc.robot.Subsystems.Intake.Intake;
 import frc.robot.Subsystems.Shooter.Shooter;
-import frc.robot.Subsystems.Shooter.ShooterConsts;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Utils.Math.SwerveToWpi;
 
 public class RobotContainer {
 
-  public static final CommandXboxController chassis = new CommandXboxController(0);
+  private static final int CHASSIS_PORT = 0;
+  private static final int OPERATOR_PORT = 1;
+
+   //controllers
+  public static final CommandXboxController chassis = new CommandXboxController(CHASSIS_PORT);
+  public static final CommandXboxController operator = new CommandXboxController(OPERATOR_PORT);
   
   //command instances
   public static DriveByJoysticks teleop = new DriveByJoysticks(() -> chassis.getLeftX(), () -> chassis.getLeftY(),
@@ -70,23 +78,31 @@ public class RobotContainer {
 
 
   private void configureBindings() {
-    NamedCommands.registerCommand("start intake", new InstantCommand(()->{Intake.getInstance().intake();
-                                                                               Shooter.getInstance().pullNote(-0.5);
-                                                                               Shooter.getInstance().turnToAngle(ShooterConsts.AIM_MOTOR_MIN_ANGLE);}));
+    NamedCommands.registerCommand("start intake", new InstantCommand(()->{Intake.getInstance().intakeNote();
+                                                                               Shooter.getInstance().containNote();
+                                                                               Shooter.getInstance().turnToIntake();} ));
     
     NamedCommands.registerCommand("stop intake", new InstantCommand(()->{
-                                                                              Shooter.getInstance().pullNote(0); Intake.getInstance().stop();}));
+                                                                              Intake.getInstance().stop();
+                                                                              Shooter.getInstance().stopIntake();}));
     
                                                                               
-    NamedCommands.registerCommand("start shoot from side of amp", new InstantCommand(() -> {Shooter.getInstance().turnToAngle(113);}).andThen(new ShootFromSideOfAmp().withTimeout(2)));
+    NamedCommands.registerCommand("start shoot from side of amp", new InstantCommand(() -> {Shooter.getInstance().turnTo(113);}).andThen(new ShootFromSideOfAmp().withTimeout(2)));
     NamedCommands.registerCommand("release note", new ReleaseNote().withTimeout(0.5));
+  
+    //intake
+    operator.a().whileTrue(new IntakeNote());
+    operator.b().whileTrue(new ReleaseNote());
+    operator.start().whileTrue(new EmitNote());
+    operator.x().whileTrue(new ShootToAmp());
+    operator.y().whileTrue(new AutomaticShootToSpeaker());
 
-    //buttons
-    chassis.a().whileTrue(new IntakeNote(0.5));
-    chassis.start().whileTrue(new EjectNote(0.5));
-    chassis.x().whileTrue(new ChargeNote());
-    chassis.y().whileTrue(new ReleaseNote());
-    chassis.b().onTrue(new InstantCommand(() -> {Shooter.getInstance().turnToAngle(113);;}));
+    //climber
+    operator.rightBumper().whileTrue(new ExtendRight());//RB
+    operator.leftBumper().whileTrue(new ExtendLeft());//LB
+    operator.rightTrigger().whileTrue(new RetractRight());//RT
+    operator.leftTrigger().whileTrue(new RetractLeft());//RL
+    
 
   }
 

@@ -1,38 +1,34 @@
 package frc.robot.Subsystems.Intake;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Utils.EverKit.EverMotorController;
-import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 
 public class Intake extends SubsystemBase{
+    private final double SPEED = 0.6;
     private static Intake m_instance = new Intake();
-    private EverMotorController m_intakeMotor;
+    private CANSparkMax m_motor;
 
     private Intake(){
-        m_intakeMotor = new EverSparkMax(19);
-        m_intakeMotor.restoreFactoryDefaults();
+        m_motor = new CANSparkMax(19, MotorType.kBrushless);
+        m_motor.restoreFactoryDefaults();
     }
 
     public static Intake getInstance(){
         return m_instance;
     }
 
-    public void intake(){
-        m_intakeMotor.set(0.5);
-    }
-
-    public void eject(){
-        m_intakeMotor.set(-0.5);
+    public void intakeNote(){
+        m_motor.set(SPEED);
     }
 
     public void stop(){
-        m_intakeMotor.set(0);
+        m_motor.set(0);
     }
 
-
-
-
-
-
+    public void emitNote(){
+        m_motor.set(-SPEED);
+    }
     
 }

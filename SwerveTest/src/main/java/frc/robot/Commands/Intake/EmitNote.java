@@ -5,9 +5,10 @@ import frc.robot.Subsystems.Intake.Intake;
 import frc.robot.Subsystems.Shooter.Shooter;
 
 
-public class IntakeNote extends Command{
+public class EmitNote extends Command{
+    
 
-    public IntakeNote(){
+    public EmitNote(){
         addRequirements(Intake.getInstance());
     }
 
@@ -18,13 +19,10 @@ public class IntakeNote extends Command{
 
     @Override
     public void execute(){
-        if(Shooter.getInstance().readyToIntake()){
-            // Intake.getInstance().intakeNote();
-            // Shooter.getInstance().intakeNote();
+        if(Shooter.getInstance().readyToIntake())
+            Intake.getInstance().emitNote();
+            Shooter.getInstance().emitNote();
         }
-        Intake.getInstance().intakeNote();
-        Shooter.getInstance().intakeNote();
-    }
 
     @Override
     public boolean isFinished(){
@@ -34,8 +32,8 @@ public class IntakeNote extends Command{
     @Override
     public void end(boolean interrupted) {
         Intake.getInstance().stop();
-        Shooter.getInstance().stopIntake();
     }
 
-    
+
+
 }

@@ -3,13 +3,13 @@ package frc.robot.Commands.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Shooter.Shooter;
 
-public class ReleaseNote extends Command{
+public class ShootToSpeaker extends Command {
 
-    public ReleaseNote(){
-    }
+    public ShootToSpeaker(){}
 
     public void initialize(){
-        Shooter.getInstance().releaseNote();
+        Shooter.getInstance().turnTo(130);
+        Shooter.getInstance().shoot();
     }
 
     public boolean isFinished(){
@@ -18,7 +18,7 @@ public class ReleaseNote extends Command{
 
     @Override
     public void end(boolean interrupted) {
-        Shooter.getInstance().stopContain();
+        Shooter.getInstance().stopShoot();
     }
     
 }

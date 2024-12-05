@@ -88,6 +88,8 @@ public class Robot extends TimedRobot {
     // m_odometryField.setRobotPose(SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getX(), SwerveOdometer.getInstance().getCurrentOdometryOnlyPoint().getY(), new Rotation2d(0));
     SmartDashboard.putNumber("absolute angle", SwerveLocalizer.getInstance().getCurrentPoint().getAngle());
     SmartDashboard.putNumber("gyro angle", Swerve.getInstance().getGyroOrientedAngle());
+    
+   
   }
 
   @Override

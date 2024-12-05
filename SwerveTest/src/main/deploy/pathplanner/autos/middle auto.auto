@@ -12,9 +12,40 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "start intake"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot from middle"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "release note"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "start intake"
+                }
+              }
+            ]
           }
         },
         {
@@ -27,6 +58,24 @@
           "type": "named",
           "data": {
             "name": "stop intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot from middle"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "release note"
           }
         },
         {
@@ -48,9 +97,57 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "shoot from middle"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "release note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "start intake"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "not amp side note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot from middle"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "release note"
           }
         }
       ]
