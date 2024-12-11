@@ -1,14 +1,10 @@
-package frc.robot.Subsystems;
+package frc.robot.Subsystems.Swerve;
 
 import frc.robot.Utils.EverKit.EverAbsEncoder;
-import frc.robot.Utils.EverKit.EverMotorController;
-import frc.robot.Utils.EverKit.EverPIDController;
-import frc.robot.Utils.EverKit.EverMotorController.IdleMode;
-import frc.robot.Utils.EverKit.EverPIDController.ControlType;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverCANCoder;
-import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverSparkMaxPIDController;
+import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
 
 /*
@@ -18,18 +14,21 @@ import frc.robot.Utils.Math.Vector2d;
  * DR = Down Right
  */
 public interface SwerveConsts{
-    public static final boolean USES_ABS_ENCODER = true;
-
     // speed values
-    public static final double MAX_DRIVE_SPEED = 1.0; // m/s
-    public static final double MAX_ANGULAR_SPEED = 1.0; // deg/s/
-
+    public static final double MAX_NORMAL_DRIVE_SPEED = 2.8; // m/s
+    public static final double MAX_TURBO_DRIVE_SPEED = 4;
+    public static final double MAX_SLOW_DRIVE_SPEED = 1.5;
+    public static final double MAX_ANGULAR_SPEED = 180; // deg/s/
+    public static final double MIN_SPEED = 0.07;
+    
+    public static final double GYRO_FACTOR = -1; //use this to decide the direction of positivity of the gyro(counter clock wise should be positive)
     // motor controllers
     public static final EverSparkMax 
             TL_DRIVE_MOTOR = new EverSparkMax(18),
             TR_DRIVE_MOTOR = new EverSparkMax(17),
             DL_DRIVE_MOTOR = new EverSparkMax(3),
             DR_DRIVE_MOTOR = new EverSparkMax(27),
+            
             TL_STEER_MOTOR = new EverSparkMax(62),
             TR_STEER_MOTOR = new EverSparkMax(13),
             DL_STEER_MOTOR = new EverSparkMax(2),
@@ -59,13 +58,8 @@ public interface SwerveConsts{
             DR_ANGLE_CONTROLLER = new EverSparkMaxPIDController(DR_STEER_MOTOR);
 
     public static final EverSparkMaxPIDController[] WHEEL_ANGLE_CONTROLLERS = {TL_ANGLE_CONTROLLER, TR_ANGLE_CONTROLLER, DL_ANGLE_CONTROLLER, DR_ANGLE_CONTROLLER};
-
-    // swerve pid controllers
-    public static final EverPIDController
-            HEADING_ANGLE_CONTROLLER = null,
-            X_CONTROLLER = null,
-            Y_CONTROLLER = null;
-    // chassis encoders
+            
+    // chassis encoders 
     public static final EverAbsEncoder
             TL_ABS_ENCODER = new EverCANCoder(4),
             TR_ABS_ENCODER = new EverCANCoder(5),
@@ -77,6 +71,8 @@ public interface SwerveConsts{
     // swerve dimensions
     public static final double FRONT_WHEEL_DIST_METERS = 0.57, SIDE_WHEEL_DIST_METERS = 0.57;
     public static final double ROBOT_BOUNDING_CIRCLE_PERIMETER = Math.PI * Math.sqrt(
+            FRONT_WHEEL_DIST_METERS * FRONT_WHEEL_DIST_METERS + SIDE_WHEEL_DIST_METERS * SIDE_WHEEL_DIST_METERS);
+    public static final double ROBOT_RADIUS = 0.5 * Math.sqrt(
             FRONT_WHEEL_DIST_METERS * FRONT_WHEEL_DIST_METERS + SIDE_WHEEL_DIST_METERS * SIDE_WHEEL_DIST_METERS);
     public static final double WHEEL_PERIMETER = Math.PI * 0.095;
 
@@ -95,14 +91,13 @@ public interface SwerveConsts{
                     -(SIDE_WHEEL_DIST_METERS / 2));
 
     // array of physical module vectors
-    public static final Vector2d[] physicalMoudulesVector = { TL, TR, DL, DR};// array of vectors from robot center to swerves module
+    public static final Vector2d[] physicalMoudulesVector = { Funcs.convertFromStandardAxesToWpilibs(TL),
+                                                              Funcs.convertFromStandardAxesToWpilibs(TR),
+                                                              Funcs.convertFromStandardAxesToWpilibs(DL),
+                                                              Funcs.convertFromStandardAxesToWpilibs(DR)
+    };// array of vectors from robot center to swerves module
 
-    public static final SwerveModule[] SWERVE_MODULES = {
-        new SwerveModule(TL_VELOCITY_CONTROLLER, TL_DRIVE_MOTOR, new EverSparkInternalEncoder(TL_DRIVE_MOTOR), TL_ANGLE_CONTROLLER, TL_STEER_MOTOR, new EverSparkInternalEncoder(TL_STEER_MOTOR), ABS_ENCODERS[0]),
-        new SwerveModule(TR_VELOCITY_CONTROLLER, TR_DRIVE_MOTOR, new EverSparkInternalEncoder(TR_DRIVE_MOTOR), TR_ANGLE_CONTROLLER, TR_STEER_MOTOR, new EverSparkInternalEncoder(TR_STEER_MOTOR), ABS_ENCODERS[1]),
-        new SwerveModule(DL_VELOCITY_CONTROLLER, DL_DRIVE_MOTOR, new EverSparkInternalEncoder(DL_DRIVE_MOTOR), DL_ANGLE_CONTROLLER, DL_STEER_MOTOR, new EverSparkInternalEncoder(DL_STEER_MOTOR), ABS_ENCODERS[2]),
-        new SwerveModule(DR_VELOCITY_CONTROLLER, DR_DRIVE_MOTOR, new EverSparkInternalEncoder(DR_DRIVE_MOTOR), DR_ANGLE_CONTROLLER, DR_STEER_MOTOR, new EverSparkInternalEncoder(DR_STEER_MOTOR), ABS_ENCODERS[3])
-     };
+    
  
 
 }

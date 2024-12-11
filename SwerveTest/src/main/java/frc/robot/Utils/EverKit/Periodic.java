@@ -12,6 +12,8 @@ public interface Periodic {
         kSimulationPeriodic,
     }
 
+    public void periodic();
+
     /**
      * This function adds a copy of the periodic(do not run this more than once) 
      * @param times - periodic times(robot, teleop, test, autonomous...)
@@ -71,6 +73,5 @@ public interface Periodic {
     }
 
 
-    public void periodic();
 
 }

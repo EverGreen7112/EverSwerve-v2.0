@@ -94,7 +94,7 @@ public class Vector2d
      * @return a representative String of this vector.
      */
     public String toString() {
-        return x + " : " + y;
+        return x + ", " + y;
     }
 
     /**
@@ -199,13 +199,13 @@ public class Vector2d
         return this;
     }
 
-    public Vector2d rotateBy(double thetaRadians){
-        double mag = this.mag();
-        double theta = Math.atan2(this.x, this.y) + thetaRadians;
-        this.x = Math.cos(theta) * mag;
-        this.y = Math.sin(theta) * mag;
-        return this;
-    }
+    // public Vector2d rotateBy(double thetaRadians){
+    //     double mag = this.mag();
+    //     double theta = Math.atan2(this.x, this.y) + thetaRadians;
+    //     this.x = Math.cos(theta) * mag;
+    //     this.y = Math.sin(theta) * mag;
+    //     return this;
+    // }
 
     /**
      * Calculates the scalar product of this vector and the one passed by parameter

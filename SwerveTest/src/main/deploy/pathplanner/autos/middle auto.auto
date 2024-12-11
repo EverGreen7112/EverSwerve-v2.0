@@ -1,0 +1,124 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.36,
+      "y": 5.56
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot from middle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "release note"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "start intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp side note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop intake"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot from middle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "release note"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "start intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "middle note"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot from middle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "release note"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "start intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "not amp side note"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.68,
+      "y": 4.37
+    },
+    "rotation": -58.439186554379845
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot from not side of amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "release note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "start intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "not amp side far note"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,10 +1,5 @@
-package frc.robot.Subsystems;
+package frc.robot.Subsystems.Swerve;
 
-import javax.swing.text.StyleContext.SmallAttributeSet;
-
-import org.opencv.core.Mat;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
 import frc.robot.Utils.EverKit.EverEncoder;
@@ -20,6 +15,7 @@ public class SwerveModule extends SubsystemBase {
     private EverPIDController m_velocityController;
     private EverMotorController m_driveMotor;
     private EverEncoder m_driveEncoder;
+    
     private EverPIDController m_angleController;
     private EverMotorController m_steerMotor;
     private EverEncoder m_steerEncoder;
@@ -55,15 +51,15 @@ public class SwerveModule extends SubsystemBase {
              angleController, steerMotor, steerEncoder);
         m_absSteerEncoder = absSteerEncoder;
         m_absSteerEncoder.setPosConversionFactor(1);
-        m_steerEncoder.setPos(getAbsPos());
+        m_steerEncoder.setPos(getAbsAngle());
+        
     }
 
-    public double getAbsPos(){
+    public double getAbsAngle(){
         return Funcs.convertRotationsToDegrees(m_absSteerEncoder.getAbsPos());
     }
 
     /**
-     * set state in cartesian values
      * @param speed - in meters per second
      * @param angle - in degrees
      */
@@ -73,24 +69,26 @@ public class SwerveModule extends SubsystemBase {
 
     /**
      * 
-     * @param desiredState - 2d vector - magnitude represents the target speed in
-     *                     m/s
-     *                     angle represents the target angle
+     * @param desiredState - desired velocity in meters per second
      */
     public void setState(Vector2d desiredState) {
-        // rotate vector by 90 because we want 0 degrees to be in the front and not in
-        // the right
-        desiredState.rotate(Math.toRadians(90));
+        
+        if(desiredState.mag() < SwerveConsts.MIN_SPEED){
+            desiredState = new Vector2d(0, 0);
+        }        
 
-        // get polar values from desired state vector
-        double targetSpeed = desiredState.mag(); // get target speed
-        double targetAngle = Math.toDegrees(desiredState.theta()); // convert target angle from radians to degrees
+        if(desiredState.mag() == 0){
+            stopModule();
+        }
+
+        double targetSpeed = desiredState.mag();
+        double targetAngle = Math.toDegrees(desiredState.theta());
 
         double currentAngle = getAngle();
 
         // calculate optimal delta angle
-        double optimizedFlippedDeltaTargetAngle = Funcs.closestAngle(currentAngle, targetAngle - 180);
-        double optimizedNormalDeltaTargetAngle = Funcs.closestAngle(currentAngle, targetAngle);
+        double optimizedFlippedDeltaTargetAngle = Funcs.getShortestAnglePath(currentAngle, targetAngle - 180);
+        double optimizedNormalDeltaTargetAngle = Funcs.getShortestAnglePath(currentAngle, targetAngle);
 
         double optimizedDeltaTargetAngle = 0;
         if (Math.abs(optimizedNormalDeltaTargetAngle) > Math.abs(optimizedFlippedDeltaTargetAngle)) {
@@ -105,8 +103,9 @@ public class SwerveModule extends SubsystemBase {
         // dot product to current state
         targetSpeed *= Math.cos(Math.toRadians(optimizedNormalDeltaTargetAngle));
         
+        
         // set speed of module at target speed
-        m_velocityController.activate(targetSpeed * 0, ControlType.kVel);
+        m_velocityController.activate(targetSpeed, ControlType.kVel);
     }
 
     /**
@@ -117,31 +116,39 @@ public class SwerveModule extends SubsystemBase {
         m_angleController.activate(targetAngle, ControlType.kPos);
     }
 
-    /**
-     * @return current angle in degrees
-     */
+    /**                                                 
+     * @return current angle in degrees(0 degrees is forward)             
+     */                                                 
     public double getAngle() {
         return m_steerEncoder.getPos();
     }
 
+    public void resetDistance(){
+        m_driveEncoder.setPos(0);
+    }
+
+    /**
+     * @return distance travelled in meters 
+     */
     public double getDistance(){
         return m_driveEncoder.getPos();
     }
 
     /**
-     * @return current velocity in meters per second
+     * @return current speed in meters per second
      */
-    public double getVelocity() {
+    public double getSpeed() {
         return m_driveEncoder.getVel();
     }
 
     /**
      * @return module's velocity vector in meters per second
      */
-    public Vector2d getVec(){
-        double mag = Math.abs(getVelocity());
+    public Vector2d getVelocity(){
+        double mag = getSpeed();
         double theta = Math.toRadians(getAngle());
-        return new Vector2d(mag * Math.cos(theta), mag * Math.sin(theta));
+        Vector2d vec = new Vector2d(mag * Math.cos(theta), mag * Math.sin(theta));
+        return vec;
     }
 
     public void stopModule() {
@@ -150,9 +157,7 @@ public class SwerveModule extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
-        
-    }
+    public void periodic() {}
 
     
 

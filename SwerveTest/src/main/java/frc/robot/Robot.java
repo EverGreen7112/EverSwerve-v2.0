@@ -4,20 +4,22 @@
 
 package frc.robot;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Subsystems.Swerve;
-import frc.robot.Subsystems.SwerveConsts;
+import frc.robot.Subsystems.Swerve.Swerve;
+import frc.robot.Subsystems.Swerve.SwerveLocalizer;
+import frc.robot.Subsystems.Vision.JetsonHealthChecker;
 import frc.robot.Utils.EverKit.Periodic;
-import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
-import frc.robot.Utils.Math.Vector2d;
 
 public class Robot extends TimedRobot {
   public static ArrayList<Periodic> robotPeriodicFuncs = new ArrayList<Periodic>();
@@ -25,14 +27,42 @@ public class Robot extends TimedRobot {
   public static ArrayList<Periodic> testPeriodicFuncs = new ArrayList<Periodic>();
   public static ArrayList<Periodic> autonomousPeriodicFuncs = new ArrayList<Periodic>();
   public static ArrayList<Periodic> simulationPeriodicFuncs = new ArrayList<Periodic>();
+  private static JetsonHealthChecker m_jetsonHealthChecker = new JetsonHealthChecker(5801);
 
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
+  private static Field2d m_field; 
+
+  private static SendableChooser<Alliance> m_allianceChooser;
+  public static SendableChooser<Command> m_autoChooser;
+
   @Override
   public void robotInit() {
-    Swerve.getInstance();
+    
     m_robotContainer = new RobotContainer();
+    Swerve.getInstance().resetGyro();
+
+    //create and add robot field data to dashboard
+    m_field = new Field2d();
+    SmartDashboard.putData("field", m_field);
+    
+
+    // m_odometryField = new Field2d();
+    // SmartDashboard.putData("odometry", m_odometryField);
+
+    m_allianceChooser = new SendableChooser<Alliance>();
+    m_allianceChooser.addOption("blue", Alliance.Blue);
+    m_allianceChooser.addOption("red", Alliance.Red);
+    SmartDashboard.putData("alliance", m_allianceChooser);
+
+    m_autoChooser = new SendableChooser<Command>();
+    m_autoChooser.addOption("middle auto", new PathPlannerAuto("middle auto"));
+    m_autoChooser.addOption("not amp side auto", new PathPlannerAuto("not amp side auto"));
+    SmartDashboard.putData("auto", m_autoChooser);
+
+
+
   }
 
   @Override
@@ -45,11 +75,12 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
-    
-    // SmartDashboard.putNumber("POS tl", SwerveConsts.SWERVE_MODULES[0].getAbsPos());
-    // SmartDashboard.putNumber("POS tr", SwerveConsts.SWERVE_MODULES[1].getAbsPos());
-    // SmartDashboard.putNumber("POS dl", SwerveConsts.SWERVE_MODULES[2].getAbsPos());
-    // SmartDashboard.putNumber("POS dr", SwerveConsts.SWERVE_MODULES[3].getAbsPos());
+
+    // update the robot position of dashboard
+    m_field.setRobotPose(SwerveLocalizer.getInstance().getCurrentPoint().getX(),
+                         SwerveLocalizer.getInstance().getCurrentPoint().getY(),
+                        new Rotation2d(Math.toRadians(SwerveLocalizer.getInstance().getCurrentPoint().getAngle())));
+
   }
 
   @Override
@@ -63,7 +94,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_autoChooser.getSelected();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -79,6 +110,8 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
+
+    
   }
 
   @Override
@@ -89,13 +122,13 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+   
+    
   }
 
-
-  CommandXboxController controller = new CommandXboxController(0);
-
   @Override
-  public void teleopPeriodic() {
+  public void teleopPeriodic() { 
+
     for (Periodic method : teleopPeriodicFuncs) {
       try {
         method.periodic();
@@ -103,8 +136,8 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
-    Vector2d vec = new Vector2d(controller.getLeftX(), controller.getLeftY() * -1);
-    Swerve.getInstance().drive(vec, true);    
+
+    
     
   }
 
@@ -139,6 +172,11 @@ public class Robot extends TimedRobot {
         e.printStackTrace();
       }
     }
+  }
+
+
+  public static Alliance getAlliance(){
+    return m_allianceChooser.getSelected();
   }
   
 }
