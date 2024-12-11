@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
@@ -19,7 +18,6 @@ public class DriveByJoysticks extends Command{
         kTurbo,
         kSlow
     }    
-
 
     private final double JOYSTICK_DEADZONE = 0.2;
     private static double m_maxDriveSpeed = SwerveConsts.MAX_NORMAL_DRIVE_SPEED;

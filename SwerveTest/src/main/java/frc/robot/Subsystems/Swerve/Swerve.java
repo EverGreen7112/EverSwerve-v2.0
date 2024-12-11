@@ -1,19 +1,14 @@
 package frc.robot.Subsystems.Swerve;
 
-import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Utils.EverKit.EverGyro;
 import frc.robot.Utils.EverKit.EverMotorController.IdleMode;
 import frc.robot.Utils.EverKit.EverPIDController.ControlType;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
+import frc.robot.Utils.EverKit.Implementations.Gyros.EverNavX;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverSparkMaxPIDController;
-import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
 
 /**
@@ -24,8 +19,12 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     private static Swerve m_instance = new Swerve();
 
     private SwerveModule[] m_modules;
-    private AHRS m_gyro;    //TODO: change gyro to EverGyro
-    
+    private EverGyro m_gyro;
+
+    private Vector2d m_velocity;
+    private double m_angularVelocity;
+    private boolean m_isGyroOriented;
+
     private Swerve() {
         
         //offset of abs encoder to 0 degrees being forward
@@ -62,9 +61,12 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         m_modules[2] = new SwerveModule(SwerveConsts.DL_VELOCITY_CONTROLLER, SwerveConsts.DL_DRIVE_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DL_DRIVE_MOTOR), SwerveConsts.DL_ANGLE_CONTROLLER, SwerveConsts.DL_STEER_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DL_STEER_MOTOR), SwerveConsts.ABS_ENCODERS[2]);
         m_modules[3] = new SwerveModule(SwerveConsts.DR_VELOCITY_CONTROLLER, SwerveConsts.DR_DRIVE_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DR_DRIVE_MOTOR), SwerveConsts.DR_ANGLE_CONTROLLER, SwerveConsts.DR_STEER_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DR_STEER_MOTOR), SwerveConsts.ABS_ENCODERS[3]);
         
-        m_gyro = new AHRS(SerialPort.Port.kMXP);
-        m_gyro.reset();
+        m_gyro = new EverNavX(SerialPort.Port.kMXP);
+        m_gyro.resetYaw();
         
+        m_velocity = new Vector2d(0, 0);
+        m_angularVelocity = 0;
+        m_isGyroOriented = true;
     }
 
     /**
@@ -84,7 +86,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
         // SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         // SmartDashboard.putNumber("angular velocity", getAngularVelocity());
-        SmartDashboard.putNumber("gyro angle", m_gyro.getAngle());
+        // SmartDashboard.putNumber("gyro angle", m_gyro.getYaw());
        
     }
 
@@ -107,6 +109,10 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
      * @param angularVelocity = robot's target angular velocity(deg/s) 
      */
     public void drive(Vector2d velocity, boolean isGyroOriented, double angularVelocity) {
+        m_velocity = velocity;
+        m_angularVelocity = angularVelocity;
+        m_isGyroOriented = isGyroOriented;
+
         //convert to m/s
         double angularVel = (angularVelocity / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
 
@@ -140,6 +146,14 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
             // set module state
             m_modules[i].setState(sumVectors[i]);
         }
+    }
+
+    public void driveByAngularVelocity(double angularVelocity){
+        drive(m_velocity, m_isGyroOriented, angularVelocity);
+    }
+
+    public void driveByVelocity(Vector2d velocity, boolean isGyroOriented){
+        drive(velocity, isGyroOriented, m_angularVelocity);
     }
 
     /**
@@ -198,6 +212,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
      * every action that depends on the localization might not work 
      */
     public void resetGyro(){
-        m_gyro.zeroYaw();
+        m_gyro.resetYaw();
     }
 }

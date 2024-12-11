@@ -34,13 +34,6 @@ public interface EverMotorController {
     public void stop();
 
     /**
-     * follow a given motor controller. 
-     * output = target's output
-     * @param motorController - target mottor
-     */
-    public void follow(EverMotorController motorController);
-
-    /**
      * @return this motor controller's id.
      */
     public int getId();

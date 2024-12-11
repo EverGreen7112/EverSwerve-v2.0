@@ -1,12 +1,7 @@
 package frc.robot.Subsystems.Swerve;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
-import frc.robot.Utils.EverKit.EverPIDController;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverCANCoder;
-import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverSparkMaxPIDController;
 import frc.robot.Utils.Math.Funcs;

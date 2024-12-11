@@ -42,11 +42,6 @@ public class EverTalonFX implements EverMotorController{
     }
 
     @Override
-    public void follow(EverMotorController motorController) {
-        m_controller.setControl(new Follower(motorController.getId(), motorController.getInverted()));
-    }
-
-    @Override
     public int getId() {
         return m_controller.getDeviceID();
     }

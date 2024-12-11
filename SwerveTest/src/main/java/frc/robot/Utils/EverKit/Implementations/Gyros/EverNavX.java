@@ -48,10 +48,5 @@ public class EverNavX implements EverGyro{
     public void resetRoll() {
         m_rollOffset = getRoll();
     }
-
-    
-
-
-    
     
 }

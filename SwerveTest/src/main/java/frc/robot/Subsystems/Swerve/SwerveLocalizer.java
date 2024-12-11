@@ -1,11 +1,9 @@
 package frc.robot.Subsystems.Swerve;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Subsystems.Vision.LocalizationVision;
 import frc.robot.Utils.EverKit.Periodic;
-import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
 
 /**

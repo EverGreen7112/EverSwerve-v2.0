@@ -43,18 +43,6 @@ public class EverSparkMax implements EverMotorController{
     }
 
     @Override
-    public void follow(EverMotorController motorController) {
-        
-        if(motorController instanceof CANSparkBase){
-            CANSparkBase controller = (CANSparkBase) motorController;
-            m_controller.follow(controller);
-        }
-        else{
-            throw new RuntimeException("A spark max cannot follow a non-spark based motor controller");
-        }
-    }
-
-    @Override
     public int getId() {
        return m_controller.getDeviceId();
     }

@@ -2,7 +2,6 @@ package frc.robot.Commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Intake.Intake;
-import frc.robot.Subsystems.Shooter.Shooter;
 
 
 public class EmitNote extends Command{
@@ -14,14 +13,12 @@ public class EmitNote extends Command{
 
     @Override
     public void initialize() {
-        Shooter.getInstance().turnToIntake();
+        Intake.getInstance().emitNote();
     }
 
     @Override
-    public void execute(){
-        Intake.getInstance().emitNote();
-        Shooter.getInstance().emitNote();
-    }
+    public void execute(){}
+
     @Override
     public boolean isFinished(){
         return false;
