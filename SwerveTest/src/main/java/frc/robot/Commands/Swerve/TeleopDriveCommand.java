@@ -3,8 +3,10 @@ package frc.robot.Commands.Swerve;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Utils.Math.Funcs;
+import frc.robot.Utils.Math.Vector2d;
 
 public class TeleopDriveCommand extends Command{
     
@@ -39,6 +41,17 @@ public class TeleopDriveCommand extends Command{
         speedX = Funcs.roundAfterDecimalPoint(speedX, 2);
         speedY = Funcs.roundAfterDecimalPoint(speedY, 2);
     
+         //create drive vector
+        Vector2d vec = new Vector2d(-speedX * maxSpeed, speedY * maxSpeed);
+        
+        //make sure mag never goes over maxDriveSpeed so driving in all directions will be the same speed
+        if(vec.mag() > maxSpeed){
+            vec.normalise();
+            vec.mul(maxSpeed);
+        }
+
+        //drive
+        Swerve.getInstance().drive(Funcs.convertFromStandardAxesToWpilibs(vec), true, -angularVel * SwerveConsts.MAX_ANGULAR_SPEED);       
             
     }
 

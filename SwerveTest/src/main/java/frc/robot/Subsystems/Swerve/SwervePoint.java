@@ -2,10 +2,9 @@ package frc.robot.Subsystems.Swerve;
 
 import frc.robot.Utils.Math.Vector2d;
 
-/**
- * Represents a point on the field in which the swerve can be at
- */
+
 public class SwervePoint {
+    //NWU coordinate system 
     private double m_x;
     private double m_y;
     private double m_angle;

@@ -106,17 +106,4 @@ public class SwerveLocalizer implements Periodic {
         return Swerve.getInstance().getGyroOrientedAngle() + ((m_isVisionWorking) ? m_angleOffsetToField : m_offsetNotFromVision);
     }
 
-    public double getAngleToSpeaker(){
-        Vector2d speakerPos;
-        if(Robot.getAlliance() == Alliance.Red){
-            speakerPos = new Vector2d(16.54, 5.8928 - 0.6);
-        }
-        else{
-            speakerPos = new Vector2d(0,  5.8928 - 0.4);
-        }
-        
-        Vector2d currentPos = SwerveLocalizer.getInstance().getCurrentPoint().getAs2DVector();
-        Vector2d deltaToSpeaker = speakerPos.subtract(currentPos.x, currentPos.y);
-        return Math.toDegrees(deltaToSpeaker.theta());
-    }
 }

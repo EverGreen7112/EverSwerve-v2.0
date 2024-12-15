@@ -16,8 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Intake.EmitNote;
 import frc.robot.Commands.Intake.IntakeNote;
-import frc.robot.Commands.Swerve.DriveByJoysticks;
-import frc.robot.Commands.Swerve.DriveByJoysticks.SpeedMode;
+
 import frc.robot.Subsystems.Intake.Intake;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
@@ -87,12 +86,11 @@ public class RobotContainer {
   private void configureBindings() {
 
     //chassis
-    DriveByJoysticks teleop = new DriveByJoysticks(() -> chassis.getLeftX(), () -> chassis.getLeftY(),
-      () -> chassis.getRightX(), () -> chassisStart.getAsBoolean(), () -> chassisA.getAsBoolean());
+    
     
     chassisBack.onTrue(new InstantCommand(() -> {Swerve.getInstance().resetGyro();}));
     
-    Swerve.getInstance().setDefaultCommand(teleop);
+    // Swerve.getInstance().setDefaultCommand(teleop);
     
 
   }

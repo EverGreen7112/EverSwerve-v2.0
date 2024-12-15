@@ -6,7 +6,7 @@ public class SwerveOdometer {
     private static final double ODOMETRY_FACTOR = 1;
     private static SwerveOdometer m_instance = new SwerveOdometer();
 
-    private SwervePoint m_currentPoint; //position based only on odometry for callibration or debugging purposes
+    private SwervePoint m_currentPoint; //odometry only position estimation for callibration or debugging purposes
     private double[] m_prevModulesDistance;
     private SwerveModule[] m_modules;
     
@@ -43,7 +43,7 @@ public class SwerveOdometer {
         }
         robotDelta.mul(1.0 / m_modules.length);
         
-        //update position based only on odometry for callibration or debugging purposes
+        //update odometry only position 
         m_currentPoint.add(robotDelta.x * ODOMETRY_FACTOR, robotDelta.y * ODOMETRY_FACTOR);
         m_currentPoint.setAngle(Swerve.getInstance().getGyroOrientedAngle());
         robotDelta.rotate(Math.toRadians(fieldOrientedAngle));
