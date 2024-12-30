@@ -11,7 +11,7 @@ import frc.robot.Utils.EverKit.EverPIDController;
 import frc.robot.Utils.EverKit.Periodic;
 import frc.robot.Utils.EverKit.Periodic.PeriodicTime;
 
-public class EverExternalPIDController implements EverPIDController, Periodic{
+public class EverExternalPIDController extends EverPIDController implements Periodic{
 
     private PIDController m_pidController;
     private double m_ff;

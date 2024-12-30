@@ -6,7 +6,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.Utils.EverKit.EverPIDController;
 
-public class EverTalonFXPIDController implements EverPIDController{
+public class EverTalonFXPIDController extends EverPIDController{
 
     private TalonFX m_controller;
     

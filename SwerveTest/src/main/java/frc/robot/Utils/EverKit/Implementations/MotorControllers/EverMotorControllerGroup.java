@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import frc.robot.Utils.EverKit.EverMotorController;
 
-public class EverMotorControllerGroup implements EverMotorController{
+public class EverMotorControllerGroup extends EverMotorController{
 
     private ArrayList<EverMotorController> m_motorControllers;
 

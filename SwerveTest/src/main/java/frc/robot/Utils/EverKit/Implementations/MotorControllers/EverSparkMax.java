@@ -9,7 +9,7 @@ import frc.robot.Utils.EverKit.EverMotorController;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
 
 
-public class EverSparkMax implements EverMotorController{
+public class EverSparkMax extends EverMotorController{
 
     private CANSparkMax m_controller;
 

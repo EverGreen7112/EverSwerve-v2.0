@@ -7,7 +7,7 @@ import frc.robot.Utils.EverKit.EverPIDController;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 
 
-public class EverSparkMaxPIDController implements EverPIDController{
+public class EverSparkMaxPIDController extends EverPIDController{
 
     private EverSparkMax m_controller;
     private SparkPIDController m_internalPIDController;

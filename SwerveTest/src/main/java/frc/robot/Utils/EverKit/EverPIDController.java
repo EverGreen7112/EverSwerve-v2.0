@@ -1,6 +1,6 @@
 package frc.robot.Utils.EverKit;
 
-public interface EverPIDController {
+public abstract class EverPIDController {
 
     public enum ControlType{
         kPos,
@@ -13,27 +13,27 @@ public interface EverPIDController {
      * @param kd - derivative coefficent
      * @param kf - feedforward coefficent
      */
-    public void setPIDF(double kp, double ki, double kd, double kf);
+    public abstract void setPIDF(double kp, double ki, double kd, double kf);
     
     /**
      * @param kp - proportional coefficent
      * @param ki - integral coefficent
      * @param kd - derivative coefficent
      */
-    public void setPID(double kp, double ki, double kd);
+    public abstract void setPID(double kp, double ki, double kd);
 
     /**
      * reset I
      */
-    public void resetIAccum();
+    public abstract void resetIAccum();
 
     /** 
      * activates the PID
      */
-    public void activate(double setpoint, ControlType type);    
+    public abstract void activate(double setpoint, ControlType type);    
 
     /**
      * stops the motor, notice that using {@link #activate(double setpoint, ControlType type)} will move the motor again
      */
-    public void stop();
+    public abstract void stop();
 } 

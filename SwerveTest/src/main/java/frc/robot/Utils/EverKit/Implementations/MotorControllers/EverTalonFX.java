@@ -8,7 +8,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Utils.EverKit.EverMotorController;
 
 
-public class EverTalonFX implements EverMotorController{ 
+public class EverTalonFX extends EverMotorController{ 
     
     private TalonFX m_controller;
     

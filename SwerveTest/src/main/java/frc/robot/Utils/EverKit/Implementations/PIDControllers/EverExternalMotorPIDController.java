@@ -7,9 +7,10 @@ import edu.wpi.first.math.controller.PIDController;
 import frc.robot.Utils.EverKit.EverMotorController;
 import frc.robot.Utils.EverKit.EverPIDController;
 import frc.robot.Utils.EverKit.Periodic;
+import frc.robot.Utils.EverKit.Periodic.PeriodicTime;
 
 
-public class EverExternalMotorPIDController implements EverPIDController, Periodic{
+public class EverExternalMotorPIDController extends EverPIDController implements Periodic{
     private PIDController m_pidController;
     private double m_ff;
     private double m_maxOutput;
