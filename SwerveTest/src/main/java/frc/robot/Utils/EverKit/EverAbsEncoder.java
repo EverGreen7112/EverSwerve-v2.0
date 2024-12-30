@@ -1,21 +1,21 @@
  package frc.robot.Utils.EverKit;
 
-public interface EverAbsEncoder extends EverEncoder{
+public abstract class EverAbsEncoder extends EverEncoder{
     
     /**
      * @return current absolute position
      */
-    public double getAbsPos();
+    public abstract double getAbsPos();
     
     /**
      * @return the offset of the encoder from origin
      * This value is set by user, using the {@link #setOffset(double)} function.
      */
-    public double getOffset();
+    public abstract double getOffset();
     
     /**
      * Set offset of encoder from origin.
      */
-    public void setOffset(double offset);
+    public abstract void setOffset(double offset);
     
 }

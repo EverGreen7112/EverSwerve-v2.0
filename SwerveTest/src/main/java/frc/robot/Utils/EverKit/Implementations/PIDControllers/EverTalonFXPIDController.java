@@ -5,13 +5,16 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.Utils.EverKit.EverPIDController;
+import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverTalonFX;
 
 public class EverTalonFXPIDController extends EverPIDController{
 
     private TalonFX m_controller;
+    private EverTalonFX m_everController;
     
-    public EverTalonFXPIDController(TalonFX controller){
-        m_controller = controller;
+    public EverTalonFXPIDController(EverTalonFX controller){
+        m_controller = controller.getControllerInstance();
+        m_everController = controller;
     }
 
     @Override
@@ -43,10 +46,12 @@ public class EverTalonFXPIDController extends EverPIDController{
     public void activate(double setpoint, ControlType type) {
         switch (type) {
             case kPos:
-                m_controller.setControl(new PositionVoltage(setpoint).withSlot(0));
+                double posConversionFactor = m_everController.getPosConversionFactor();
+                m_controller.setControl(new PositionVoltage(setpoint / posConversionFactor).withSlot(0));
                 break;
             case kVel:
-                m_controller.setControl(new VelocityVoltage(setpoint).withSlot(0));
+                double velConversionFactor = m_everController.getVelConversionFactor();
+                m_controller.setControl(new VelocityVoltage(setpoint / velConversionFactor).withSlot(0));
                 break;    
             default:
                 break;

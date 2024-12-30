@@ -7,13 +7,16 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Utils.EverKit.EverMotorController;
 
-
 public class EverTalonFX extends EverMotorController{ 
     
     private TalonFX m_controller;
-    
+    private double m_posConversionFactor;
+    private double m_velConversionFactor;
+
     public EverTalonFX(int id){
         m_controller = new TalonFX(id);
+        m_posConversionFactor = 1;
+        m_velConversionFactor = 1;
     }
 
     @Override
@@ -75,4 +78,20 @@ public class EverTalonFX extends EverMotorController{
         return m_controller;
     }
     
+    public void setPosConversionFactor(double factor) {
+        m_posConversionFactor = factor;
+    }
+
+    public void setVelConversionFactor(double factor) {
+        m_velConversionFactor = factor;
+    }
+
+    public double getVelConversionFactor(){
+        return m_velConversionFactor;
+    }
+
+    public double getPosConversionFactor(){
+        return m_posConversionFactor;
+    }
+
 }

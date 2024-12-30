@@ -3,7 +3,7 @@ package frc.robot.Utils.EverKit.Implementations.Encoders;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
 
-public class EverDcEncoder implements EverAbsEncoder{
+public class EverDcEncoder extends EverAbsEncoder{
 
     private DutyCycleEncoder m_encoder;
 

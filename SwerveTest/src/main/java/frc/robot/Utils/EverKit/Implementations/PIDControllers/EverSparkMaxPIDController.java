@@ -55,18 +55,5 @@ public class EverSparkMaxPIDController extends EverPIDController{
     public void stop() {
         m_controller.stop();
     }
-
-    public void setConversionFactor(double factor, ControlType type){
-        switch (type) {
-            case kPos:
-                m_controller.getSparkInternalEncoder().setPosConversionFactor(factor);    
-                break;
-            case kVel:
-                m_controller.getSparkInternalEncoder().setVelConversionFactor(factor); 
-                break;
-            default:
-                break;
-        }
-    }
     
 }

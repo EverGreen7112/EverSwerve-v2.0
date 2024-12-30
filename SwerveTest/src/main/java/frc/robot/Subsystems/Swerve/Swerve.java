@@ -1,14 +1,20 @@
 package frc.robot.Subsystems.Swerve;
 
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Utils.EverKit.EverAbsEncoder;
 import frc.robot.Utils.EverKit.EverGyro;
 import frc.robot.Utils.EverKit.EverMotorController.IdleMode;
 import frc.robot.Utils.EverKit.EverPIDController.ControlType;
+import frc.robot.Utils.EverKit.Implementations.Encoders.EverCANCoder;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
+import frc.robot.Utils.EverKit.Implementations.Encoders.EverTalonFXInternalEncoder;
 import frc.robot.Utils.EverKit.Implementations.Gyros.EverNavX;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
+import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverTalonFX;
 import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverSparkMaxPIDController;
+import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverTalonFXPIDController;
 import frc.robot.Utils.Math.Vector2d;
 
 /**
@@ -26,40 +32,55 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     private boolean m_isGyroOriented;
 
     private Swerve() {
-        
-        //offset of abs encoder to 0 degrees being forward
-        ABS_ENCODERS[0].setOffset(166.552734375/360.0);
-        ABS_ENCODERS[1].setOffset(292.939453125/360.0);
-        ABS_ENCODERS[2].setOffset(48.867191314697266/360.0);
-        ABS_ENCODERS[3].setOffset(307.3785705566406/360.0);
-
-        
-        for (EverSparkMax driveMotor : DRIVE_MOTORS) {
+    
+        //config motor controllers
+        for (EverTalonFX driveMotor : DRIVE_MOTORS) {
              driveMotor.restoreFactoryDefaults();
              driveMotor.setInverted(false);
              driveMotor.setIdleMode(IdleMode.kCoast);
         }
         
         for (EverSparkMax steerMotor : STEER_MOTORS) {
-             steerMotor.setIdleMode(IdleMode.kCoast);
+            steerMotor.restoreFactoryDefaults();
+            steerMotor.setIdleMode(IdleMode.kCoast);
         }
         
-        for (EverSparkMaxPIDController velocityController : WHEEL_VELOCITY_CONTROLLERS) {
-             velocityController.setPIDF(WHEEL_VELOCITY_KP, WHEEL_VELOCITY_KI, WHEEL_VELOCITY_KD, WHEEL_VELOCITY_KF);   
-             velocityController.setConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER / 60.0, ControlType.kVel);
-             velocityController.setConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER, ControlType.kPos);
-        }
-        
-        for (EverSparkMaxPIDController angleController : WHEEL_ANGLE_CONTROLLERS) {
-             angleController.setPID(WHEEL_ANGLE_KP, WHEEL_ANGLE_KI, WHEEL_ANGLE_KD);      
-             angleController.setConversionFactor(SwerveConsts.STEER_GEAR_RATIO * 360.0, ControlType.kPos);
+        //config encoders
+        for(EverTalonFXInternalEncoder driveEncoder : DRIVE_ENCODERS){
+            driveEncoder.setVelConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER / 60.0);//rpm to m/s
+            driveEncoder.setPosConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER);//rotations to meters
         }
 
+        for(EverSparkInternalEncoder steerEncoder : STEER_ENCODERS){
+            steerEncoder.setPosConversionFactor(SwerveConsts.STEER_GEAR_RATIO * 360.0); //rotations to degrees
+        }
+
+        for(EverAbsEncoder absEncoder : ABS_ENCODERS){
+            absEncoder.setPosConversionFactor(360.0);
+        }
+
+        ABS_ENCODERS[0].setOffset(302.00640869140625);
+        ABS_ENCODERS[1].setOffset(-121.02523040771484);
+        ABS_ENCODERS[2].setOffset(-7.106578350067139);
+        ABS_ENCODERS[3].setOffset(-130.91921997070312);
+
+        //config pid controllers
+        for (EverTalonFXPIDController velocityController : WHEEL_VELOCITY_CONTROLLERS) {
+             velocityController.setPIDF(WHEEL_VELOCITY_KP, WHEEL_VELOCITY_KI, WHEEL_VELOCITY_KD, WHEEL_VELOCITY_KF);   
+        }
+
+        for (EverSparkMaxPIDController angleController : WHEEL_ANGLE_CONTROLLERS) {
+             angleController.setPID(WHEEL_ANGLE_KP, WHEEL_ANGLE_KI, WHEEL_ANGLE_KD);      
+        }
+
+
+       
+
         m_modules = new SwerveModule[4];
-        m_modules[0] = new SwerveModule(SwerveConsts.TL_VELOCITY_CONTROLLER, SwerveConsts.TL_DRIVE_MOTOR, new EverSparkInternalEncoder(SwerveConsts.TL_DRIVE_MOTOR), SwerveConsts.TL_ANGLE_CONTROLLER, SwerveConsts.TL_STEER_MOTOR, new EverSparkInternalEncoder(SwerveConsts.TL_STEER_MOTOR), SwerveConsts.ABS_ENCODERS[0]);
-        m_modules[1] = new SwerveModule(SwerveConsts.TR_VELOCITY_CONTROLLER, SwerveConsts.TR_DRIVE_MOTOR, new EverSparkInternalEncoder(SwerveConsts.TR_DRIVE_MOTOR), SwerveConsts.TR_ANGLE_CONTROLLER, SwerveConsts.TR_STEER_MOTOR, new EverSparkInternalEncoder(SwerveConsts.TR_STEER_MOTOR), SwerveConsts.ABS_ENCODERS[1]);
-        m_modules[2] = new SwerveModule(SwerveConsts.DL_VELOCITY_CONTROLLER, SwerveConsts.DL_DRIVE_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DL_DRIVE_MOTOR), SwerveConsts.DL_ANGLE_CONTROLLER, SwerveConsts.DL_STEER_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DL_STEER_MOTOR), SwerveConsts.ABS_ENCODERS[2]);
-        m_modules[3] = new SwerveModule(SwerveConsts.DR_VELOCITY_CONTROLLER, SwerveConsts.DR_DRIVE_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DR_DRIVE_MOTOR), SwerveConsts.DR_ANGLE_CONTROLLER, SwerveConsts.DR_STEER_MOTOR, new EverSparkInternalEncoder(SwerveConsts.DR_STEER_MOTOR), SwerveConsts.ABS_ENCODERS[3]);
+        m_modules[0] = new SwerveModule(SwerveConsts.TL_VELOCITY_CONTROLLER, SwerveConsts.TL_DRIVE_MOTOR, SwerveConsts.TL_DRIVE_ENCODER, SwerveConsts.TL_ANGLE_CONTROLLER, SwerveConsts.TL_STEER_MOTOR, SwerveConsts.TL_STEER_ENCODER, SwerveConsts.ABS_ENCODERS[0]);
+        m_modules[1] = new SwerveModule(SwerveConsts.TR_VELOCITY_CONTROLLER, SwerveConsts.TR_DRIVE_MOTOR, SwerveConsts.TR_DRIVE_ENCODER, SwerveConsts.TR_ANGLE_CONTROLLER, SwerveConsts.TR_STEER_MOTOR, SwerveConsts.TR_STEER_ENCODER, SwerveConsts.ABS_ENCODERS[1]);
+        m_modules[2] = new SwerveModule(SwerveConsts.DL_VELOCITY_CONTROLLER, SwerveConsts.DL_DRIVE_MOTOR, SwerveConsts.DL_DRIVE_ENCODER, SwerveConsts.DL_ANGLE_CONTROLLER, SwerveConsts.DL_STEER_MOTOR, SwerveConsts.DL_STEER_ENCODER, SwerveConsts.ABS_ENCODERS[2]);
+        m_modules[3] = new SwerveModule(SwerveConsts.DR_VELOCITY_CONTROLLER, SwerveConsts.DR_DRIVE_MOTOR, SwerveConsts.DR_DRIVE_ENCODER, SwerveConsts.DR_ANGLE_CONTROLLER, SwerveConsts.DR_STEER_MOTOR, SwerveConsts.DR_STEER_ENCODER, SwerveConsts.ABS_ENCODERS[3]);
         
         m_gyro = new EverNavX(SerialPort.Port.kMXP);
         m_gyro.resetYaw();
@@ -79,10 +100,10 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     @Override
     public void periodic() {
         //absolute encoders
-        // SmartDashboard.putNumber("TL", m_modules[0].getAngle());
-        // SmartDashboard.putNumber("TR", m_modules[1].getAngle());
-        // SmartDashboard.putNumber("DL", m_modules[2].getAngle());
-        // SmartDashboard.putNumber("DR", m_modules[3].getAngle());
+        SmartDashboard.putNumber("TL", m_modules[0].getAngle());
+        SmartDashboard.putNumber("TR", m_modules[1].getAngle());
+        SmartDashboard.putNumber("DL", m_modules[2].getAngle());
+        SmartDashboard.putNumber("DR", m_modules[3].getAngle());
 
         // SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         // SmartDashboard.putNumber("angular velocity", getAngularVelocity());
@@ -91,7 +112,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     }
 
     public double getGyroOrientedAngle(){
-        return m_gyro.getYaw() * SwerveConsts.GYRO_FACTOR;
+        return m_gyro.getYaw() * SwerveConsts.GYRO_DIRECTION;
     }
 
     public SwerveModule[] getModules(){
@@ -116,7 +137,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         //convert to m/s
         double angularVel = (angularVelocity / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
 
-        // if drive values are 0 stop moving
         if (velocity.mag() == 0 && angularVel == 0) {
             for (int i = 0; i < m_modules.length; i++) {
                 m_modules[i].stopModule();
@@ -125,25 +145,21 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
         // convert to gyro oriented
         if(isGyroOriented)
-            velocity.rotate(Math.toRadians(getGyroOrientedAngle() * SwerveConsts.GYRO_FACTOR));
+            velocity.rotate(Math.toRadians(getGyroOrientedAngle() * SwerveConsts.GYRO_DIRECTION));
         
         // calculate rotation vectors
         Vector2d[] rotVecs = new Vector2d[m_modules.length];
         for (int i = 0; i < rotVecs.length; i++) {
             rotVecs[i] = new Vector2d(SwerveConsts.physicalMoudulesVector[i]);
-            rotVecs[i].rotate(Math.toRadians(90 * SwerveConsts.GYRO_FACTOR));
-            // change magnitude of rot vector to rotationSpeed
+            rotVecs[i].rotate(Math.toRadians(90 * SwerveConsts.GYRO_DIRECTION));
             rotVecs[i].normalise();
             rotVecs[i].mul(angularVel);
         }
 
         Vector2d[] sumVectors = new Vector2d[m_modules.length];
         for (int i = 0; i < sumVectors.length; i++) {
-            // sum rot and drive vectors
             sumVectors[i] = new Vector2d(velocity);
             sumVectors[i].add(rotVecs[i]);
-
-            // set module state
             m_modules[i].setState(sumVectors[i]);
         }
     }
@@ -166,7 +182,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         for (int i = 0; i < m_modules.length; i++) {
             Vector2d moduleRotationVector = new Vector2d(SwerveConsts.physicalMoudulesVector[i]);
             moduleRotationVector.normalise();
-            moduleRotationVector.rotate(Math.toRadians(90 * SwerveConsts.GYRO_FACTOR));
+            moduleRotationVector.rotate(Math.toRadians(90 * SwerveConsts.GYRO_DIRECTION));
 
             Vector2d moduleVelocity = m_modules[i].getVelocity();
 
@@ -197,7 +213,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
 
     public Vector2d getGyroOrientedVelocity(){
         Vector2d vel = getRobotOrientedVelocity();
-        vel.rotate(Math.toRadians(getGyroOrientedAngle() * GYRO_FACTOR));
+        vel.rotate(Math.toRadians(getGyroOrientedAngle() * GYRO_DIRECTION));
         return vel;
     }
     

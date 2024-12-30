@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
 
 
-public class EverCANCoder implements EverAbsEncoder{
+public class EverCANCoder extends EverAbsEncoder{
 
     private CANcoder m_encoder;
     private MagnetSensorConfigs m_configs;

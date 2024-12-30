@@ -5,7 +5,7 @@ import com.revrobotics.RelativeEncoder;
 import frc.robot.Utils.EverKit.EverEncoder;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 
-public class EverSparkInternalEncoder implements EverEncoder{
+public class EverSparkInternalEncoder extends EverEncoder{
 
     private RelativeEncoder m_encoder;
 
