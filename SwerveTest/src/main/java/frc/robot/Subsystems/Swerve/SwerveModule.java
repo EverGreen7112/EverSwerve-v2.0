@@ -1,5 +1,6 @@
 package frc.robot.Subsystems.Swerve;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
 import frc.robot.Utils.EverKit.EverEncoder;
@@ -50,13 +51,12 @@ public class SwerveModule extends SubsystemBase {
         this(velocityController, driveMotor, driveEncoder,
              angleController, steerMotor, steerEncoder);
         m_absSteerEncoder = absSteerEncoder;
-        m_absSteerEncoder.setPosConversionFactor(1);
         m_steerEncoder.setPos(getAbsAngle());
         
     }
 
     public double getAbsAngle(){
-        return Funcs.convertRotationsToDegrees(m_absSteerEncoder.getAbsPos());
+        return m_absSteerEncoder.getAbsPos();
     }
 
     /**
@@ -64,7 +64,8 @@ public class SwerveModule extends SubsystemBase {
      * @param angle - in degrees
      */
     public void setState(double speed, double angle) {
-        setState(new Vector2d(speed * Math.cos(Math.toRadians(angle)), speed * Math.sin(Math.toRadians(angle))));
+        m_velocityController.activate(speed, ControlType.kVel);
+        m_angleController.activate(angle, ControlType.kPos);
     }
 
     /**
@@ -72,12 +73,7 @@ public class SwerveModule extends SubsystemBase {
      * @param desiredState - desired velocity in meters per second
      */
     public void setState(Vector2d desiredState) {
-        
         if(desiredState.mag() < SwerveConsts.MIN_SPEED){
-            desiredState = new Vector2d(0, 0);
-        }        
-
-        if(desiredState.mag() == 0){
             stopModule();
         }
 
@@ -157,8 +153,17 @@ public class SwerveModule extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+        SmartDashboard.putNumber("output", m_driveMotor.get()); 
+    }
 
+    public void setDrive(double output){
+        m_driveMotor.set(output);
+    }
+
+    public void setSteer(double output){
+        m_steerMotor.set(output);
+    }
     
 
 }

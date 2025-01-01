@@ -61,8 +61,6 @@ public class Robot extends TimedRobot {
     m_autoChooser.addOption("not amp side auto", new PathPlannerAuto("not amp side auto"));
     SmartDashboard.putData("auto", m_autoChooser);
 
-
-
   }
 
   @Override
@@ -122,8 +120,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-   
     
+      Swerve.getInstance().testModule(3, 0, 2);
+  
+
   }
 
   @Override

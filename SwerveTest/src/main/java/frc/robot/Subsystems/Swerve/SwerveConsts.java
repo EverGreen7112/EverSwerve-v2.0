@@ -31,8 +31,8 @@ public interface SwerveConsts{
     public static final EverTalonFX 
             TL_DRIVE_MOTOR = new EverTalonFX(6),
             TR_DRIVE_MOTOR = new EverTalonFX(13),
-            DL_DRIVE_MOTOR = new EverTalonFX(10),
-            DR_DRIVE_MOTOR = new EverTalonFX(9);
+            DL_DRIVE_MOTOR = new EverTalonFX(9),
+            DR_DRIVE_MOTOR = new EverTalonFX(10);
     
     public static final EverSparkMax 
             TL_STEER_MOTOR = new EverSparkMax(7),
@@ -86,10 +86,10 @@ public interface SwerveConsts{
     
 
     // swerve module velocity pidf values
-    public static final double WHEEL_VELOCITY_KP = 0.05, WHEEL_VELOCITY_KI = 0, WHEEL_VELOCITY_KD = 0,
-            WHEEL_VELOCITY_KF = 0.75 / 2.81;
+    public static final double WHEEL_VELOCITY_KP = 0.35, WHEEL_VELOCITY_KI = 0.0, WHEEL_VELOCITY_KD = 0.00,
+            WHEEL_VELOCITY_KF = 0;
     // swerve module wheel angle pid values
-    public static final double WHEEL_ANGLE_KP = 0.01, WHEEL_ANGLE_KI = 0.0, WHEEL_ANGLE_KD = 0.0;
+    public static final double WHEEL_ANGLE_KP = 0.01, WHEEL_ANGLE_KI = 0.0, WHEEL_ANGLE_KD = 0.0001;
 
     // swerve dimensions
     public static final double FRONT_WHEEL_DIST_METERS = 0.57, SIDE_WHEEL_DIST_METERS = 0.57;

@@ -47,7 +47,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         
         //config encoders
         for(EverTalonFXInternalEncoder driveEncoder : DRIVE_ENCODERS){
-            driveEncoder.setVelConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER / 60.0);//rpm to m/s
+            driveEncoder.setVelConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER);//rps to m/s 
             driveEncoder.setPosConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER);//rotations to meters
         }
 
@@ -73,9 +73,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
              angleController.setPID(WHEEL_ANGLE_KP, WHEEL_ANGLE_KI, WHEEL_ANGLE_KD);      
         }
 
-
-       
-
         m_modules = new SwerveModule[4];
         m_modules[0] = new SwerveModule(SwerveConsts.TL_VELOCITY_CONTROLLER, SwerveConsts.TL_DRIVE_MOTOR, SwerveConsts.TL_DRIVE_ENCODER, SwerveConsts.TL_ANGLE_CONTROLLER, SwerveConsts.TL_STEER_MOTOR, SwerveConsts.TL_STEER_ENCODER, SwerveConsts.ABS_ENCODERS[0]);
         m_modules[1] = new SwerveModule(SwerveConsts.TR_VELOCITY_CONTROLLER, SwerveConsts.TR_DRIVE_MOTOR, SwerveConsts.TR_DRIVE_ENCODER, SwerveConsts.TR_ANGLE_CONTROLLER, SwerveConsts.TR_STEER_MOTOR, SwerveConsts.TR_STEER_ENCODER, SwerveConsts.ABS_ENCODERS[1]);
@@ -100,10 +97,10 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     @Override
     public void periodic() {
         //absolute encoders
-        SmartDashboard.putNumber("TL", m_modules[0].getAngle());
-        SmartDashboard.putNumber("TR", m_modules[1].getAngle());
-        SmartDashboard.putNumber("DL", m_modules[2].getAngle());
-        SmartDashboard.putNumber("DR", m_modules[3].getAngle());
+        SmartDashboard.putNumber("TL", m_modules[0].getSpeed());
+        SmartDashboard.putNumber("TR", m_modules[1].getSpeed());
+        SmartDashboard.putNumber("DL", m_modules[2].getSpeed());
+        SmartDashboard.putNumber("DR", m_modules[3].getSpeed());
 
         // SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         // SmartDashboard.putNumber("angular velocity", getAngularVelocity());
@@ -230,4 +227,10 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     public void resetGyro(){
         m_gyro.resetYaw();
     }
+
+    public void testModule(int moduleIdx, double targetAngle, double targetSpeed){
+        m_modules[moduleIdx].setState(targetSpeed, targetAngle);
+    }
+
+
 }
