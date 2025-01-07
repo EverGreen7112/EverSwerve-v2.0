@@ -34,8 +34,6 @@ public class EverTalonFXInternalEncoder extends EverEncoder{
     @Override
     public double getVel() {
         double velConversionFactor = m_everController.getVelConversionFactor();
-        SmartDashboard.putNumber("en vel cf", m_everController.getVelConversionFactor());
-
         return m_controller.getVelocity().getValueAsDouble() * velConversionFactor;
     }
 

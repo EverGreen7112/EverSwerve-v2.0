@@ -1,7 +1,10 @@
 package frc.robot.Utils.EverKit.Implementations.MotorControllers;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -15,13 +18,13 @@ public class EverTalonFX extends EverMotorController{
     private double m_posConversionFactor;
     private double m_velConversionFactor;
     private TalonFXConfiguration m_config;
-
+    private TalonFXConfigurator m_configurator;
     public EverTalonFX(int id){
         m_controller = new TalonFX(id);
         m_posConversionFactor = 1;
         m_velConversionFactor = 1;
         m_config = new TalonFXConfiguration();
-        
+        m_configurator = m_controller.getConfigurator();
     }
 
     @Override
@@ -76,14 +79,23 @@ public class EverTalonFX extends EverMotorController{
     @Override
     public void restoreFactoryDefaults() {
         m_config = new TalonFXConfiguration();
-        m_controller.getConfigurator().apply(m_config);
+        m_configurator.apply(m_config);
     }
 
     @Override
     public TalonFX getControllerInstance() {
         return m_controller;
     }
-    
+
+    public void setPidConfig(Slot0Configs config){
+        m_config.Slot0 = config;
+        m_configurator.apply(m_config);
+    }
+   
+    public void setVoltage(double volts) {
+        m_controller.setControl(new VoltageOut(volts));
+    }
+
     public void setPosConversionFactor(double factor) {
         m_posConversionFactor = factor;
     }
@@ -93,8 +105,6 @@ public class EverTalonFX extends EverMotorController{
     }
 
     public double getVelConversionFactor(){
-                SmartDashboard.putNumber("tal vel cf", m_velConversionFactor);
-
         return m_velConversionFactor;
     }
 

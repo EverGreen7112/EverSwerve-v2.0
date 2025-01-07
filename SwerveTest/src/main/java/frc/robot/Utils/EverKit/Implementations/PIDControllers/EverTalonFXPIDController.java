@@ -17,10 +17,14 @@ public class EverTalonFXPIDController extends EverPIDController{
 
     private TalonFX m_controller;
     private EverTalonFX m_everController;
-    
+    private PositionVoltage m_posControlRequest;
+    private VelocityVoltage m_velocityControlRequest;
+
     public EverTalonFXPIDController(EverTalonFX controller){
         m_controller = controller.getControllerInstance();
         m_everController = controller;
+        m_posControlRequest = new PositionVoltage(0).withSlot(0);
+        m_velocityControlRequest = new VelocityVoltage(0).withSlot(0);
     }
 
     @Override
@@ -30,7 +34,7 @@ public class EverTalonFXPIDController extends EverPIDController{
         slot0Configs.kI = ki;
         slot0Configs.kD = kd;
         slot0Configs.kS = kf;
-        m_controller.getConfigurator().apply(slot0Configs);        
+        m_everController.setPidConfig(slot0Configs);     
     }
 
     @Override
@@ -39,12 +43,16 @@ public class EverTalonFXPIDController extends EverPIDController{
         slot0Configs.kP = kp; 
         slot0Configs.kI = ki;
         slot0Configs.kD = kd;
-        m_controller.getConfigurator().apply(slot0Configs);
+        slot0Configs.kV = 0;
+        m_everController.setPidConfig(slot0Configs);
+    }
+
+    public void setPID(Slot0Configs config){
+        m_everController.setPidConfig(config);     
     }
 
     @Override
     public void resetIAccum() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'resetIAccum'");
     }
 
@@ -53,11 +61,11 @@ public class EverTalonFXPIDController extends EverPIDController{
         switch (type) {
             case kPos:
                 double posConversionFactor = m_everController.getPosConversionFactor();
-                m_controller.setControl(new PositionDutyCycle(setpoint / posConversionFactor).withSlot(0));
+                m_controller.setControl(m_posControlRequest.withPosition(setpoint / posConversionFactor));
                 break;
             case kVel:
                 double velConversionFactor = m_everController.getVelConversionFactor();
-                m_controller.setControl(new VelocityVoltage(setpoint / velConversionFactor).withSlot(0));
+                m_controller.setControl(m_velocityControlRequest.withVelocity(setpoint / velConversionFactor));
                 break;    
             default:
                 break;

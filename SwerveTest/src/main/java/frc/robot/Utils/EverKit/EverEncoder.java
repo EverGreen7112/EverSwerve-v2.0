@@ -16,7 +16,7 @@ public abstract class EverEncoder {
      * @return current velocity
      */
     public abstract double getVel();
-    
+
     /**
      * Set conversion factor of the position value that is returned from the {@link #getPos()} function.
      * This should be used when trying to switch between units of measure.
@@ -28,4 +28,6 @@ public abstract class EverEncoder {
      * This should be used when trying to switch between units of measure.
      */
     public abstract void setVelConversionFactor(double factor);    
+
+    
 }
