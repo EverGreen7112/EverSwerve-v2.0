@@ -1,9 +1,11 @@
 package frc.robot.Utils.EverKit.Implementations.PIDControllers;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -28,7 +30,7 @@ public class EverTalonFXPIDController extends EverPIDController{
         slot0Configs.kI = ki;
         slot0Configs.kD = kd;
         slot0Configs.kS = kf;
-        m_controller.getConfigurator().apply(slot0Configs);
+        m_controller.getConfigurator().apply(slot0Configs);        
     }
 
     @Override
@@ -51,7 +53,7 @@ public class EverTalonFXPIDController extends EverPIDController{
         switch (type) {
             case kPos:
                 double posConversionFactor = m_everController.getPosConversionFactor();
-                m_controller.setControl(new PositionVoltage(setpoint / posConversionFactor).withSlot(0));
+                m_controller.setControl(new PositionDutyCycle(setpoint / posConversionFactor).withSlot(0));
                 break;
             case kVel:
                 double velConversionFactor = m_everController.getVelConversionFactor();

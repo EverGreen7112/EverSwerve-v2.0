@@ -1,7 +1,11 @@
 package frc.robot.Utils.EverKit.Implementations.Encoders;
 
+import com.ctre.phoenix6.configs.CustomParamsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utils.EverKit.EverEncoder;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverTalonFX;
 
@@ -30,6 +34,8 @@ public class EverTalonFXInternalEncoder extends EverEncoder{
     @Override
     public double getVel() {
         double velConversionFactor = m_everController.getVelConversionFactor();
+        SmartDashboard.putNumber("en vel cf", m_everController.getVelConversionFactor());
+
         return m_controller.getVelocity().getValueAsDouble() * velConversionFactor;
     }
 

@@ -6,6 +6,10 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Subsystems.Swerve.Swerve;
+import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
 import frc.robot.Subsystems.Vision.JetsonHealthChecker;
 import frc.robot.Utils.EverKit.Periodic;
@@ -27,7 +32,6 @@ public class Robot extends TimedRobot {
   public static ArrayList<Periodic> testPeriodicFuncs = new ArrayList<Periodic>();
   public static ArrayList<Periodic> autonomousPeriodicFuncs = new ArrayList<Periodic>();
   public static ArrayList<Periodic> simulationPeriodicFuncs = new ArrayList<Periodic>();
-  private static JetsonHealthChecker m_jetsonHealthChecker = new JetsonHealthChecker(5801);
 
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
@@ -121,7 +125,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     
-      Swerve.getInstance().testModule(3, 0, 2);
   
 
   }

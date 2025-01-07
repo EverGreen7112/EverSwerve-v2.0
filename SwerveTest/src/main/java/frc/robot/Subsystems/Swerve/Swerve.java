@@ -47,8 +47,9 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         
         //config encoders
         for(EverTalonFXInternalEncoder driveEncoder : DRIVE_ENCODERS){
-            driveEncoder.setVelConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER);//rps to m/s 
-            driveEncoder.setPosConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER);//rotations to meters
+            // driveEncoder.setVelConversionFactor(((DRIVE_GEAR_RATIO) * SwerveConsts.WHEEL_PERIMETER));
+            driveEncoder.setVelConversionFactor(DRIVE_GEAR_RATIO);
+            driveEncoder.setPosConversionFactor(DRIVE_GEAR_RATIO);
         }
 
         for(EverSparkInternalEncoder steerEncoder : STEER_ENCODERS){
@@ -101,6 +102,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         SmartDashboard.putNumber("TR", m_modules[1].getSpeed());
         SmartDashboard.putNumber("DL", m_modules[2].getSpeed());
         SmartDashboard.putNumber("DR", m_modules[3].getSpeed());
+        SmartDashboard.putNumber("DR p", m_modules[3].getDistance());
 
         // SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         // SmartDashboard.putNumber("angular velocity", getAngularVelocity());

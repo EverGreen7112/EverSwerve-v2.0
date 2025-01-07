@@ -86,8 +86,8 @@ public interface SwerveConsts{
     
 
     // swerve module velocity pidf values
-    public static final double WHEEL_VELOCITY_KP = 0.35, WHEEL_VELOCITY_KI = 0.0, WHEEL_VELOCITY_KD = 0.00,
-            WHEEL_VELOCITY_KF = 0;
+    public static final double WHEEL_VELOCITY_KP = 0.0, WHEEL_VELOCITY_KI = 0.0, WHEEL_VELOCITY_KD = 0.00,
+            WHEEL_VELOCITY_KF = 0.0;
     // swerve module wheel angle pid values
     public static final double WHEEL_ANGLE_KP = 0.01, WHEEL_ANGLE_KI = 0.0, WHEEL_ANGLE_KD = 0.0001;
 
@@ -100,7 +100,7 @@ public interface SwerveConsts{
     public static final double WHEEL_PERIMETER = Math.PI * 0.095;
 
     // module gear ratios
-    public static final double DRIVE_GEAR_RATIO = 1 / 6.75, STEER_GEAR_RATIO = 1 / 12.8;
+    public static final double DRIVE_GEAR_RATIO = 1 / 5.9, STEER_GEAR_RATIO = 1 / 12.8;
 
     // swerve vectors
     public static final Vector2d 
