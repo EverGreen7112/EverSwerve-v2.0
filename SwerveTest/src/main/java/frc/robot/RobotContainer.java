@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Intake.EmitNote;
 import frc.robot.Commands.Intake.IntakeNote;
-
+import frc.robot.Commands.Swerve.TeleopDriveCommand;
 import frc.robot.Subsystems.Intake.Intake;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
@@ -26,6 +26,7 @@ public class RobotContainer {
 
   private static final int CHASSIS_PORT = 0;
   private static final int OPERATOR_PORT = 1;
+
 
    //controllers
   public static final CommandXboxController chassis = new CommandXboxController(CHASSIS_PORT);
@@ -50,6 +51,7 @@ public class RobotContainer {
   public static final Trigger chassisRT = chassis.rightTrigger();
   public static final Trigger chassisLT = chassis.leftTrigger();
 
+  public static final TeleopDriveCommand teleopCommand = new TeleopDriveCommand(chassis::getLeftX, chassis::getLeftY, chassis::getRightX);
 
   public RobotContainer() {
     registerNamedCommands();
@@ -87,10 +89,10 @@ public class RobotContainer {
 
     //chassis
     
-    
+    // Swerve.getInstance().setDefaultCommand(teleopCommand);
     chassisBack.onTrue(new InstantCommand(() -> {Swerve.getInstance().resetGyro();}));
     
-    // Swerve.getInstance().setDefaultCommand(teleop);
+    
     
 
   }

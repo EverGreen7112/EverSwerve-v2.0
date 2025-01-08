@@ -19,7 +19,7 @@ import frc.robot.Utils.Math.Vector2d;
  */
 public interface SwerveConsts{
     // speed values
-    public static final double MAX_NORMAL_DRIVE_SPEED = 2.8; // m/s
+    public static final double MAX_NORMAL_DRIVE_SPEED = 1; // m/s
     public static final double MAX_TURBO_DRIVE_SPEED = 4;
     public static final double MAX_SLOW_DRIVE_SPEED = 1.5;
     public static final double MAX_ANGULAR_SPEED = 180; // deg/s/
@@ -87,9 +87,9 @@ public interface SwerveConsts{
 
     // swerve module velocity pidf values
     public static final double WHEEL_VELOCITY_KP = 0.0, WHEEL_VELOCITY_KI = 0.0, WHEEL_VELOCITY_KD = 0.00,
-            WHEEL_VELOCITY_KF = 0.0;
+            WHEEL_VELOCITY_KV = 0.7825, WHEEL_VELOCITY_KS = 0;
     // swerve module wheel angle pid values
-    public static final double WHEEL_ANGLE_KP = 0.01, WHEEL_ANGLE_KI = 0.0, WHEEL_ANGLE_KD = 0.0001;
+    public static final double WHEEL_ANGLE_KP = 0.01, WHEEL_ANGLE_KI = 0.0, WHEEL_ANGLE_KD = 0.000;
 
     // swerve dimensions
     public static final double FRONT_WHEEL_DIST_METERS = 0.57, SIDE_WHEEL_DIST_METERS = 0.57;
@@ -100,7 +100,7 @@ public interface SwerveConsts{
     public static final double WHEEL_PERIMETER = Math.PI * 0.095;
 
     // module gear ratios
-    public static final double DRIVE_GEAR_RATIO = 1 / 5.9, STEER_GEAR_RATIO = 1 / 12.8;
+    public static final double DRIVE_GEAR_RATIO = 1 / 6.75, STEER_GEAR_RATIO = 1 / 12.8;
 
     // swerve vectors
     public static final Vector2d 

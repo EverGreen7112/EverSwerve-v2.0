@@ -1,3 +1,4 @@
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -24,6 +25,7 @@ import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
 import frc.robot.Subsystems.Vision.JetsonHealthChecker;
+import frc.robot.Utils.TalonFxCalib;
 import frc.robot.Utils.EverKit.Periodic;
 
 public class Robot extends TimedRobot {
@@ -125,7 +127,11 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     
-  
+    for(int i = 0; i < 4; i++){
+      // Swerve.getInstance().getModules()[i].setState(1, 90);
+      Swerve.getInstance().getModules()[i].turnToAngle(360);
+      // Swerve.getInstance().getModules()[i].setSteer(0.1);
+    }
 
   }
 

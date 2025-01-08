@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Swerve;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -60,14 +62,20 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
             absEncoder.setPosConversionFactor(360.0);
         }
 
-        ABS_ENCODERS[0].setOffset(302.00640869140625);
-        ABS_ENCODERS[1].setOffset(-121.02523040771484);
-        ABS_ENCODERS[2].setOffset(-7.106578350067139);
-        ABS_ENCODERS[3].setOffset(-130.91921997070312);
+        ABS_ENCODERS[0].setOffset(-58.83230972290039);
+        ABS_ENCODERS[1].setOffset(-121.904296875);
+        ABS_ENCODERS[2].setOffset(-7.119141578674316);
+        ABS_ENCODERS[3].setOffset(-132.36329650878906);
 
         //config pid controllers
         for (EverTalonFXPIDController velocityController : WHEEL_VELOCITY_CONTROLLERS) {
-             velocityController.setPIDF(WHEEL_VELOCITY_KP, WHEEL_VELOCITY_KI, WHEEL_VELOCITY_KD, WHEEL_VELOCITY_KF);   
+            Slot0Configs configs = new Slot0Configs();
+            configs.kP = WHEEL_VELOCITY_KP;
+            configs.kI = WHEEL_VELOCITY_KI;
+            configs.kD = WHEEL_VELOCITY_KD;
+            configs.kS = WHEEL_VELOCITY_KS;
+            configs.kV = WHEEL_VELOCITY_KV;
+            velocityController.setPID(configs);   
         }
 
         for (EverSparkMaxPIDController angleController : WHEEL_ANGLE_CONTROLLERS) {
@@ -98,11 +106,11 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     @Override
     public void periodic() {
         //absolute encoders
-        SmartDashboard.putNumber("TL", m_modules[0].getSpeed());
-        SmartDashboard.putNumber("TR", m_modules[1].getSpeed());
-        SmartDashboard.putNumber("DL", m_modules[2].getSpeed());
-        SmartDashboard.putNumber("DR", m_modules[3].getSpeed());
-        SmartDashboard.putNumber("DR p", m_modules[3].getDistance());
+        SmartDashboard.putNumber("TL", m_modules[0].getAbsAngle());
+        SmartDashboard.putNumber("TR", m_modules[1].getAbsAngle());
+        SmartDashboard.putNumber("DL", m_modules[2].getAbsAngle());
+        SmartDashboard.putNumber("DR", m_modules[3].getAbsAngle());
+        
 
         // SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         // SmartDashboard.putNumber("angular velocity", getAngularVelocity());

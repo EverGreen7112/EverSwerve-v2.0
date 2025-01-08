@@ -17,6 +17,7 @@ public class TeleopDriveCommand extends Command{
     private Supplier<Double> m_angularVelocityInput;
     
     public TeleopDriveCommand(Supplier<Double> xSpeedInput, Supplier<Double> ySpeedInput, Supplier<Double> angularVelocityInput){
+        addRequirements(Swerve.getInstance());
         m_xSpeedInput = xSpeedInput;
         m_ySpeedInput = ySpeedInput;
         m_angularVelocityInput = angularVelocityInput;
