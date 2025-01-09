@@ -10,9 +10,7 @@ import frc.robot.Subsystems.Swerve.SwerveLocalizer;
 import frc.robot.Subsystems.Swerve.SwervePoint;
 
 /**     
- * class including util function for converting to WPIlib's classes
- * all of these function are taken from pathplanner's documentation for
- * configuring an auto
+ * class for util functions for converting to WPIlib's classes
  */
 public class SwerveToWpi {
     private static Swerve m_swerve = Swerve.getInstance();
@@ -43,5 +41,10 @@ public class SwerveToWpi {
         m_swerve.drive(new Vector2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond), false,
                 Math.toDegrees(speeds.omegaRadiansPerSecond));
     }
+
+    public static Rotation2d getGyroRotation(){
+        return new Rotation2d(Math.toRadians(m_swerve.getGyroOrientedAngle()));
+    }
+
 
 }

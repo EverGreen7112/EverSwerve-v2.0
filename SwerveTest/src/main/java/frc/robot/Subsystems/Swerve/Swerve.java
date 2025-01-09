@@ -2,6 +2,8 @@ package frc.robot.Subsystems.Swerve;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +19,7 @@ import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverSparkMax;
 import frc.robot.Utils.EverKit.Implementations.MotorControllers.EverTalonFX;
 import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverSparkMaxPIDController;
 import frc.robot.Utils.EverKit.Implementations.PIDControllers.EverTalonFXPIDController;
+import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
 
 /**
@@ -126,7 +129,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         return m_modules;
     }
 
-
     /**
      * see math on pdf document for more information
      * NWU - positive X is forward positive Y is left positive rotation is counter-clock wise
@@ -157,7 +159,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         // calculate rotation vectors
         Vector2d[] rotVecs = new Vector2d[m_modules.length];
         for (int i = 0; i < rotVecs.length; i++) {
-            rotVecs[i] = new Vector2d(SwerveConsts.physicalMoudulesVector[i]);
+            rotVecs[i] = new Vector2d(Funcs.convertFromStandardAxesToWpilibs(SwerveConsts.modulesPositions[i]));
             rotVecs[i].rotate(Math.toRadians(90 * SwerveConsts.GYRO_DIRECTION));
             rotVecs[i].normalise();
             rotVecs[i].mul(angularVel);
@@ -187,7 +189,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         double angularVelocity = 0;
         
         for (int i = 0; i < m_modules.length; i++) {
-            Vector2d moduleRotationVector = new Vector2d(SwerveConsts.physicalMoudulesVector[i]);
+            Vector2d moduleRotationVector = new Vector2d(Funcs.convertFromStandardAxesToWpilibs(SwerveConsts.modulesPositions[i]));
             moduleRotationVector.normalise();
             moduleRotationVector.rotate(Math.toRadians(90 * SwerveConsts.GYRO_DIRECTION));
 
@@ -197,7 +199,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         }
         
         // at this point the angular velocity is in m/s
-        angularVelocity /= (double)SwerveConsts.physicalMoudulesVector.length;
+        angularVelocity /= (double)SwerveConsts.modulesPositions.length;
 
         // converts angularVelocity to degrees/s
         angularVelocity /= SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;  // rotations / sec
@@ -236,6 +238,19 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
      */
     public void resetGyro(){
         m_gyro.resetYaw();
+    }
+
+   
+    public SwerveModulePosition[] getModulesPositions() {
+        return new SwerveModulePosition[]{
+            m_modules[0].getPosition(), 
+            m_modules[1].getPosition(), 
+            m_modules[2].getPosition(), 
+            m_modules[3].getPosition()};
+    }
+
+    public Rotation2d getGyroRotation(){
+        return new Rotation2d(Math.toRadians(getGyroOrientedAngle()));
     }
 
     public void testModule(int moduleIdx, double targetAngle, double targetSpeed){

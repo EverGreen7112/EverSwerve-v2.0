@@ -126,10 +126,9 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    
     for(int i = 0; i < 4; i++){
-      // Swerve.getInstance().getModules()[i].setState(1, 90);
-      Swerve.getInstance().getModules()[i].turnToAngle(360);
+      //Swerve.getInstance().getModules()[i].setState(1, 90);
+      // Swerve.getInstance().getModules()[i].turnToAngle(360);
       // Swerve.getInstance().getModules()[i].setSteer(0.1);
     }
 

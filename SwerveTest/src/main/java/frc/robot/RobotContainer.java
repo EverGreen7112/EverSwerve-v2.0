@@ -89,7 +89,7 @@ public class RobotContainer {
 
     //chassis
     
-    // Swerve.getInstance().setDefaultCommand(teleopCommand);
+    Swerve.getInstance().setDefaultCommand(teleopCommand);
     chassisBack.onTrue(new InstantCommand(() -> {Swerve.getInstance().resetGyro();}));
     
     
