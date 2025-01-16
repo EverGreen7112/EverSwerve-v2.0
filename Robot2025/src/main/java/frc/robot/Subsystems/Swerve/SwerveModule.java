@@ -162,7 +162,6 @@ public class SwerveModule extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("output", m_driveMotor.get()); 
     }
 
     public void setDrive(double output){

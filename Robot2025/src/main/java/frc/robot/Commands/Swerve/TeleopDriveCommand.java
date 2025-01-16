@@ -2,6 +2,7 @@ package frc.robot.Commands.Swerve;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
@@ -42,7 +43,7 @@ public class TeleopDriveCommand extends Command{
         speedX = Funcs.roundAfterDecimalPoint(speedX, 2);
         speedY = Funcs.roundAfterDecimalPoint(speedY, 2);
     
-         //create drive vector
+        //create drive vector
         Vector2d vec = new Vector2d(-speedX * maxSpeed, speedY * maxSpeed);
         
         //make sure mag never goes over maxDriveSpeed so driving in all directions will be the same speed
@@ -51,6 +52,7 @@ public class TeleopDriveCommand extends Command{
             vec.mul(maxSpeed);
         }
 
+        SmartDashboard.putNumber("max speed", maxSpeed);
         //drive
         Swerve.getInstance().drive(Funcs.convertFromStandardAxesToWpilibs(vec), true, -angularVel * SwerveConsts.MAX_ANGULAR_SPEED);       
             

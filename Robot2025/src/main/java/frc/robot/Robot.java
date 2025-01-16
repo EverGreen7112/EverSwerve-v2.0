@@ -11,7 +11,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -20,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Subsystems.LocalizationTest.LocalizationTest;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
@@ -62,8 +62,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("alliance", m_allianceChooser);
 
     m_autoChooser = new SendableChooser<Command>();
-    m_autoChooser.addOption("middle auto", new PathPlannerAuto("middle auto"));
-    m_autoChooser.addOption("not amp side auto", new PathPlannerAuto("not amp side auto"));
+   
     SmartDashboard.putData("auto", m_autoChooser);
 
   }
@@ -80,9 +79,9 @@ public class Robot extends TimedRobot {
     }
 
     // update the robot position of dashboard
-    m_field.setRobotPose(SwerveLocalizer.getInstance().getCurrentPoint().getX(),
-                         SwerveLocalizer.getInstance().getCurrentPoint().getY(),
-                        new Rotation2d(Math.toRadians(SwerveLocalizer.getInstance().getCurrentPoint().getAngle())));
+    m_field.setRobotPose(LocalizationTest.getInstance().getCurrentPoint().getX(),
+                         LocalizationTest.getInstance().getCurrentPoint().getY(),
+                        new Rotation2d(Math.toRadians(LocalizationTest.getInstance().getFieldOrientedAngle())));
 
   }
 
@@ -126,8 +125,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     for(int i = 0; i < 4; i++){
-      //Swerve.getInstance().getModules()[i].setState(1, 90);
-      // Swerve.getInstance().getModules()[i].turnToAngle(360);
+      // Swerve.getInstance().getModules()[i].setState(1, 90);
       // Swerve.getInstance().getModules()[i].setSteer(0.1);
     }
 

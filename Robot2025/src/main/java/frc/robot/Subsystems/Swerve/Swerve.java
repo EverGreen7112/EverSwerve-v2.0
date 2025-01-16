@@ -53,9 +53,9 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         
         //config encoders
         for(EverTalonFXInternalEncoder driveEncoder : DRIVE_ENCODERS){
-            // driveEncoder.setVelConversionFactor(((DRIVE_GEAR_RATIO) * SwerveConsts.WHEEL_PERIMETER));
-            driveEncoder.setVelConversionFactor(DRIVE_GEAR_RATIO);
-            driveEncoder.setPosConversionFactor(DRIVE_GEAR_RATIO);
+            // driveEncoder.setVelConversionFactor(((DRIVE_GEAR_RATIO)));
+            driveEncoder.setVelConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER);
+            driveEncoder.setPosConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER);
         }
 
         for(EverSparkInternalEncoder steerEncoder : STEER_ENCODERS){
@@ -110,16 +110,46 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     @Override
     public void periodic() {
         //absolute encoders
-        SmartDashboard.putNumber("TL", m_modules[0].getAbsAngle());
-        SmartDashboard.putNumber("TR", m_modules[1].getAbsAngle());
-        SmartDashboard.putNumber("DL", m_modules[2].getAbsAngle());
-        SmartDashboard.putNumber("DR", m_modules[3].getAbsAngle());
+        SmartDashboard.putNumber("TL", m_modules[0].getSpeed());
+        SmartDashboard.putNumber("TR", m_modules[1].getSpeed());
+        SmartDashboard.putNumber("DL", m_modules[2].getSpeed());
+        SmartDashboard.putNumber("DR", m_modules[3].getSpeed());
         
 
         // SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         // SmartDashboard.putNumber("angular velocity", getAngularVelocity());
         // SmartDashboard.putNumber("gyro angle", m_gyro.getYaw());
        
+
+        
+        //convert to m/s
+        double angularVel = (m_angularVelocity / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
+
+        if (m_velocity.mag() == 0 && angularVel == 0) {
+            for (int i = 0; i < m_modules.length; i++) {
+                m_modules[i].stopModule();
+            }
+        }
+
+        // convert to gyro oriented
+        if(m_isGyroOriented)
+            m_velocity.rotate(Math.toRadians(getGyroOrientedAngle() * SwerveConsts.GYRO_DIRECTION));
+        
+        // calculate rotation vectors
+        Vector2d[] rotVecs = new Vector2d[m_modules.length];
+        for (int i = 0; i < rotVecs.length; i++) {
+            rotVecs[i] = new Vector2d(Funcs.convertFromStandardAxesToWpilibs(SwerveConsts.modulesPositions[i]));
+            rotVecs[i].rotate(Math.toRadians(90 * SwerveConsts.GYRO_DIRECTION));
+            rotVecs[i].normalise();
+            rotVecs[i].mul(angularVel);
+        }
+
+        Vector2d[] sumVectors = new Vector2d[m_modules.length];
+        for (int i = 0; i < sumVectors.length; i++) {
+            sumVectors[i] = new Vector2d(m_velocity);
+            sumVectors[i].add(rotVecs[i]);
+            m_modules[i].setState(sumVectors[i]);
+        }
     }
 
     public double getGyroOrientedAngle(){
@@ -144,34 +174,6 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         m_angularVelocity = angularVelocity;
         m_isGyroOriented = isGyroOriented;
 
-        //convert to m/s
-        double angularVel = (angularVelocity / 360.0) * SwerveConsts.ROBOT_BOUNDING_CIRCLE_PERIMETER;
-
-        if (velocity.mag() == 0 && angularVel == 0) {
-            for (int i = 0; i < m_modules.length; i++) {
-                m_modules[i].stopModule();
-            }
-        }
-
-        // convert to gyro oriented
-        if(isGyroOriented)
-            velocity.rotate(Math.toRadians(getGyroOrientedAngle() * SwerveConsts.GYRO_DIRECTION));
-        
-        // calculate rotation vectors
-        Vector2d[] rotVecs = new Vector2d[m_modules.length];
-        for (int i = 0; i < rotVecs.length; i++) {
-            rotVecs[i] = new Vector2d(Funcs.convertFromStandardAxesToWpilibs(SwerveConsts.modulesPositions[i]));
-            rotVecs[i].rotate(Math.toRadians(90 * SwerveConsts.GYRO_DIRECTION));
-            rotVecs[i].normalise();
-            rotVecs[i].mul(angularVel);
-        }
-
-        Vector2d[] sumVectors = new Vector2d[m_modules.length];
-        for (int i = 0; i < sumVectors.length; i++) {
-            sumVectors[i] = new Vector2d(velocity);
-            sumVectors[i].add(rotVecs[i]);
-            m_modules[i].setState(sumVectors[i]);
-        }
     }
 
     public void driveByAngularVelocity(double angularVelocity){

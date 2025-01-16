@@ -58,6 +58,7 @@ public class EverTalonFXPIDController extends EverPIDController{
 
     @Override
     public void activate(double setpoint, ControlType type) {
+
         switch (type) {
             case kPos:
                 double posConversionFactor = m_everController.getPosConversionFactor();

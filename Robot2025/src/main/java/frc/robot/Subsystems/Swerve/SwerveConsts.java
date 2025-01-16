@@ -86,8 +86,8 @@ public interface SwerveConsts{
     
 
     // swerve module velocity pidf values
-    public static final double WHEEL_VELOCITY_KP = 0.0, WHEEL_VELOCITY_KI = 0.0, WHEEL_VELOCITY_KD = 0.00,
-            WHEEL_VELOCITY_KV = 0.7825, WHEEL_VELOCITY_KS = 0;
+    public static final double WHEEL_VELOCITY_KP = 0.1, WHEEL_VELOCITY_KI = 0.0, WHEEL_VELOCITY_KD = 0.00,
+            WHEEL_VELOCITY_KV = 1/8.5, WHEEL_VELOCITY_KS = 0;
     // swerve module wheel angle pid values
     public static final double WHEEL_ANGLE_KP = 0.01, WHEEL_ANGLE_KI = 0.0, WHEEL_ANGLE_KD = 0.000;
 
