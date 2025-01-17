@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "amp side note from side of the speaker"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "amp side far note"
+            "pathName": "test"
           }
         }
       ]

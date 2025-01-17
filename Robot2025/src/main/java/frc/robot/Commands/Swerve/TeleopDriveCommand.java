@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Swerve.Swerve;
+import frc.robot.Subsystems.Swerve.SwerveAngleController;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Utils.Math.Funcs;
 import frc.robot.Utils.Math.Vector2d;
@@ -42,7 +43,11 @@ public class TeleopDriveCommand extends Command{
         angularVel = Funcs.roundAfterDecimalPoint(angularVel, 2);
         speedX = Funcs.roundAfterDecimalPoint(speedX, 2);
         speedY = Funcs.roundAfterDecimalPoint(speedY, 2);
-    
+        
+        if(angularVel != 0){
+            SwerveAngleController.getInstance().stop();
+            SmartDashboard.putBoolean("balls",true);
+        }
         //create drive vector
         Vector2d vec = new Vector2d(-speedX * maxSpeed, speedY * maxSpeed);
         
@@ -52,7 +57,6 @@ public class TeleopDriveCommand extends Command{
             vec.mul(maxSpeed);
         }
 
-        SmartDashboard.putNumber("max speed", maxSpeed);
         //drive
         Swerve.getInstance().drive(Funcs.convertFromStandardAxesToWpilibs(vec), true, -angularVel * SwerveConsts.MAX_ANGULAR_SPEED);       
             

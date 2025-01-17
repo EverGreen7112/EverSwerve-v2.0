@@ -1,6 +1,7 @@
 package frc.robot.Subsystems.Swerve;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utils.EverKit.Periodic;
 
 public class SwerveAngleController implements Periodic{
@@ -21,21 +22,21 @@ public class SwerveAngleController implements Periodic{
 
     public void start(double targetAngle){
         stop();
-        start(PeriodicTime.kAutonomousPeriodic, PeriodicTime.kTeleopPeriodic, PeriodicTime.kTestPeriodic);
         m_targetAngle = targetAngle;
         m_isFieldOriented = false;
+        start(PeriodicTime.kAutonomousPeriodic, PeriodicTime.kTeleopPeriodic, PeriodicTime.kTestPeriodic);
     }
 
     public void start(double targetAngle, boolean isFieldOriented){
         stop();
-        start(PeriodicTime.kAutonomousPeriodic, PeriodicTime.kTeleopPeriodic, PeriodicTime.kTestPeriodic);
         m_targetAngle = targetAngle;
         m_isFieldOriented = isFieldOriented;
+        start(PeriodicTime.kAutonomousPeriodic, PeriodicTime.kTeleopPeriodic, PeriodicTime.kTestPeriodic);
     }
 
     @Override
     public void periodic() {
-
+        
         double currentAngle = (m_isFieldOriented) ? SwerveLocalizer.getInstance().getFieldOrientedAngle():
                                                     Swerve.getInstance().getGyroOrientedAngle();
         m_angleController.setSetpoint(m_targetAngle);

@@ -23,13 +23,13 @@ public interface Periodic {
             if(periodicTime == PeriodicTime.kRobotPeriodic && !Robot.robotPeriodicFuncs.contains(this))
                 Robot.robotPeriodicFuncs.add(this);
             if(periodicTime == PeriodicTime.kTeleopPeriodic && !Robot.teleopPeriodicFuncs.contains(this))
-                Robot.robotPeriodicFuncs.add(this);
+                Robot.teleopPeriodicFuncs.add(this);
             if(periodicTime == PeriodicTime.kTestPeriodic && !Robot.testPeriodicFuncs.contains(this))
-                Robot.robotPeriodicFuncs.add(this);
+                Robot.testPeriodicFuncs.add(this);
             if(periodicTime == PeriodicTime.kAutonomousPeriodic && !Robot.autonomousPeriodicFuncs.contains(this))
-                Robot.robotPeriodicFuncs.add(this);
+                Robot.autonomousPeriodicFuncs.add(this);
             if(periodicTime == PeriodicTime.kSimulationPeriodic && !Robot.simulationPeriodicFuncs.contains(this))
-                Robot.robotPeriodicFuncs.add(this);    
+                Robot.simulationPeriodicFuncs.add(this);    
         }
     }
 

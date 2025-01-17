@@ -7,27 +7,19 @@ package frc.robot;
 
 import java.util.ArrayList;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Subsystems.LocalizationTest.LocalizationTest;
-import frc.robot.Subsystems.Swerve.Swerve;
-import frc.robot.Subsystems.Swerve.SwerveConsts;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
-import frc.robot.Subsystems.Vision.JetsonHealthChecker;
-import frc.robot.Utils.TalonFxCalib;
+import frc.robot.Subsystems.Swerve.Swerve;
+import frc.robot.Subsystems.Swerve.SwerveAutoController;
 import frc.robot.Utils.EverKit.Periodic;
 
 public class Robot extends TimedRobot {
+
   public static ArrayList<Periodic> robotPeriodicFuncs = new ArrayList<Periodic>();
   public static ArrayList<Periodic> teleopPeriodicFuncs = new ArrayList<Periodic>();
   public static ArrayList<Periodic> testPeriodicFuncs = new ArrayList<Periodic>();
@@ -39,8 +31,6 @@ public class Robot extends TimedRobot {
 
   private static Field2d m_field; 
 
-  private static SendableChooser<Alliance> m_allianceChooser;
-  public static SendableChooser<Command> m_autoChooser;
 
   @Override
   public void robotInit() {
@@ -53,23 +43,16 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("field", m_field);
     
 
-    // m_odometryField = new Field2d();
-    // SmartDashboard.putData("odometry", m_odometryField);
+    SwerveAutoController.getInstance().addChoosersToDashboard();
 
-    m_allianceChooser = new SendableChooser<Alliance>();
-    m_allianceChooser.addOption("blue", Alliance.Blue);
-    m_allianceChooser.addOption("red", Alliance.Red);
-    SmartDashboard.putData("alliance", m_allianceChooser);
-
-    m_autoChooser = new SendableChooser<Command>();
    
-    SmartDashboard.putData("auto", m_autoChooser);
-
+    
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
     for (Periodic method : robotPeriodicFuncs) {
       try {
         method.periodic();
@@ -79,10 +62,9 @@ public class Robot extends TimedRobot {
     }
 
     // update the robot position of dashboard
-    m_field.setRobotPose(LocalizationTest.getInstance().getCurrentPoint().getX(),
-                         LocalizationTest.getInstance().getCurrentPoint().getY(),
-                        new Rotation2d(Math.toRadians(LocalizationTest.getInstance().getFieldOrientedAngle())));
-
+    m_field.setRobotPose(SwerveLocalizer.getInstance().getCurrentPoint().getX(),
+                         SwerveLocalizer.getInstance().getCurrentPoint().getY(),
+                        new Rotation2d(Math.toRadians(SwerveLocalizer.getInstance().getFieldOrientedAngle())));
   }
 
   @Override
@@ -96,7 +78,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_autoChooser.getSelected();
+    m_autonomousCommand = SwerveAutoController.getInstance().getAutoCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -108,6 +90,7 @@ public class Robot extends TimedRobot {
     for (Periodic method : autonomousPeriodicFuncs) {
       try {
         method.periodic();
+
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -140,10 +123,8 @@ public class Robot extends TimedRobot {
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }
 
-    
-    
+    }    
   }
 
   @Override
@@ -180,8 +161,6 @@ public class Robot extends TimedRobot {
   }
 
 
-  public static Alliance getAlliance(){
-    return m_allianceChooser.getSelected();
-  }
+  
   
 }

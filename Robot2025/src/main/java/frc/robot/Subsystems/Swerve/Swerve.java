@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -114,7 +115,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         SmartDashboard.putNumber("TR", m_modules[1].getSpeed());
         SmartDashboard.putNumber("DL", m_modules[2].getSpeed());
         SmartDashboard.putNumber("DR", m_modules[3].getSpeed());
-        
+        SmartDashboard.putNumber("gyro angle", getGyroOrientedAngle());
 
         // SmartDashboard.putString("velocity", getRobotOrientedVelocity().toString());
         // SmartDashboard.putNumber("angular velocity", getAngularVelocity());
@@ -177,11 +178,17 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     }
 
     public void driveByAngularVelocity(double angularVelocity){
-        drive(m_velocity, m_isGyroOriented, angularVelocity);
+        m_angularVelocity = angularVelocity;
     }
 
     public void driveByVelocity(Vector2d velocity, boolean isGyroOriented){
-        drive(velocity, isGyroOriented, m_angularVelocity);
+        m_velocity = velocity;
+        m_isGyroOriented = isGyroOriented;
+    }
+
+    public void driveRobotOrientedBySpeeds(ChassisSpeeds speeds){
+        drive(new Vector2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond), false,
+            Math.toDegrees(speeds.omegaRadiansPerSecond));
     }
 
     /**
@@ -221,6 +228,14 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
         }
         vel.mul(1.0 / m_modules.length);
         return vel;
+    }
+
+    public ChassisSpeeds getRobotOrientedSpeeds() {
+        ChassisSpeeds speeds = new ChassisSpeeds();
+        speeds.omegaRadiansPerSecond = Math.toRadians(getAngularVelocity());
+        speeds.vxMetersPerSecond = getRobotOrientedVelocity().x;
+        speeds.vyMetersPerSecond = getRobotOrientedVelocity().y;
+        return speeds;
     }
 
     public Vector2d getGyroOrientedVelocity(){
