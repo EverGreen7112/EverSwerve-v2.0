@@ -11,9 +11,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Intake.EmitNote;
 import frc.robot.Commands.Intake.IntakeNote;
+import frc.robot.Commands.Swerve.ChangeTeleopSpeedModeCommand;
 import frc.robot.Commands.Swerve.LockSwerveAngleCommand;
 import frc.robot.Commands.Swerve.RotateToCommand;
 import frc.robot.Commands.Swerve.TeleopDriveCommand;
+import frc.robot.Commands.Swerve.ChangeTeleopSpeedModeCommand.SpeedMode;
 import frc.robot.Subsystems.Intake.Intake;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
@@ -88,6 +90,9 @@ public class RobotContainer {
     Swerve.getInstance().setDefaultCommand(teleopCommand);
     chassisBack.onTrue(new InstantCommand(() -> {Swerve.getInstance().resetGyro();}));
     chassisA.onTrue(new RotateToCommand(90));
+    chassisRT.whileTrue(new ChangeTeleopSpeedModeCommand(SpeedMode.kTurbo));
+    chassisLT.whileTrue(new ChangeTeleopSpeedModeCommand(SpeedMode.kSlow));
+
 
   }
 

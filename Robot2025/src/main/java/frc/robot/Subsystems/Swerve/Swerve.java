@@ -7,10 +7,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.EverKit.EverAbsEncoder;
+import frc.robot.Utils.EverKit.EverEncoder;
 import frc.robot.Utils.EverKit.EverGyro;
+import frc.robot.Utils.EverKit.EverMotorController;
 import frc.robot.Utils.EverKit.EverMotorController.IdleMode;
 import frc.robot.Utils.EverKit.EverPIDController.ControlType;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverCANCoder;
@@ -41,25 +44,24 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
     private Swerve() {
     
         //config motor controllers
-        for (EverTalonFX driveMotor : DRIVE_MOTORS) {
+        for (EverMotorController driveMotor : DRIVE_MOTORS) {
              driveMotor.restoreFactoryDefaults();
              driveMotor.setInverted(false);
              driveMotor.setIdleMode(IdleMode.kCoast);
         }
         
-        for (EverSparkMax steerMotor : STEER_MOTORS) {
+        for (EverMotorController steerMotor : STEER_MOTORS) {
             steerMotor.restoreFactoryDefaults();
             steerMotor.setIdleMode(IdleMode.kCoast);
         }
         
         //config encoders
-        for(EverTalonFXInternalEncoder driveEncoder : DRIVE_ENCODERS){
-            // driveEncoder.setVelConversionFactor(((DRIVE_GEAR_RATIO)));
+        for(EverEncoder driveEncoder : DRIVE_ENCODERS){
             driveEncoder.setVelConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER);
             driveEncoder.setPosConversionFactor(DRIVE_GEAR_RATIO * WHEEL_PERIMETER);
         }
 
-        for(EverSparkInternalEncoder steerEncoder : STEER_ENCODERS){
+        for(EverEncoder steerEncoder : STEER_ENCODERS){
             steerEncoder.setPosConversionFactor(SwerveConsts.STEER_GEAR_RATIO * 360.0); //rotations to degrees
         }
 
