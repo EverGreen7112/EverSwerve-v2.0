@@ -11,7 +11,6 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -64,8 +63,6 @@ public class SwerveAutoController {
         m_allianceChooser = new SendableChooser<Alliance>();
         m_allianceChooser.addOption("blue", Alliance.Blue);
         m_allianceChooser.addOption("red", Alliance.Red);
-    
-
     }
 
     public static SwerveAutoController getInstance(){
@@ -89,9 +86,10 @@ public class SwerveAutoController {
         PathPlannerPath path = new PathPlannerPath(
             PathPlannerPath.waypointsFromPoses(waypoints),
             PATH_CONSTRAINTS,
-        null,
-        endState );
+            null,
+            endState);
         path.preventFlipping = true;
+
         return AutoBuilder.pathfindThenFollowPath(path, PATH_CONSTRAINTS);
     }
     

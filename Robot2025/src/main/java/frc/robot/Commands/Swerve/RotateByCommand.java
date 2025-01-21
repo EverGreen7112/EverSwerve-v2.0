@@ -18,11 +18,9 @@ public class RotateByCommand extends Command{
 
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 
     @Override
-    public void end(boolean interrupted) {
-        SwerveAngleController.getInstance().stop();
-    }
+    public void end(boolean interrupted) {}
 }

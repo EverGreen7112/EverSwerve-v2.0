@@ -46,7 +46,6 @@ public class TeleopDriveCommand extends Command{
         
         if(angularVel != 0){
             SwerveAngleController.getInstance().stop();
-            SmartDashboard.putBoolean("balls",true);
         }
         //create drive vector
         Vector2d vec = new Vector2d(-speedX * maxSpeed, speedY * maxSpeed);

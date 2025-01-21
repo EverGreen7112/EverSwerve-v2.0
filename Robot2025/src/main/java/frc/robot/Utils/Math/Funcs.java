@@ -1,5 +1,7 @@
 package frc.robot.Utils.Math;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class Funcs {
 
     /**
@@ -42,5 +44,9 @@ public class Funcs {
             rotations += 360;
         }
         return rotations;
+    }
+
+    public static Rotation2d degreesToRotation2d(double degrees){
+        return new Rotation2d(Math.toRadians(degrees));
     }
 }

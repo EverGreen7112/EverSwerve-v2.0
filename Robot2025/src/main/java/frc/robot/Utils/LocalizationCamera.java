@@ -3,22 +3,16 @@ package frc.robot.Utils;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.Robot;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.simulation.PhotonCameraSim;
-import org.photonvision.simulation.SimCameraProperties;
-import org.photonvision.simulation.VisionSystemSim;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
  
  public class LocalizationCamera {
@@ -28,13 +22,8 @@ import org.photonvision.targeting.PhotonTrackedTarget;
     private Matrix<N3, N1> m_multiTagStdDevs;
     private Matrix<N3, N1> m_curStdDevs;
  
-     // Simulation
-    private PhotonCameraSim cameraSim;
-    private VisionSystemSim visionSim;
- 
      public LocalizationCamera(String camName, AprilTagFieldLayout tagFieldLayout, Transform3d robotToCam, Matrix<N3, N1> singleTagStdDevs, Matrix<N3, N1> multiTagStdDevs) {
          m_cam = new PhotonCamera(camName);
- 
          m_poseEstimator =
                  new PhotonPoseEstimator(tagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam);
          m_poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
@@ -42,16 +31,16 @@ import org.photonvision.targeting.PhotonTrackedTarget;
          m_singleTagStdDevs = singleTagStdDevs;
          m_multiTagStdDevs = multiTagStdDevs;
          
-
      }
  
      public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
          Optional<EstimatedRobotPose> visionEst = Optional.empty();
-         for (var change : m_cam.getAllUnreadResults()) {
+         List<PhotonPipelineResult> res =  m_cam.getAllUnreadResults();
+         for (PhotonPipelineResult change : res) {
              visionEst = m_poseEstimator.update(change);
              updateEstimationStdDevs(visionEst, change.getTargets());
-             
-         }
+         }  
+
          return visionEst;
      }
  

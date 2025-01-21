@@ -1,5 +1,8 @@
 package frc.robot.Subsystems.Swerve;
 
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
+
 import frc.robot.Utils.EverKit.EverAbsEncoder;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverCANCoder;
 import frc.robot.Utils.EverKit.Implementations.Encoders.EverSparkInternalEncoder;
@@ -97,7 +100,7 @@ public interface SwerveConsts{
             FRONT_WHEEL_DIST_METERS * FRONT_WHEEL_DIST_METERS + SIDE_WHEEL_DIST_METERS * SIDE_WHEEL_DIST_METERS);
     public static final double ROBOT_RADIUS = 0.5 * Math.sqrt(
             FRONT_WHEEL_DIST_METERS * FRONT_WHEEL_DIST_METERS + SIDE_WHEEL_DIST_METERS * SIDE_WHEEL_DIST_METERS);
-    public static final double WHEEL_PERIMETER = Math.PI * 0.095;
+    public static final double WHEEL_PERIMETER = Math.PI * 0.09;
 
     // module gear ratios
     public static final double DRIVE_GEAR_RATIO = 1 / 6.75, STEER_GEAR_RATIO = 1 / 12.8;
@@ -120,7 +123,6 @@ public interface SwerveConsts{
                                                                  DR
     };// array of vectors from robot center to swerves module
 
-    
- 
+
 
 }

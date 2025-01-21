@@ -1,28 +1,3 @@
-// package frc.robot.Subsystems.LocalizationTest;
-
-// import edu.wpi.first.apriltag.AprilTagFieldLayout;
-// import edu.wpi.first.apriltag.AprilTagFields;
-// import edu.wpi.first.math.Matrix;
-// import edu.wpi.first.math.VecBuilder;
-// import edu.wpi.first.math.geometry.Rotation3d;
-// import edu.wpi.first.math.geometry.Transform3d;
-// import edu.wpi.first.math.geometry.Translation3d;
-// import edu.wpi.first.math.numbers.N1;
-// import edu.wpi.first.math.numbers.N3;
-
-
-//      public static final String CAM_NAME = "YOUR CAMERA NAME";
-//     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-//     public static final Transform3d ROBOT_TO_CAM =
-//             new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
-//     // The layout of the AprilTags on the field
-//     public static final AprilTagFieldLayout kTagLayout =
-//             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-//     // The standard deviations of our vision estimated poses, which affect correction rate
-//     // (Fake values. Experiment and determine estimation noise on an actual robot.)
-//     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-//     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
-//     private static LocalizerTest m_instance = new LocalizerTest();
 
 package frc.robot.Subsystems.Swerve;                                                                        
 import java.util.ArrayList;
@@ -34,18 +9,23 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utils.LocalizationCamera;
 import frc.robot.Utils.EverKit.Periodic;
     
 public class SwerveLocalizer implements Periodic, SwerveConsts{
     
-    private static final LocalizationCamera[] CAMS = { 
-        new LocalizationCamera(null, null, null, null, null),
-        new LocalizationCamera(null, null, null, null, null)
+    public static final LocalizationCamera[] CAMS = { 
+        new LocalizationCamera("front", AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo), new Transform3d(), VecBuilder.fill(0, 0, 0), VecBuilder.fill(0, 0, 0)),
     }; 
 
     private static final double FIELD_WIDTH = 0;
@@ -71,7 +51,7 @@ public class SwerveLocalizer implements Periodic, SwerveConsts{
     
         m_poseEstimator = new SwerveDrivePoseEstimator(
             kinematics,
-            Swerve.getInstance().getGyroRotation(),
+            Swerve.getInstance().getGyroRotation2d(),
             Swerve.getInstance().getModulesPositions(),
             new Pose2d());
 
@@ -85,7 +65,7 @@ public class SwerveLocalizer implements Periodic, SwerveConsts{
     @Override
     public void periodic() {
         // update odometry
-        m_poseEstimator.update(Swerve.getInstance().getGyroRotation(), Swerve.getInstance().getModulesPositions());
+        m_poseEstimator.update(Swerve.getInstance().getGyroRotation2d(), Swerve.getInstance().getModulesPositions());
 
         // update vision 
         for (LocalizationCamera cam : m_cams) {
@@ -99,7 +79,7 @@ public class SwerveLocalizer implements Periodic, SwerveConsts{
     
     public void setCurrentPoint(Pose2d newPoint) {
         m_poseEstimator.resetPosition(
-                Swerve.getInstance().getGyroRotation(),
+                Swerve.getInstance().getGyroRotation2d(),
                 Swerve.getInstance().getModulesPositions(),
                 newPoint);
     }
@@ -107,16 +87,12 @@ public class SwerveLocalizer implements Periodic, SwerveConsts{
     public double getFieldOrientedAngle() {
         return m_poseEstimator.getEstimatedPosition().getRotation().getDegrees();
     }
-        
     
     private boolean takeVisionPoseEstimation(Optional<EstimatedRobotPose> est){
         if(!est.isPresent() || est == null)
             return false;
 
-
-            
         Pose2d estPos = est.get().estimatedPose.toPose2d();
-        int targetsUsed = est.get().targetsUsed.size();
         double x = estPos.getX();
         double y = estPos.getY();
         double z = est.get().estimatedPose.getZ();
@@ -124,7 +100,6 @@ public class SwerveLocalizer implements Periodic, SwerveConsts{
         boolean outOfField = x < 0.0 || x > FIELD_WIDTH || y < 0.0 || y > FIELD_HEIGHT;
         boolean aboveCamera = z > MAX_CAMERA_HEIGHT; 
         boolean underGround = z < 0; 
-        boolean noTags = targetsUsed == 0;
         
         int numTags = 0;
         double avgDist = 0;
@@ -145,15 +120,15 @@ public class SwerveLocalizer implements Periodic, SwerveConsts{
 
             boolean isTooFar = avgDist > MAX_DISTANCE_FROM_TAG;
     
-            return !outOfField && !aboveCamera && !underGround && !noTags && !isTooFar;
-        
+            return !outOfField && !aboveCamera && !underGround && !isTooFar;
     }
     
         private void addCameraVisionMeasurements(LocalizationCamera cam){
             Optional<EstimatedRobotPose> est = cam.getEstimatedGlobalPose();
-            
+
             if(!takeVisionPoseEstimation(est))
                 return;
+            
             m_poseEstimator.addVisionMeasurement(est.get().estimatedPose.toPose2d(), est.get().timestampSeconds, cam.getEstimationStdDevs());        
         }
     

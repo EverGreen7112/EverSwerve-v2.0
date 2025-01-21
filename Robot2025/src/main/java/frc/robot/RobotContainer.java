@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.path.GoalEndState;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -13,12 +17,16 @@ import frc.robot.Commands.Intake.EmitNote;
 import frc.robot.Commands.Intake.IntakeNote;
 import frc.robot.Commands.Swerve.ChangeTeleopSpeedModeCommand;
 import frc.robot.Commands.Swerve.LockSwerveAngleCommand;
+import frc.robot.Commands.Swerve.RotateByCommand;
 import frc.robot.Commands.Swerve.RotateToCommand;
 import frc.robot.Commands.Swerve.TeleopDriveCommand;
 import frc.robot.Commands.Swerve.ChangeTeleopSpeedModeCommand.SpeedMode;
 import frc.robot.Subsystems.Intake.Intake;
 import frc.robot.Subsystems.Swerve.Swerve;
+import frc.robot.Subsystems.Swerve.SwerveAutoController;
 import frc.robot.Subsystems.Swerve.SwerveConsts;
+import frc.robot.Subsystems.Swerve.SwerveLocalizer;
+import frc.robot.Utils.Math.Funcs;
 
 public class RobotContainer {
 
@@ -46,6 +54,7 @@ public class RobotContainer {
   public static final Trigger chassisStart = chassis.start();
   public static final Trigger chassisBack = chassis.back();
   public static final Trigger chassisA = chassis.a();
+  public static final Trigger chassisB = chassis.b();
   public static final Trigger chassisRT = chassis.rightTrigger();
   public static final Trigger chassisLT = chassis.leftTrigger();
 
@@ -54,30 +63,6 @@ public class RobotContainer {
   public RobotContainer() {
     registerNamedCommands();
     configureBindings();
-
-    // Configure AutoBuilder last
-    // AutoBuilder.configure(
-    //         SwerveToWpi::getPos, // Robot pose supplier
-    //         SwerveToWpi::resetPos, // Method to reset odometry (will be called if your auto has a starting pose)
-    //         SwerveToWpi::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-    //         SwerveToWpi::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-    //         new HolonomicPathFollowerConfig(
-    //                 new PIDConstants(2.5, 0.0, 0.0), // Translation PID constants
-    //                 new PIDConstants(2.5, 0.0, 0.0), // Rotation PID constants
-    //                 2,
-    //                 SwerveConsts.ROBOT_RADIUS,
-    //                 new ReplanningConfig(true, false)
-    //         ),
-    //         () -> {
-    //           // Boolean supplier that controls when the path will be mirrored for the red alliance
-    //           // This will flip the path being followed to the red side of the field.
-    //           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-    //           return  Robot.getAlliance() == DriverStation.Alliance.Red;
-    //         },
-    //         Swerve.getInstance() // Reference to this subsystem to set requirements
-    // );
-
-    
   }
 
   private void registerNamedCommands(){
@@ -88,10 +73,17 @@ public class RobotContainer {
 
     //chassis
     Swerve.getInstance().setDefaultCommand(teleopCommand);
-    chassisBack.onTrue(new InstantCommand(() -> {Swerve.getInstance().resetGyro();}));
-    chassisA.onTrue(new RotateToCommand(90));
+    chassisA.onTrue(new RotateByCommand(90));
+    chassisB.onTrue(new InstantCommand(()->{Swerve.getInstance().resetGyro();}));
     chassisRT.whileTrue(new ChangeTeleopSpeedModeCommand(SpeedMode.kTurbo));
     chassisLT.whileTrue(new ChangeTeleopSpeedModeCommand(SpeedMode.kSlow));
+    chassisBack.onTrue(new InstantCommand(() -> {SwerveLocalizer.getInstance().setCurrentPoint(new Pose2d());}));
+    chassisStart.onTrue(SwerveAutoController.getInstance().generateDriveToCommand(
+      new GoalEndState(0, Funcs.degreesToRotation2d(90)),
+      SwerveLocalizer.getInstance().getCurrentPoint(),
+      new Pose2d(1, 0, Funcs.degreesToRotation2d(0))
+    ));
+    
 
 
   }

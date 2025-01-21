@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Subsystems.Swerve.SwerveLocalizer;
 import frc.robot.Subsystems.Swerve.Swerve;
 import frc.robot.Subsystems.Swerve.SwerveAutoController;
+import frc.robot.Utils.LocalizationCamera;
 import frc.robot.Utils.EverKit.Periodic;
 
 public class Robot extends TimedRobot {
@@ -61,6 +62,7 @@ public class Robot extends TimedRobot {
       }
     }
 
+   
     // update the robot position of dashboard
     m_field.setRobotPose(SwerveLocalizer.getInstance().getCurrentPoint().getX(),
                          SwerveLocalizer.getInstance().getCurrentPoint().getY(),

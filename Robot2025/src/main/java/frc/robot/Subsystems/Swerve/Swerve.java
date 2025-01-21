@@ -269,7 +269,7 @@ public class Swerve extends SubsystemBase implements SwerveConsts{
             m_modules[3].getPosition()};
     }
 
-    public Rotation2d getGyroRotation(){
+    public Rotation2d getGyroRotation2d(){
         return new Rotation2d(Math.toRadians(getGyroOrientedAngle()));
     }
 
