@@ -13,6 +13,8 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -23,15 +25,18 @@ import frc.robot.Utils.LocalizationCamera;
 import frc.robot.Utils.EverKit.Periodic;
     
 public class SwerveLocalizer implements Periodic, SwerveConsts{
-    
+    public static double m_camPitch = 45;
+    public static Rotation3d m_camRot = new Rotation3d(0,m_camPitch,0);
+    public static Pose3d m_camPose = new Pose3d((75.0 / 2.0) / 100.0, 0, 0.1, m_camRot);
+    public static Pose3d m_robotPose3d = new Pose3d(0,0,0, new Rotation3d(0,0,0));
     public static final LocalizationCamera[] CAMS = { 
-        new LocalizationCamera("front", AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo), new Transform3d(), VecBuilder.fill(0, 0, 0), VecBuilder.fill(0, 0, 0)),
+        new LocalizationCamera("front", AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo), new Transform3d(m_robotPose3d, m_camPose), VecBuilder.fill(0, 0, 0), VecBuilder.fill(0, 0, 0)),
     }; 
 
-    private static final double FIELD_WIDTH = 0;
-    private static final double FIELD_HEIGHT = 0;
-    private static final double MAX_CAMERA_HEIGHT = 0;
-    private static final double MAX_DISTANCE_FROM_TAG = 0;
+    private static final double FIELD_WIDTH = 8.52; // 8.52 meters
+    private static final double FIELD_HEIGHT = 17.55; // 17.55 meters
+    private static final double MAX_CAMERA_HEIGHT = 20;
+    private static final double MAX_DISTANCE_FROM_TAG = 3.5;
     
     private static SwerveLocalizer m_instance = new SwerveLocalizer();
     private ArrayList<LocalizationCamera> m_cams;
@@ -48,7 +53,6 @@ public class SwerveLocalizer implements Periodic, SwerveConsts{
             new Translation2d(modulesPositions[2].x, modulesPositions[2].y),
             new Translation2d(modulesPositions[3].x, modulesPositions[3].y)
         );
-    
         m_poseEstimator = new SwerveDrivePoseEstimator(
             kinematics,
             Swerve.getInstance().getGyroRotation2d(),
@@ -103,7 +107,8 @@ public class SwerveLocalizer implements Periodic, SwerveConsts{
         
         int numTags = 0;
         double avgDist = 0;
- 
+
+        SmartDashboard.putBoolean("hight", outOfField);
              // Precalculation - see how many tags we found, and calculate an average-distance metric
              for (var tgt : est.get().targetsUsed) {
                  var tagPose = m_fieldLayout.getTagPose(tgt.getFiducialId());
@@ -115,6 +120,7 @@ public class SwerveLocalizer implements Periodic, SwerveConsts{
                                  .toPose2d()
                                  .getTranslation()
                                  .getDistance(est.get().estimatedPose.toPose2d().getTranslation());
+                SmartDashboard.putNumber("Dis to tag", avgDist);
              }
              avgDist /= numTags;
 
@@ -125,10 +131,9 @@ public class SwerveLocalizer implements Periodic, SwerveConsts{
     
         private void addCameraVisionMeasurements(LocalizationCamera cam){
             Optional<EstimatedRobotPose> est = cam.getEstimatedGlobalPose();
-
+            SmartDashboard.putBoolean("is vision good", takeVisionPoseEstimation(est));
             if(!takeVisionPoseEstimation(est))
                 return;
-            
             m_poseEstimator.addVisionMeasurement(est.get().estimatedPose.toPose2d(), est.get().timestampSeconds, cam.getEstimationStdDevs());        
         }
     
