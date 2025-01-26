@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Intake.EmitNote;
 import frc.robot.Commands.Intake.IntakeNote;
 import frc.robot.Commands.Swerve.ChangeTeleopSpeedModeCommand;
-import frc.robot.Commands.Swerve.DriveToPose;
 import frc.robot.Commands.Swerve.LockSwerveAngleCommand;
 import frc.robot.Commands.Swerve.RotateByCommand;
 import frc.robot.Commands.Swerve.RotateToCommand;
@@ -79,7 +78,6 @@ public class RobotContainer {
     chassisRT.whileTrue(new ChangeTeleopSpeedModeCommand(SpeedMode.kTurbo));
     chassisLT.whileTrue(new ChangeTeleopSpeedModeCommand(SpeedMode.kSlow));
     chassisBack.onTrue(new InstantCommand(() -> {SwerveLocalizer.getInstance().setCurrentPoint(new Pose2d());}));
-    chassisStart.onTrue(new DriveToPose());
     
 
 

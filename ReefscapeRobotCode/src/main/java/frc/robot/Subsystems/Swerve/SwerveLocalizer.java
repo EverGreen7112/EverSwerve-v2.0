@@ -22,13 +22,13 @@ import frc.robot.Utils.EverKit.Periodic;
 public class SwerveLocalizer implements Periodic, SwerveConsts {
     public static final LocalizationCamera[] CAMS = {
             new LocalizationCamera("front",
-                    AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo),
+                    AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
                     new Transform3d(new Translation3d(0.035, -0.015, 0.07), new Rotation3d(0, Math.toRadians(-23), 0)),
                     VecBuilder.fill(0, 0, 0), VecBuilder.fill(0, 0, 0)),
     };
 
-    private static final double FIELD_WIDTH = 8.21;
-    private static final double FIELD_HEIGHT = 16.54;
+    private static final double FIELD_WIDTH = 8.05;
+    private static final double FIELD_HEIGHT = 17.55;
     private static final double MAX_CAMERA_HEIGHT = 0.17;
     private static final double MAX_DISTANCE_FROM_TAG = 3.5;
 
@@ -39,7 +39,7 @@ public class SwerveLocalizer implements Periodic, SwerveConsts {
 
     private SwerveLocalizer() {
         m_cams = new ArrayList<>(Arrays.asList(CAMS));
-        m_fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+        m_fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
         SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
                 new Translation2d(modulesPositions[0].x, modulesPositions[0].y),
@@ -114,7 +114,6 @@ public class SwerveLocalizer implements Periodic, SwerveConsts {
                     .toPose2d()
                     .getTranslation()
                     .getDistance(est.get().estimatedPose.toPose2d().getTranslation());
-            SmartDashboard.putNumber("Dis to tag", avgDist);
         }
         avgDist /= numTags;
 
@@ -123,17 +122,18 @@ public class SwerveLocalizer implements Periodic, SwerveConsts {
         SmartDashboard.putBoolean("to far", isTooFar);
         SmartDashboard.putBoolean("above camera", aboveCamera);
         SmartDashboard.putBoolean("underGround", underGround);
-        SmartDashboard.putString("Z", z + "");        
         return !outOfField && !aboveCamera && !underGround && !isTooFar;
     }
 
     private void addCameraVisionMeasurements(LocalizationCamera cam) {
         Optional<EstimatedRobotPose> est = cam.getEstimatedGlobalPose();
-        SmartDashboard.putString("vision pose", est.get().estimatedPose.toString());
+        // SmartDashboard.putString("vision pose", est.get().estimatedPose.toString());
         if (!takeVisionPoseEstimation(est))
             return;
         m_poseEstimator.addVisionMeasurement(est.get().estimatedPose.toPose2d(), est.get().timestampSeconds,
                 cam.getEstimationStdDevs());
     }
+
+    
 
 }
