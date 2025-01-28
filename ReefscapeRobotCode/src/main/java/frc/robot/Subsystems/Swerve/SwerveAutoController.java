@@ -93,6 +93,7 @@ public class SwerveAutoController {
             null,
             endState);
         path.preventFlipping = true;
+        
         return AutoBuilder.pathfindThenFollowPath(path, PATH_CONSTRAINTS);
     }
     

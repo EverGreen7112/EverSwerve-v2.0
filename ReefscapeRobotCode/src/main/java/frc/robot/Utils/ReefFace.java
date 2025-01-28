@@ -16,7 +16,6 @@ public class ReefFace {
         new ReefFace(5.32, 4.03, 180, 5.32,3.83,180,5.32,4.2,180),
         new ReefFace(4.90, 4.75, 240, 5.04,4.665,240,4.76,4.835,240),
         new ReefFace(4.07, 4.75, 300, 4.21,4.835,300,3.93,4.665,300)
-
     };
 
     public static final ReefFace[] RED_REEF = {
