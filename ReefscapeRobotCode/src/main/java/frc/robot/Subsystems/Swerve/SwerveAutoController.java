@@ -67,6 +67,7 @@ public class SwerveAutoController {
         m_allianceChooser = new SendableChooser<Alliance>();
         m_allianceChooser.addOption("blue", Alliance.Blue);
         m_allianceChooser.addOption("red", Alliance.Red);
+        SmartDashboard.putData("alliance", m_allianceChooser);
     }
 
     public static SwerveAutoController getInstance(){

@@ -47,7 +47,8 @@ public class RobotContainer {
   public static final Trigger chassisB = chassis.b();
   public static final Trigger chassisRT = chassis.rightTrigger();
   public static final Trigger chassisLT = chassis.leftTrigger();
-
+  public static final Trigger chassisPovUp = chassis.povUp();
+  public static final Trigger chassisPovDown = chassis.povDown();
   public static final TeleopDriveCommand teleopCommand = new TeleopDriveCommand(chassis::getLeftX, chassis::getLeftY, chassis::getRightX);
 
   public RobotContainer() {
@@ -69,6 +70,9 @@ public class RobotContainer {
     chassisLT.whileTrue(new ChangeTeleopSpeedModeCommand(SpeedMode.kSlow));
     chassisBack.onTrue(new InstantCommand(() -> {SwerveLocalizer.getInstance().setCurrentPoint(new Pose2d());}));
     chassisStart.onTrue(new DriveToBranch(ReefFace.BLUE_REEF[3], true));
+    chassisPovUp.onTrue(new DriveToClosestBranch(true));
+    chassisPovDown.onTrue(new DriveToClosestBranch(false));
+
 
 
   }

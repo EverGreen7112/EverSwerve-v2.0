@@ -53,5 +53,10 @@ public class ReefFace {
     public Pose2d getRightBranchPose(){
         return m_rightBranchPose;
     }
+
+    @Override
+    public String toString(){
+        return this.m_facePose.toString();
+    }
     
 }
